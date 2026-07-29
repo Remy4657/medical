@@ -1,4 +1,3 @@
-"use client";
 import { CatalogProductCard } from "@/components/CatalogProductCard";
 import { Product } from "@/types";
 
@@ -7,7 +6,6 @@ export default function ListProducts({
 }: {
   listProducts: Product[];
 }) {
-  console.log("listProducts: ", listProducts);
   return (
     <div className="space-y-12">
       <section id="catolag" className="scroll-mt-24">
@@ -18,7 +16,7 @@ export default function ListProducts({
             </h2>
           </div>
         </div>
-        <ul className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        <ul className="grid gap-6 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
           {listProducts.map((p) => (
             <li key={p.id}>
               <CatalogProductCard product={p} />

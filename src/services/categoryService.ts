@@ -1,19 +1,10 @@
-import api from "../lib/api";
-export const getAllCategories = async () => {
+export const fetchAllCategories = async () => {
   try {
-    const res = await api.get("/categories");
-    console.log("res product: ", res);
-    return res.data.data;
-  } catch (error) {
-    console.error(error);
-  }
-};
-export const getAllProducts = async () => {
-  try {
-    const res = await api.get("/products");
-    console.log("res cate: ", res);
-
-    return res.data.data?.products;
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/categories`,
+    ).then((res) => res.json());
+    console.log("res: ", res);
+    return res.data;
   } catch (error) {
     console.error(error);
   }
