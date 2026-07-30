@@ -3,8 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './user/user.module';
-import { User } from './user/entities/user.entity';
 import { RoleModule } from './role/role.module';
 import { Role } from './role/entities/role.entity';
 import { APP_GUARD } from '@nestjs/core';
@@ -16,7 +14,7 @@ import { Product } from './product/entities/product.entity';
 
 @Module({
   imports: [
-    // cấu hình đọc biến môi trường
+    // cấu hình đọc biến môi trườngg
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -28,11 +26,10 @@ import { Product } from './product/entities/product.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Role, Product, Category],
-      synchronize: false,
+      entities: [Role, Product, Category],
+      synchronize: process.env.NODE_ENV !== 'production',
       logging: true,
     }),
-    UserModule,
     RoleModule,
     CategoryModule,
     ProductModule,

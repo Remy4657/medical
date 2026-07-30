@@ -19,7 +19,7 @@ export class Product {
   @Column()
   name: string;
 
-  @ManyToOne(() => Category, { nullable: false })
+  @ManyToOne(() => Category, { nullable: true })
   @JoinColumn({ name: 'category_id' })
   category: Category;
 

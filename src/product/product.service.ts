@@ -3,34 +3,56 @@ import { Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
+import { CategoryService } from '../category/category.service';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(Product)
-    private readonly productRepo: Repository<Product>,
+    private readonly productRepository: Repository<Product>,
+    private readonly categoryService: CategoryService,
   ) {}
 
-  async findAll() {
-    return this.productRepo.find({
+  findAll() {
+    return this.productRepository.find({
       relations: {
         category: true,
       },
       order: { created_at: 'DESC' },
     });
   }
+  async findByCategory(slug: string) {
+    const { category, ids } =
+      await this.categoryService.getCategoryWithDescendants(slug);
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
-  }
+    const breadcrumb = await this.categoryService.getBreadcrumb(category);
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
-  }
+    const products = await this.productRepository.find({
+      where: {
+        category: {
+          id: In(ids),
+        },
+      },
+      relations: {
+        category: true,
+      },
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+    return {
+      category: {
+        id: category.id,
+        name: category.name,
+        slug: category.slug,
+      },
+
+      breadcrumb: breadcrumb.map((item) => ({
+        name: item.name,
+        slug: item.slug,
+      })),
+
+      products,
+    };
   }
 }

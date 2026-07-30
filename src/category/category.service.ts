@@ -1,34 +1,74 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, IsNull } from 'typeorm';
 import { Category } from './entities/category.entity';
-import { Repository } from 'typeorm';
 
 @Injectable()
 export class CategoryService {
   constructor(
     @InjectRepository(Category)
-    private readonly categoryRepo: Repository<Category>,
+    private readonly categoryRepository: Repository<Category>,
   ) {}
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
-  }
 
   findAll() {
-    console.log('findall service');
-    return this.categoryRepo.find();
+    return this.categoryRepository.find({
+      where: {
+        parent: IsNull(), // Chỉ lấy danh mục gốc
+      },
+      relations: {
+        children: true,
+      },
+      order: {
+        id: 'ASC',
+        children: {
+          id: 'ASC',
+        },
+      },
+    });
   }
+  async getCategoryWithDescendants(slug: string) {
+    const categories = await this.categoryRepository.find();
+    console.log('categories: ', categories);
+    const category = categories.find((c) => c.slug === slug);
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+    if (!category) {
+      throw new NotFoundException('Category not found');
+    }
+
+    const ids: number[] = [];
+
+    const dfs = (id: number) => {
+      ids.push(id);
+
+      categories
+        .filter((c) => c.parent_id === id)
+        .forEach((child) => dfs(child.id));
+    };
+
+    dfs(category.id);
+
+    return {
+      category,
+      ids,
+    };
   }
+  async getBreadcrumb(category: Category): Promise<Category[]> {
+    const breadcrumb: Category[] = [];
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
-  }
+    let current = category;
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+    while (current) {
+      breadcrumb.unshift(current);
+
+      if (!current.parent_id) break;
+
+      current = await this.categoryRepository.findOne({
+        where: {
+          id: current.parent_id,
+        },
+      });
+    }
+
+    return breadcrumb;
   }
 }
