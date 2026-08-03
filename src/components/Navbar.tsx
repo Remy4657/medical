@@ -3,26 +3,11 @@ import { ShoppingCartIcon, StoreIcon } from "lucide-react";
 import { authClient } from "../lib/auth-client";
 import Link from "next/link";
 import { fetchAllCategories } from "@/services/categoryService";
-import { useEffect, useState } from "react";
+import AuthInfo from "./AuthInfo";
 
-const Navbar = () => {
-  const [listCategories, setListCategories] = useState<any>([]);
-  useEffect(() => {
-    const load = async () => {
-      const resListCategories = await fetchAllCategories();
-      console.log("resListCategories: ", resListCategories);
-      setListCategories(resListCategories);
-    };
+const Navbar = async () => {
+  const resListCategories = await fetchAllCategories();
 
-    load();
-  }, []);
-
-  const signInWithGoogle = async () => {
-    await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/", // sau khi login xong sẽ redirect đến dashboard
-    });
-  };
   return (
     <div className="navbar sticky top-0 z-50 border-b border-base-300 shadow-sm bg-base-100/95 backdrop-blur-md">
       <div className="flex flex-row justify-between mx-auto w-full min-h-14 max-w-7xl">
@@ -83,12 +68,12 @@ const Navbar = () => {
               <span className="flex size-10 items-center justify-center rounded-lg bg-primary/15 p-1 text-primary">
                 <StoreIcon className="size-8" aria-hidden />
               </span>
-              <span className="leading-none">An Sinh</span>
+              <span className="invisible xs:visible leading-none">An Sinh</span>
             </Link>
           </div>
         </div>
         <div className="navbar-center hidden lg:flex gap-2">
-          {listCategories.map((p: any) => (
+          {resListCategories.map((p: any) => (
             <div key={p.id} className="dropdown dropdown-hover">
               <div tabIndex={0} role="" className="m-1 flex gap-1">
                 <span>{p.name}</span>
@@ -107,49 +92,7 @@ const Navbar = () => {
             </div>
           ))}
         </div>
-        <div className="navbar-end">
-          <div className="flex flex-row items-center">
-            <div className="flex flex-row items-center gap-1">
-              <Sun className="size-4" />
-              <input
-                type="checkbox"
-                className="toggle toggle-sm"
-                value="dark"
-                data-set-theme
-              />
-              <Moon className="size-4" />
-            </div>
-            <Link
-              href="/cart"
-              className="btn btn-ghost gap-2 font-medium indicator"
-              aria-label={"Cart"}
-            >
-              <ShoppingCartIcon className="size-6 opacity-90" aria-hidden />
-            </Link>
-            <button
-              className="btn btn-ghost"
-              onClick={() =>
-                (
-                  document.getElementById("my_modal_2") as HTMLDialogElement
-                ).showModal()
-              }
-            >
-              <CircleUserRound />
-              Đăng nhập
-            </button>
-            <dialog id="my_modal_2" className="modal">
-              <div className="modal-box flex flex-col">
-                <h3 className="font-bold text-lg mb-5">Xin chào!</h3>
-                <button className="btn m-auto" onClick={signInWithGoogle}>
-                  Tiếp tục với google
-                </button>
-              </div>
-              <form method="dialog" className="modal-backdrop">
-                <button>close</button>
-              </form>
-            </dialog>
-          </div>
-        </div>
+        <AuthInfo />
       </div>
     </div>
   );

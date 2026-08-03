@@ -8,6 +8,7 @@ export interface Product {
   currency: string;
   image_url: string | null;
   image_kit_file_id: string | null;
+  images: string[]; // array of image URLs for the product gallery
   active: boolean;
   created_at: string;
 }

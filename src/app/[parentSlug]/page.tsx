@@ -1,6 +1,6 @@
 import Breadcrumb from "@/components/BreadCrumb";
-import ListProducts from "@/components/product/ListProducts";
 import { fetchProductByCategory } from "@/services/productService";
+import ListProductsSlug from "@/components/ListProduct/ListProductsSlug";
 
 type Props = {
   params: Promise<{
@@ -10,12 +10,17 @@ type Props = {
 
 const page = async ({ params }: Props) => {
   const { parentSlug } = await params;
-  const { breadcrumb, products } = await fetchProductByCategory(parentSlug);
+  const productCategory = await fetchProductByCategory(parentSlug, 1, 15);
+  const parentSlugName =
+    productCategory.breadcrumb[productCategory.breadcrumb.length - 1].name;
   return (
     <div>
-      <Breadcrumb items={breadcrumb} />
-      <ListProducts listProducts={products} />;<div>slug</div>
-      <div>page</div>
+      <Breadcrumb items={productCategory.breadcrumb} />
+      <ListProductsSlug
+        categorySlug={parentSlug}
+        categoryName={parentSlugName}
+        initialData={productCategory}
+      />
     </div>
   );
 };

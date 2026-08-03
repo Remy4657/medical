@@ -9,7 +9,7 @@ type Props = {
   items: BreadcrumbItem[];
 };
 
-export default function Breadcrumb({ items }: Props) {
+export default function Breadcrumb({ items = [] }: Props) {
   const breadcrumbItems = [{ name: "Trang chủ", slug: "/" }, ...items];
   return (
     <div className="breadcrumbs text-sm text-primary">
