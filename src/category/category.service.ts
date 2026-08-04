@@ -27,13 +27,9 @@ export class CategoryService {
     });
   }
   async getCategoryWithDescendants(slug: string) {
+    // trả về danh mục và tất cả các danh mục con của nó
     const categories = await this.categoryRepository.find();
-    console.log('categories: ', categories);
     const category = categories.find((c) => c.slug === slug);
-
-    if (!category) {
-      throw new NotFoundException('Category not found');
-    }
 
     const ids: number[] = [];
 
@@ -45,7 +41,7 @@ export class CategoryService {
         .forEach((child) => dfs(child.id));
     };
 
-    dfs(category.id);
+    dfs(category?.id);
 
     return {
       category,

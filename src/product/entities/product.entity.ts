@@ -1,11 +1,18 @@
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
   CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
+
+import { Brand } from './brand.entity';
+import { Country } from './country.entity';
+import { ProductImage } from './product-image.entity';
+import { ProductVariant } from './product-variant.entity';
 import { Category } from '../../category/entities/category.entity';
 
 @Entity('product')
@@ -13,34 +20,69 @@ export class Product {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
-  slug: string;
-
-  @Column()
+  @Column({ length: 255 })
   name: string;
 
-  @ManyToOne(() => Category, { nullable: true })
+  @Column({ length: 255, unique: true })
+  slug: string;
+
+  @Column({ type: 'text', nullable: true })
+  description: string | null;
+
+  @Column({
+    type: 'int',
+    default: 0,
+  })
+  totalSold: number;
+  /**
+   * Brand
+   */
+  @ManyToOne(() => Brand, (brand) => brand.products, {
+    nullable: false,
+    onDelete: 'RESTRICT',
+  })
+  @JoinColumn({ name: 'brand_id' })
+  brand: Brand;
+
+  /**
+   * Country of manufacture
+   */
+  @ManyToOne(() => Country, (country) => country.products, {
+    nullable: false,
+    onDelete: 'RESTRICT',
+  })
+  @JoinColumn({ name: 'country_id' })
+  country: Country;
+
+  /**
+   * Category
+   */
+  @ManyToOne(() => Category, (category) => category.products, {
+    nullable: false,
+    onDelete: 'RESTRICT',
+  })
   @JoinColumn({ name: 'category_id' })
   category: Category;
 
-  @Column({ type: 'text', nullable: true })
-  description: string;
+  /**
+   * Product images
+   */
+  @OneToMany(() => ProductImage, (image) => image.product, {
+    cascade: true,
+  })
+  images: ProductImage[];
 
-  @Column({ type: 'int' })
-  price_cents: number;
+  /**
+   * Product variants
+   */
+  @OneToMany(() => ProductVariant, (variant) => variant.product, {
+    cascade: true,
+  })
+  variants: ProductVariant[];
 
-  @Column({ default: 'vnd' })
-  currency: string;
+  @CreateDateColumn()
+  createdAt: Date;
 
-  @Column({ nullable: true })
-  image_url: string;
-
-  @Column({ nullable: true })
-  image_kit_file_id: string;
-
-  @Column({ default: true })
-  active: boolean;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  created_at: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

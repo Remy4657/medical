@@ -1,0 +1,77 @@
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryColumn,
+  ManyToMany,
+  JoinTable,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Account } from './account.entity';
+import { Role } from '../../role/entities/role.entity';
+import { Session } from './session.entity';
+
+@Entity('user')
+export class User {
+  @PrimaryColumn({
+    type: 'varchar',
+  })
+  id: string;
+
+  @Column({
+    type: 'varchar',
+    unique: true,
+  })
+  email: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  name: string | null;
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  image: string | null;
+
+  @Column({
+    type: 'boolean',
+    default: false,
+    name: 'emailVerified',
+  })
+  emailVerified: boolean;
+
+  @CreateDateColumn({ name: 'createdAt' })
+  createdAt: Date;
+
+  @UpdateDateColumn({
+    name: 'updatedAt',
+  })
+  updatedAt: Date;
+
+  // User 1:N Account
+  @OneToMany(() => Account, (account) => account.user)
+  accounts: Account[];
+
+  // User 1:N Session
+  @OneToMany(() => Session, (session) => session.user)
+  sessions: Session[];
+
+  // User N:N Role
+  @ManyToMany(() => Role, (role) => role.users)
+  @JoinTable({
+    name: 'user_role',
+    joinColumn: {
+      name: 'user_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'role_id',
+      referencedColumnName: 'id',
+    },
+  })
+  roles: Role[];
+}

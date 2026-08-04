@@ -27,7 +27,7 @@ async function bootstrap() {
   );
 
   //app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector))); // Automatically serialize responses to DTOs
-  app.useGlobalInterceptors(new HttpInterceptor());
+  app.useGlobalInterceptors(new HttpInterceptor(app.get(Reflector)));
   app.useGlobalFilters(new HttpExceptionFilter()); // Handle HTTP exceptions
 
   await app.listen(process.env.PORT ?? 5001);

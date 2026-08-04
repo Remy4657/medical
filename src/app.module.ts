@@ -11,6 +11,18 @@ import { ProductModule } from './product/product.module';
 import { CategoryModule } from './category/category.module';
 import { Category } from './category/entities/category.entity';
 import { Product } from './product/entities/product.entity';
+import { AuthModule } from './auth/auth.module';
+import { User } from './auth/entities/user.entity';
+import { Account } from './auth/entities/account.entity';
+import { Session } from './auth/entities/session.entity';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { Brand } from './product/entities/brand.entity';
+import { Country } from './product/entities/country.entity';
+import { Inventory } from './product/entities/inventory.entity';
+import { ProductImage } from './product/entities/product-image.entity';
+import { ProductPrice } from './product/entities/product-price.entity';
+import { ProductUnit } from './product/entities/product-unit.entity';
+import { ProductVariant } from './product/entities/product-variant.entity';
 
 @Module({
   imports: [
@@ -26,13 +38,29 @@ import { Product } from './product/entities/product.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [Role, Product, Category],
+      entities: [
+        User,
+        Account,
+        Session,
+        Role,
+        Product,
+        Category,
+        Brand,
+        Country,
+        Inventory,
+        ProductImage,
+        ProductPrice,
+        ProductUnit,
+        ProductVariant,
+      ],
       synchronize: process.env.NODE_ENV !== 'production',
       logging: true,
+      namingStrategy: new SnakeNamingStrategy(),
     }),
     RoleModule,
     CategoryModule,
     ProductModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [

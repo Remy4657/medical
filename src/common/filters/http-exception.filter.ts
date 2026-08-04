@@ -26,6 +26,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
           : (exceptionResponse as { message?: string });
 
       res.status(status).json({
+        success: false,
         statusCode: status,
         ...errorBody,
         message: errorBody.message || 'Đã có lỗi xảy ra!',
