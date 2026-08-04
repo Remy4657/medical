@@ -3,9 +3,10 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { CatalogProductCard } from "../CatalogProductCard";
 import { fetchProductByCategory } from "@/services/productService";
+import { useState } from "react";
+import { useProducts } from "@/hooks/use-products";
 import ProductFilterDesktop from "./ProductFilterDesktop";
 import MobileFilterDrawer from "./MobileFilterDrawer";
-import { useState } from "react";
 
 export default function ProductList({
   categorySlug,
@@ -17,32 +18,39 @@ export default function ProductList({
   initialData: any;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<undefined | string>(undefined);
+  const [order, setOrder] = useState<undefined | string>(undefined);
+
   const handleOpenFilter = () => {
     setIsOpen(true);
   };
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery({
-      queryKey: ["products", categorySlug],
-      queryFn: async ({ pageParam }) => {
-        return await fetchProductByCategory(categorySlug, pageParam, 15);
-      },
-      staleTime: Infinity,
-      initialPageParam: 1,
-      initialData: {
-        pages: [initialData],
-        pageParams: [1],
-      },
-
-      getNextPageParam: (lastPage, pages) => {
-        if (!lastPage?.pagination?.hasMore) {
-          return undefined;
-        }
-        return lastPage.pagination.page + 1;
-      },
-    });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useProducts({
+    categorySlug,
+    initialData,
+    sortBy,
+    order,
+  });
   const products = data?.pages.flatMap((page) => page.products) ?? [];
+  const pagination = data?.pages.flatMap((page) => page.pagination) ?? [];
+  const latestPagination = pagination[pagination.length - 1] ?? {};
+  const currentPage = latestPagination.page ?? 1;
+  const total = latestPagination.total ?? 0;
+  const limit = latestPagination.limit ?? 0;
+  const restCountProduct = total - limit * currentPage;
 
+  const handleSortBestselling = () => {
+    setSortBy("bestSelling");
+    setOrder("asc");
+  };
+  const handleSortPriceAsc = () => {
+    setSortBy("price");
+    setOrder("asc");
+  };
+  const handleSortPriceDesc = () => {
+    setSortBy("price");
+    setOrder("desc");
+  };
   return (
     <div className="space-y-12">
       <section id="catolag" className="scroll-mt-24">
@@ -60,13 +68,23 @@ export default function ProductList({
             >
               Bộ lọc
             </button>
-            <button className="btn focus:outline-2 focus:outline-offset-2 focus:outline-primary">
+            <button
+              onClick={() => handleSortBestselling()}
+              className="btn focus:outline-2 focus:outline-offset-2 focus:outline-primary"
+            >
               Bán chạy
             </button>
-            <button className="btn focus:outline-2 focus:outline-offset-2 focus:outline-primary">
+            <button
+              onClick={() => handleSortPriceAsc()}
+              className="btn focus:outline-2 focus:outline-offset-2 focus:outline-primary"
+            >
               Giá tăng dần
             </button>
-            <button className="btn focus:outline-2 focus:outline-offset-2 focus:outline-primary">
+
+            <button
+              onClick={() => handleSortPriceDesc()}
+              className="btn focus:outline-2 focus:outline-offset-2 focus:outline-primary"
+            >
               Giá giảm dần
             </button>
           </div>
@@ -76,20 +94,30 @@ export default function ProductList({
           <aside className="hidden lg:block">
             <ProductFilterDesktop filters={null} setFilters={() => {}} />
           </aside>
-          <ul className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5">
-            {products.map((p) => (
-              <li key={p.id}>
-                <CatalogProductCard product={p} />
-              </li>
-            ))}
-          </ul>
+          <div>
+            <ul className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5">
+              {products.map((p) => (
+                <li key={p.id}>
+                  <CatalogProductCard product={p} />
+                </li>
+              ))}
+            </ul>
+            <div className="flex m-5">
+              {hasNextPage && (
+                <button
+                  className="btn m-auto"
+                  onClick={() => fetchNextPage()}
+                  disabled={isFetchingNextPage}
+                >
+                  {isFetchingNextPage
+                    ? "Đang tải..."
+                    : `Xem thêm ${restCountProduct} sản phẩm`}
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </section>
-      {hasNextPage && (
-        <button onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
-          {isFetchingNextPage ? "Đang tải..." : "Xem thêm"}
-        </button>
-      )}
 
       {/* Mobile filter */}
       <MobileFilterDrawer

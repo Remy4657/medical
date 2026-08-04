@@ -33,7 +33,50 @@ export const fetchProductByCategory = async (
     console.log(error);
   }
 };
+export const fetchProduct = async ({
+  slug,
+  page,
+  limit,
+  sortBy,
+  order,
+}: {
+  slug?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  order?: string;
+}) => {
+  try {
+    const params = new URLSearchParams();
 
+    if (slug) {
+      params.set("category", slug);
+    }
+    if (page) {
+      params.set("page", String(page));
+    }
+    if (limit) {
+      params.set("limit", String(limit));
+    }
+
+    if (sortBy) {
+      params.set("sortBy", sortBy);
+    }
+
+    if (order) {
+      params.set("order", order);
+    }
+    console.log(
+      `${process.env.NEXT_PUBLIC_API_URL}/products/?${params.toString()}`,
+    );
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/products/?${params.toString()}`,
+    ).then((res) => res.json());
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
 export const fetchAllProducts = async () => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`).then(

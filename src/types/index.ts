@@ -1,24 +1,36 @@
-export interface Product {
+export type Product = {
   id: number;
   slug: string;
   name: string;
-  category: string; // sau transform, category là string
+  category: Category; // sau transform, category là string
   description: string;
-  price_cents: number;
-  currency: string;
-  image_url: string | null;
-  image_kit_file_id: string | null;
+  country: Country;
+  variants: Variant[];
   images: string[]; // array of image URLs for the product gallery
-  active: boolean;
-  created_at: string;
-}
-
+};
+export type Variant = {
+  price: Price;
+  unit: Unit;
+};
+export type Category = {
+  name: string;
+};
+export type Unit = {
+  name: string;
+};
+export type Country = {
+  name: string;
+};
+export type Price = {
+  originalPrice: string;
+  salePrice: string;
+};
 // Response từ API /products/categories
-export interface CategoriesResponse {
+export type CategoriesResponse = {
   categories: string[];
-}
+};
 
 // Response từ API /products
-export interface ProductsResponse {
+export type ProductsResponse = {
   products: Product[];
-}
+};
