@@ -23,6 +23,9 @@ export class Category {
   @Column({ unique: true, length: 255 })
   slug: string;
 
+  @Column({ type: 'text', nullable: true })
+  imageUrl: string;
+
   @Column({ nullable: true })
   parent_id: number;
 

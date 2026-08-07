@@ -1,5 +1,13 @@
-import { IsIn, IsInt, IsOptional, IsString, Min } from 'class-validator';
-import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsIn,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
+import { Transform, Type } from 'class-transformer';
 
 export class ProductQueryDto {
   @IsOptional()
@@ -19,10 +27,32 @@ export class ProductQueryDto {
   limit: number = 15;
 
   @IsOptional()
-  @IsIn(['price', 'bestSelling'])
-  sortBy: 'price' | 'bestSelling';
+  @IsIn(['price', 'bestSelling', 'createdAt'])
+  sortBy: 'price' | 'bestSelling' | 'createdAt';
 
   @IsOptional()
   @IsIn(['asc', 'desc'])
   order: 'asc' | 'desc' = 'asc';
+
+  @IsOptional()
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @IsArray()
+  @IsString({ each: true })
+  brand?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @IsArray()
+  @IsString({ each: true })
+  country?: string[];
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  minPrice?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  maxPrice?: number;
 }

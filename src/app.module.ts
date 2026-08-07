@@ -23,6 +23,8 @@ import { ProductImage } from './product/entities/product-image.entity';
 import { ProductPrice } from './product/entities/product-price.entity';
 import { ProductUnit } from './product/entities/product-unit.entity';
 import { ProductVariant } from './product/entities/product-variant.entity';
+import { Attribute } from './product/entities/attribute.entity';
+import { ProductAttribute } from './product/entities/product-attribute.entity';
 
 @Module({
   imports: [
@@ -52,6 +54,8 @@ import { ProductVariant } from './product/entities/product-variant.entity';
         ProductPrice,
         ProductUnit,
         ProductVariant,
+        Attribute,
+        ProductAttribute,
       ],
       synchronize: process.env.NODE_ENV !== 'production',
       logging: true,
