@@ -1,24 +1,24 @@
 @import "tailwindcss";
+@import "./styles/carousel.css";
 
 @theme {
   --breakpoint-xs: 20rem;
-  --breakpoint-sm: 30rem;
-  --breakpoint-md: 50rem;
-
-  --breakpoint-lg: 70rem;
-
-  --breakpoint-xl: 82rem;
+  --breakpoint-sm: 45rem;
+  --breakpoint-md: 55rem;
+  --breakpoint-lg: 75rem;
+  --breakpoint-xl: 85rem;
 }
 /* @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *)); */
 @plugin "daisyui" {
   themes:
     light,
     dark,
-    cupcake --default;
+    garden --default;
 }
 :root {
   --container-7xl: 85rem;
-  --brand-primary: rgb(47, 112, 193);
+  --color-white: rgba(255, 255, 255, 1);
+  /* --brand-primary: rgb(47, 112, 193);
   --brand-secondary: rgb(116, 97, 195);
   --brand-alternative: rgb(19, 120, 134);
   --background-site: rgb(249, 249, 249);
@@ -49,5 +49,40 @@
   --detail-low-contrast-rgb-value: 240, 240, 242;
   --admonition-note-rgb-value: 46, 109, 188;
   --admonition-warning-rgb-value: 255, 196, 9;
-  --admonition-danger-rgb-value: 220, 38, 38;
+  --admonition-danger-rgb-value: 220, 38, 38; */
+  /* --color-primary: #3b82f6; */
+  --color-white: #fff;
+}
+
+@theme {
+  --color-base-0: var(--color-white);
+}
+[data-theme="dark"] {
+  --color-primary: lab(53.0394% 89.3459 9.07078);
+  --color-base-0: var(--color-base-100);
+}
+@layer base {
+  .btn {
+    font-weight: bolder;
+  }
+}
+@layer utilities {
+  /* .btn-primary {
+    background-color: rgb(145, 255, 0);
+  } */
+  .navbar {
+    align-items: center;
+    width: 100%;
+    min-height: 5rem;
+    padding: 0;
+    display: flex;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }

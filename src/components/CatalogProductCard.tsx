@@ -8,9 +8,8 @@ import Link from "next/link";
 
 export function CatalogProductCard({ product }: { product: Product }) {
   //const addItem = useCart((s) => s.addItem);
-  console.log("product: ", product);
   return (
-    <article className="card group h-full overflow-hidden border border-base-300 bg-base-100 shadow-md transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-xl">
+    <article className="bg-base-0  card group h-full overflow-hidden transition border border-transparent hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-xl">
       <Link
         href={`/product/${product.slug}`}
         className="relative block overflow-hidden"

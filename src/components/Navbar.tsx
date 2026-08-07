@@ -9,7 +9,7 @@ const Navbar = async () => {
   const resListCategories = await fetchAllCategories();
 
   return (
-    <div className="navbar sticky top-0 z-50 border-b border-base-300 shadow-sm bg-base-100/95 backdrop-blur-md">
+    <div className="navbar z-10 border-b border-base-300 shadow-sm bg-base-100/95 backdrop-blur-md">
       <div className="flex flex-row justify-between mx-auto w-full min-h-14 max-w-7xl">
         <div className="navbar-start ">
           <div className="dropdown">
@@ -60,6 +60,7 @@ const Navbar = async () => {
               </li>
             </ul>
           </div>
+          {/* start logo */}
           <div>
             <Link
               href="/"
@@ -71,12 +72,13 @@ const Navbar = async () => {
               <span className="invisible xs:visible leading-none">An Sinh</span>
             </Link>
           </div>
+          {/* end logo */}
         </div>
         <div className="navbar-center hidden lg:flex gap-2">
           {resListCategories.map((p: any) => (
             <div key={p.id} className="dropdown dropdown-hover">
               <div tabIndex={0} role="" className="m-1 flex gap-1">
-                <span>{p.name}</span>
+                <Link href={`/${p.slug}`}>{p.name}</Link>
                 <ChevronDown />
               </div>
               <ul
@@ -92,6 +94,7 @@ const Navbar = async () => {
             </div>
           ))}
         </div>
+
         <AuthInfo />
       </div>
     </div>

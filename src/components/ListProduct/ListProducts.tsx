@@ -8,7 +8,7 @@ import {
 } from "../EmblaCarouselArrowButtons";
 import { EmblaOptionsType } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
-import "@/app/styles/carousel.css";
+// import "@/app/styles/carousel.css";
 
 export default function ListProducts({
   listProducts,

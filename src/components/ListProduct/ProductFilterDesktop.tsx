@@ -1,113 +1,156 @@
 // import { ProductFilters } from "./ListProductsSlug";
 
 import { useState } from "react";
+import FilterAccordion from "./FilterAccordion";
 
 type Props = {
-  filters: any;
-  setFilters: React.Dispatch<React.SetStateAction<any>>;
+  listBrandFilter: any;
+  listCountryFilter: any;
+  setBrandFilter: any;
+  setCountryFilter: any;
+  minPrice: number | undefined;
+  maxPrice: number | undefined;
+  setMinPrice: any;
+  setMaxPrice: any;
 };
 
-export default function ProductFilterDesktop({ filters, setFilters }: Props) {
-  const [openId, setOpenId] = useState<number | null>(null);
+export default function ProductFilterDesktop({
+  listBrandFilter,
+  listCountryFilter,
+  setBrandFilter,
+  setCountryFilter,
+  minPrice,
+  maxPrice,
+  setMinPrice,
+  setMaxPrice,
+}: Props) {
+  const [openId1, setOpenId1] = useState<number | null>(1);
+  const [openId2, setOpenId2] = useState<number | null>(2);
+  const [openId3, setOpenId3] = useState<number | null>(3);
+
+  const handleChangeBrand = (value: string) => {
+    setBrandFilter((prev: string[]) => {
+      if (prev.includes(value)) {
+        return prev.filter((item) => item !== value);
+      }
+
+      return [...prev, value];
+    });
+  };
+  const handleChangeCountry = (value: string) => {
+    setCountryFilter((prev: string[]) => {
+      if (prev.includes(value)) {
+        return prev.filter((item) => item !== value);
+      }
+
+      return [...prev, value];
+    });
+  };
+  const handlePriceChange = ({ min, max }: { min?: number; max?: number }) => {
+    // Nếu đang chọn đúng khoảng này -> bỏ filter
+    if (minPrice === min && maxPrice === max) {
+      setMinPrice(undefined);
+      setMaxPrice(undefined);
+      return;
+    }
+    setMinPrice(min);
+    setMaxPrice(max);
+  };
   return (
-    <div className="sticky top-24">
-      <h2 className="mb-5 text-lg font-semibold">Bộ lọc</h2>
+    <div className="scrollbar-thin sticky top-2 bg-base-0 rounded-lg max-h-[100vh] overflow-y-auto">
+      <h2 className="mb-5 text-lg font-semibold border-base-300 text-center border-b-1">
+        Bộ lọc
+      </h2>
 
-      {/* Price */}
-      <div className="collapse collapse-arrow bg-base-100 border border-base-300">
-        <input
-          type="checkbox"
-          checked={openId === 1}
-          onChange={() => setOpenId((prev) => (prev === 1 ? null : 1))}
-        />
-
-        <div className="collapse-title font-semibold">
-          How do I create an account?
-        </div>
-
-        <div
-          className={`collapse-content text-sm grid transition-[grid-template-rows] duration-300 ease-in-out ${
-            openId === 1 ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-          }`}
+      <div className="space-y-2 rounded-lg">
+        <FilterAccordion
+          id={1}
+          title="Giá bán"
+          openId={openId1}
+          setOpenId={setOpenId1}
         >
-          <div className="overflow-hidden">
-            Click the "Sign Up" button in the top right corner and follow the
-            registration process.
+          <div className="space-y-2">
+            <div
+              className={`cursor-pointer border-1 p-3 rounded-lg hover:border-primary hover:text-primary ${
+                maxPrice === 100000
+                  ? "border-primary text-primary"
+                  : "border-base-200"
+              }`}
+              onClick={() => handlePriceChange({ max: 100000 })}
+            >
+              Dưới 100.000đ
+            </div>
+            <div
+              className={`cursor-pointer border-1 p-3 rounded-lg hover:border-primary hover:text-primary ${
+                minPrice === 100000 && maxPrice === 300000
+                  ? "border-primary text-primary"
+                  : "border-base-200"
+              }`}
+              onClick={() => handlePriceChange({ min: 100000, max: 300000 })}
+            >
+              100.000đ - 300.000đ
+            </div>
+            <div
+              className={`cursor-pointer border-1 p-3 rounded-lg hover:border-primary hover:text-primary ${
+                minPrice === 300000
+                  ? "border-primary text-primary"
+                  : "border-base-200"
+              }`}
+              onClick={() => handlePriceChange({ min: 300000, max: 500000 })}
+            >
+              300.000đ - 500.000đ
+            </div>
+            <div
+              className={`cursor-pointer border-1 p-3 rounded-lg hover:border-primary hover:text-primary ${
+                minPrice === 500000
+                  ? "border-primary text-primary"
+                  : "border-base-200"
+              }`}
+              onClick={() => handlePriceChange({ min: 500000 })}
+            >
+              Trên 500.000đ
+            </div>
           </div>
-        </div>
-      </div>
-      {/* /// */}
-      <div className="mb-6">
-        <h3 className="mb-3 font-medium">Khoảng giá</h3>
+        </FilterAccordion>
+        <FilterAccordion
+          id={2}
+          title="Thương hiệu"
+          openId={openId2}
+          setOpenId={setOpenId2}
+        >
+          <div className="space-y-2 flex flex-col gap-2">
+            {listBrandFilter.map((b: any) => (
+              <div key={b.id} className="flex flex-row items-center gap-3">
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-lg"
+                  onClick={() => handleChangeBrand(b.slug)}
+                />
+                <span className="">{b.name}</span>
+              </div>
+            ))}
+          </div>
+        </FilterAccordion>
 
-        <div className="flex gap-2">
-          <input
-            type="number"
-            placeholder="Từ"
-            className="input input-bordered w-full"
-            value={filters?.minPrice ?? ""}
-            onChange={(e) =>
-              setFilters((prev: any) => ({
-                ...prev,
-                minPrice: Number(e.target.value),
-              }))
-            }
-          />
-
-          <input
-            type="number"
-            placeholder="Đến"
-            className="input input-bordered w-full"
-            value={filters?.maxPrice ?? ""}
-            onChange={(e) =>
-              setFilters((prev: any) => ({
-                ...prev,
-                maxPrice: Number(e.target.value),
-              }))
-            }
-          />
-        </div>
-      </div>
-
-      {/* Color */}
-      <div>
-        <h3 className="mb-3 font-medium">Màu sắc</h3>
-
-        <div className="space-y-2">
-          <label className="flex cursor-pointer items-center gap-2">
-            <input
-              type="checkbox"
-              className="checkbox"
-              checked={filters?.colors?.includes("black")}
-              onChange={() => {
-                setFilters((prev: any) => ({
-                  ...prev,
-                  colors: prev.colors.includes("black")
-                    ? prev.colors.filter((color: any) => color !== "black")
-                    : [...prev.colors, "black"],
-                }));
-              }}
-            />
-            Đen
-          </label>
-
-          <label className="flex cursor-pointer items-center gap-2">
-            <input
-              type="checkbox"
-              className="checkbox"
-              checked={filters?.colors?.includes("white")}
-              onChange={() => {
-                setFilters((prev: any) => ({
-                  ...prev,
-                  colors: prev.colors.includes("white")
-                    ? prev.colors.filter((color: any) => color !== "white")
-                    : [...prev.colors, "white"],
-                }));
-              }}
-            />
-            Trắng
-          </label>
-        </div>
+        <FilterAccordion
+          id={3}
+          title="Nước sản xuất"
+          openId={openId3}
+          setOpenId={setOpenId3}
+        >
+          <div className="space-y-2 flex flex-col gap-2">
+            {listCountryFilter.map((c: any) => (
+              <div key={c.id} className="flex flex-row items-center gap-3">
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-lg"
+                  onClick={() => handleChangeCountry(c.code)}
+                />
+                <span className="">{c.name}</span>
+              </div>
+            ))}
+          </div>
+        </FilterAccordion>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 "use client";
-import "@/app/styles/carousel.css";
+// import "@/app/styles/carousel.css";
 
 import React from "react";
 import useEmblaCarousel from "embla-carousel-react";

@@ -2,17 +2,20 @@
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { CatalogProductCard } from "../CatalogProductCard";
-import { fetchProductByCategory } from "@/services/productService";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useProducts } from "@/hooks/use-products";
 import ProductFilterDesktop from "./ProductFilterDesktop";
 import MobileFilterDrawer from "./MobileFilterDrawer";
 
 export default function ProductList({
+  listBrandFilter,
+  listCountryFilter,
   categorySlug,
   categoryName,
   initialData,
 }: {
+  listBrandFilter: any;
+  listCountryFilter: any;
   categorySlug: string;
   categoryName: string;
   initialData: any;
@@ -20,7 +23,10 @@ export default function ProductList({
   const [isOpen, setIsOpen] = useState(false);
   const [sortBy, setSortBy] = useState<undefined | string>(undefined);
   const [order, setOrder] = useState<undefined | string>(undefined);
-
+  const [brandFilter, setBrandFilter] = useState<string[]>([]);
+  const [countryFilter, setCountryFilter] = useState<string[]>([]);
+  const [minPrice, setMinPrice] = useState<number | undefined>();
+  const [maxPrice, setMaxPrice] = useState<number | undefined>();
   const handleOpenFilter = () => {
     setIsOpen(true);
   };
@@ -30,9 +36,13 @@ export default function ProductList({
     initialData,
     sortBy,
     order,
+    brand: brandFilter,
+    country: countryFilter,
+    minPrice,
+    maxPrice,
   });
-  const products = data?.pages.flatMap((page) => page.products) ?? [];
-  const pagination = data?.pages.flatMap((page) => page.pagination) ?? [];
+  const products = data?.pages.flatMap((page) => page?.products) ?? [];
+  const pagination = data?.pages.flatMap((page) => page?.pagination) ?? [];
   const latestPagination = pagination[pagination.length - 1] ?? {};
   const currentPage = latestPagination.page ?? 1;
   const total = latestPagination.total ?? 0;
@@ -51,51 +61,75 @@ export default function ProductList({
     setSortBy("price");
     setOrder("desc");
   };
+
   return (
     <div className="space-y-12">
       <section id="catolag" className="scroll-mt-24">
-        <div className="mb-6 flex flex-row gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-base-content md:text-2xl uppercase font-mono">
-              {categoryName}
-            </h2>
-          </div>
-          <div className="flex flex-row gap-2">
-            <span className="hidden lg:flex items-center ">Sắp xếp theo: </span>
-            <button
-              onClick={() => handleOpenFilter()}
-              className="btn btn-outline lg:hidden"
-            >
-              Bộ lọc
-            </button>
-            <button
-              onClick={() => handleSortBestselling()}
-              className="btn focus:outline-2 focus:outline-offset-2 focus:outline-primary"
-            >
-              Bán chạy
-            </button>
-            <button
-              onClick={() => handleSortPriceAsc()}
-              className="btn focus:outline-2 focus:outline-offset-2 focus:outline-primary"
-            >
-              Giá tăng dần
-            </button>
-
-            <button
-              onClick={() => handleSortPriceDesc()}
-              className="btn focus:outline-2 focus:outline-offset-2 focus:outline-primary"
-            >
-              Giá giảm dần
-            </button>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[240px_1fr]">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-[260px_1fr] xl:grid-cols-[300px_1fr]">
           {/* Desktop filter */}
-          <aside className="hidden lg:block">
-            <ProductFilterDesktop filters={null} setFilters={() => {}} />
+          <aside className="hidden sm:block">
+            <ProductFilterDesktop
+              listBrandFilter={listBrandFilter}
+              listCountryFilter={listCountryFilter}
+              setCountryFilter={setCountryFilter}
+              setBrandFilter={setBrandFilter}
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+              setMinPrice={setMinPrice}
+              setMaxPrice={setMaxPrice}
+            />
           </aside>
           <div>
-            <ul className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5">
+            <div className="flex flex-row justify-between mb-5 items-center">
+              <div>
+                <h2 className="text-lg text-base-content">
+                  Danh sách sản phẩm
+                </h2>
+              </div>
+              <div className="flex flex-row gap-2 justify-end">
+                <span className="hidden lg:flex items-center ">
+                  Sắp xếp theo:{" "}
+                </span>
+                <button
+                  onClick={() => handleOpenFilter()}
+                  className="btn btn-outline sm:hidden"
+                >
+                  Bộ lọc
+                </button>
+                <button
+                  onClick={() => handleSortBestselling()}
+                  className={`btn border hover:border-primary hover:text-primary ${
+                    sortBy === "bestSelling"
+                      ? "border-primary text-primary"
+                      : "border-base-300"
+                  }`}
+                >
+                  Bán chạy
+                </button>
+                <button
+                  onClick={() => handleSortPriceAsc()}
+                  className={`btn border hover:border-primary hover:text-primary ${
+                    sortBy === "price" && order === "asc"
+                      ? "border-primary text-primary"
+                      : "border-base-300"
+                  }`}
+                >
+                  Giá tăng dần
+                </button>
+
+                <button
+                  onClick={() => handleSortPriceDesc()}
+                  className={`btn border hover:border-primary hover:text-primary ${
+                    sortBy === "price" && order === "desc"
+                      ? "border-primary text-primary"
+                      : "border-base-300"
+                  }`}
+                >
+                  Giá giảm dần
+                </button>
+              </div>
+            </div>
+            <ul className="grid gap-2 sm:gap-6 grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
               {products.map((p) => (
                 <li key={p.id}>
                   <CatalogProductCard product={p} />

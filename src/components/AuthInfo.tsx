@@ -14,18 +14,58 @@ const AuthInfo = () => {
     });
   };
   return (
-    <div className="navbar-end">
+    <div className="navbar-end ">
       <div className="flex flex-row items-center">
-        <div className="flex flex-row items-center gap-1">
-          <Sun className="size-4" />
+        <label className="toggle text-base-content">
           <input
             type="checkbox"
-            className="toggle toggle-sm"
             value="dark"
+            className="theme-controller"
+            // value="dark"
             data-set-theme
           />
-          <Moon className="size-4" />
-        </div>
+
+          <svg
+            aria-label="sun"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+          >
+            <g
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              strokeWidth="2"
+              fill="none"
+              stroke="currentColor"
+            >
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2"></path>
+              <path d="M12 20v2"></path>
+              <path d="m4.93 4.93 1.41 1.41"></path>
+              <path d="m17.66 17.66 1.41 1.41"></path>
+              <path d="M2 12h2"></path>
+              <path d="M20 12h2"></path>
+              <path d="m6.34 17.66-1.41 1.41"></path>
+              <path d="m19.07 4.93-1.41 1.41"></path>
+            </g>
+          </svg>
+
+          <svg
+            aria-label="moon"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+          >
+            <g
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              strokeWidth="2"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+            </g>
+          </svg>
+        </label>
+
         <Link
           href="/cart"
           className="btn btn-ghost gap-2 font-medium indicator"
@@ -33,24 +73,26 @@ const AuthInfo = () => {
         >
           <ShoppingCartIcon className="size-6 opacity-90" aria-hidden />
         </Link>
-        {session?.user ? (
-          <span className="flex">
-            <CircleUserRound />
-            Xin chào, {session.user.name}
-          </span>
-        ) : (
-          <button
-            className="btn btn-ghost"
-            onClick={() =>
-              (
-                document.getElementById("my_modal_2") as HTMLDialogElement
-              ).showModal()
-            }
-          >
-            <CircleUserRound />
-            Đăng nhập
-          </button>
-        )}
+        <div className="hidden sm:block">
+          {session?.user ? (
+            <span className="flex">
+              <CircleUserRound />
+              Xin chào, {session.user.name}
+            </span>
+          ) : (
+            <button
+              className="btn btn-ghost "
+              onClick={() =>
+                (
+                  document.getElementById("my_modal_2") as HTMLDialogElement
+                ).showModal()
+              }
+            >
+              <CircleUserRound />
+              Đăng nhập
+            </button>
+          )}
+        </div>
 
         <dialog id="my_modal_2" className="modal">
           <div className="modal-box flex flex-col">

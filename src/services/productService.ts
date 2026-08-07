@@ -1,50 +1,23 @@
-export const fetchProductByCategory = async (
-  slug: string,
-  page: number,
-  limit: number,
-  filters?: {
-    minPrice?: number;
-    maxPrice?: number;
-    gender?: string;
-  },
-) => {
-  try {
-    // Build query parameters
-    const params = new URLSearchParams();
-    params.append("category", slug);
-
-    if (filters?.minPrice !== undefined) {
-      params.append("min_price", String(filters.minPrice));
-    }
-
-    if (filters?.maxPrice !== undefined) {
-      params.append("max_price", String(filters.maxPrice));
-    }
-
-    if (filters?.gender) {
-      params.append("gender", filters.gender);
-    }
-
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/products/?category=${slug}&page=${page}&limit=${limit}`,
-    ).then((res) => res.json());
-    return res.data;
-  } catch (error) {
-    console.log(error);
-  }
-};
 export const fetchProduct = async ({
   slug,
   page,
   limit,
   sortBy,
   order,
+  brand = [],
+  country = [],
+  minPrice,
+  maxPrice,
 }: {
   slug?: string;
   page?: number;
   limit?: number;
   sortBy?: string;
   order?: string;
+  brand?: string[];
+  country?: string[];
+  minPrice?: number;
+  maxPrice?: number;
 }) => {
   try {
     const params = new URLSearchParams();
@@ -66,6 +39,20 @@ export const fetchProduct = async ({
     if (order) {
       params.set("order", order);
     }
+    if (minPrice) {
+      params.set("minPrice", String(minPrice));
+    }
+
+    if (maxPrice) {
+      params.set("maxPrice", String(maxPrice));
+    }
+    brand.forEach((item: any) => {
+      params.append("brand", item);
+    });
+
+    country.forEach((item: any) => {
+      params.append("country", item);
+    });
     console.log(
       `${process.env.NEXT_PUBLIC_API_URL}/products/?${params.toString()}`,
     );
@@ -74,28 +61,28 @@ export const fetchProduct = async ({
     ).then((res) => res.json());
     return res.data;
   } catch (error) {
-    console.log(error);
+    console.log("error: ", error);
   }
 };
-export const fetchAllProducts = async () => {
+export const fetchAllFilters = async () => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`).then(
-      (res) => res.json(),
-    );
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/products/filters`,
+    ).then((res) => res.json());
     return res.data;
   } catch (error) {
     console.error(error);
   }
 };
 
-export const fetchProductById = async (id: number) => {
+export const fetchProductBySlug = async (slug: string) => {
   try {
-    // For demo purposes, we'll fetch all products and filter by ID
-    // In a real app, this would be an API endpoint like /products/:id
-    const allProducts = await fetchAllProducts();
-    return allProducts.find((product: any) => product.id === id) || null;
+    console.log(`${process.env.NEXT_PUBLIC_API_URL}/product/?${slug}`);
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/${slug}`,
+    ).then((res) => res.json());
+    return res.data;
   } catch (error) {
     console.error(error);
-    return null;
   }
 };
