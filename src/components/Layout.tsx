@@ -7,8 +7,6 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 const queryClient = new QueryClient();
 
 function Layout({ children }: { children: ReactNode }) {
-  // themeChange();
-
   useEffect(() => {
     themeChange(false);
   }, []);

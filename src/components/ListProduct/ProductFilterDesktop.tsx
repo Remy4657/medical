@@ -1,13 +1,13 @@
-// import { ProductFilters } from "./ListProductsSlug";
-
 import { useState } from "react";
 import FilterAccordion from "./FilterAccordion";
 
 type Props = {
   listBrandFilter: any;
   listCountryFilter: any;
-  setBrandFilter: any;
-  setCountryFilter: any;
+  listCountryFilterSelected: string[];
+  listBrandFilterSelected: string[];
+  setListBrandFilterSelected: any;
+  setListCountryFilterSelected: any;
   minPrice: number | undefined;
   maxPrice: number | undefined;
   setMinPrice: any;
@@ -17,8 +17,10 @@ type Props = {
 export default function ProductFilterDesktop({
   listBrandFilter,
   listCountryFilter,
-  setBrandFilter,
-  setCountryFilter,
+  listCountryFilterSelected,
+  listBrandFilterSelected,
+  setListBrandFilterSelected,
+  setListCountryFilterSelected,
   minPrice,
   maxPrice,
   setMinPrice,
@@ -29,7 +31,7 @@ export default function ProductFilterDesktop({
   const [openId3, setOpenId3] = useState<number | null>(3);
 
   const handleChangeBrand = (value: string) => {
-    setBrandFilter((prev: string[]) => {
+    setListBrandFilterSelected((prev: string[]) => {
       if (prev.includes(value)) {
         return prev.filter((item) => item !== value);
       }
@@ -38,7 +40,7 @@ export default function ProductFilterDesktop({
     });
   };
   const handleChangeCountry = (value: string) => {
-    setCountryFilter((prev: string[]) => {
+    setListCountryFilterSelected((prev: string[]) => {
       if (prev.includes(value)) {
         return prev.filter((item) => item !== value);
       }
@@ -57,8 +59,8 @@ export default function ProductFilterDesktop({
     setMaxPrice(max);
   };
   return (
-    <div className="scrollbar-thin sticky top-2 bg-base-0 rounded-lg max-h-[100vh] overflow-y-auto">
-      <h2 className="mb-5 text-lg font-semibold border-base-300 text-center border-b-1">
+    <div className="scrollbar-thin sticky top-2 bg-base-0 rounded-2xl max-h-screen overflow-y-auto">
+      <h2 className="mb-5 text-lg font-semibold border-base-300 text-center border-b">
         Bộ lọc
       </h2>
 
@@ -71,7 +73,7 @@ export default function ProductFilterDesktop({
         >
           <div className="space-y-2">
             <div
-              className={`cursor-pointer border-1 p-3 rounded-lg hover:border-primary hover:text-primary ${
+              className={`cursor-pointer border p-3 rounded-lg hover:border-primary hover:text-primary ${
                 maxPrice === 100000
                   ? "border-primary text-primary"
                   : "border-base-200"
@@ -81,7 +83,7 @@ export default function ProductFilterDesktop({
               Dưới 100.000đ
             </div>
             <div
-              className={`cursor-pointer border-1 p-3 rounded-lg hover:border-primary hover:text-primary ${
+              className={`cursor-pointer border p-3 rounded-lg hover:border-primary hover:text-primary ${
                 minPrice === 100000 && maxPrice === 300000
                   ? "border-primary text-primary"
                   : "border-base-200"
@@ -91,7 +93,7 @@ export default function ProductFilterDesktop({
               100.000đ - 300.000đ
             </div>
             <div
-              className={`cursor-pointer border-1 p-3 rounded-lg hover:border-primary hover:text-primary ${
+              className={`cursor-pointer border p-3 rounded-lg hover:border-primary hover:text-primary ${
                 minPrice === 300000
                   ? "border-primary text-primary"
                   : "border-base-200"
@@ -101,7 +103,7 @@ export default function ProductFilterDesktop({
               300.000đ - 500.000đ
             </div>
             <div
-              className={`cursor-pointer border-1 p-3 rounded-lg hover:border-primary hover:text-primary ${
+              className={`cursor-pointer border p-3 rounded-lg hover:border-primary hover:text-primary ${
                 minPrice === 500000
                   ? "border-primary text-primary"
                   : "border-base-200"
@@ -124,7 +126,8 @@ export default function ProductFilterDesktop({
                 <input
                   type="checkbox"
                   className="checkbox checkbox-lg"
-                  onClick={() => handleChangeBrand(b.slug)}
+                  checked={listBrandFilterSelected.includes(b.slug)}
+                  onChange={() => handleChangeBrand(b.slug)}
                 />
                 <span className="">{b.name}</span>
               </div>
@@ -144,7 +147,8 @@ export default function ProductFilterDesktop({
                 <input
                   type="checkbox"
                   className="checkbox checkbox-lg"
-                  onClick={() => handleChangeCountry(c.code)}
+                  checked={listCountryFilterSelected.includes(c.code)}
+                  onChange={() => handleChangeCountry(c.code)}
                 />
                 <span className="">{c.name}</span>
               </div>

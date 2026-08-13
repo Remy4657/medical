@@ -1,19 +1,32 @@
 import ProductFilterDesktop from "./ProductFilterDesktop";
-
 type Props = {
+  listBrandFilter: any;
+  listCountryFilter: any;
+  listCountryFilterSelected: string[];
+  listBrandFilterSelected: string[];
+  setListBrandFilterSelected: any;
+  setListCountryFilterSelected: any;
+  minPrice: number | undefined;
+  maxPrice: number | undefined;
+  setMinPrice: any;
+  setMaxPrice: any;
   open: boolean;
   onClose: () => void;
-
-  filters: any;
-
-  setFilters: React.Dispatch<React.SetStateAction<any>>;
 };
 
 export default function MobileFilterDrawer({
+  listBrandFilter,
+  listCountryFilter,
+  listCountryFilterSelected,
+  listBrandFilterSelected,
+  setListBrandFilterSelected,
+  setListCountryFilterSelected,
+  minPrice,
+  maxPrice,
+  setMinPrice,
+  setMaxPrice,
   open,
   onClose,
-  filters,
-  setFilters,
 }: Props) {
   if (!open) {
     return null;
@@ -28,7 +41,7 @@ export default function MobileFilterDrawer({
       <div className="absolute left-0 top-0 h-full w-[85%] max-w-sm bg-base-100 shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b p-4">
-          <h2 className="text-lg font-semibold">Bộ lọc</h2>
+          <h2 className="text-lg font-semibold"></h2>
 
           <button onClick={onClose} className="btn btn-sm btn-circle btn-ghost">
             ✕
@@ -37,7 +50,18 @@ export default function MobileFilterDrawer({
 
         {/* Filter content */}
         <div className="h-[calc(100%-130px)] overflow-y-auto p-5">
-          <ProductFilterDesktop filters={filters} setFilters={setFilters} />
+          <ProductFilterDesktop
+            listBrandFilter={listBrandFilter}
+            listCountryFilter={listCountryFilter}
+            listCountryFilterSelected={listCountryFilterSelected}
+            listBrandFilterSelected={listBrandFilterSelected}
+            setListCountryFilterSelected={setListCountryFilterSelected}
+            setListBrandFilterSelected={setListBrandFilterSelected}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            setMinPrice={setMinPrice}
+            setMaxPrice={setMaxPrice}
+          />
         </div>
 
         {/* Footer */}

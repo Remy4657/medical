@@ -8,14 +8,12 @@ import {
   PrevButton,
   usePrevNextButtons,
 } from "./EmblaCarouselArrowButtons";
-type PropType = {
-  slides: number[];
-  options?: EmblaOptionsType;
-};
+import Image from "next/image";
 
-const EmblaCarouselThumbs = () => {
-  // const { slides, options } = props;
-  const slides = Array.from(Array(5).keys());
+const EmblaCarouselThumbs = ({ images }: { images: any }) => {
+  const primaryImages = images.filter((item: any) => item.isPrimary == true);
+  const extraImages = images.filter((item: any) => item.isPrimary != true);
+
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [emblaMainRef, emblaMainApi] = useEmblaCarousel();
   const [emblaThumbsRef, emblaThumbsApi] = useEmblaCarousel({
@@ -55,9 +53,14 @@ const EmblaCarouselThumbs = () => {
       <div className="embla_th">
         <div className="embla__viewport" ref={emblaMainRef}>
           <div className="embla__container">
-            {slides.map((index) => (
-              <div className="embla__slide" key={index}>
-                <div className="embla__slide__number">{index + 1}</div>
+            {primaryImages.map((item: any) => (
+              <div
+                className="bg-white embla__slide grow-0 shrink-0 basis-1"
+                key={item.id}
+              >
+                <div className="embla__slide__number">
+                  <Image src={item.url} width={384} height={384} alt="" />
+                </div>
               </div>
             ))}
           </div>
@@ -81,12 +84,12 @@ const EmblaCarouselThumbs = () => {
       <div className="embla-thumbs">
         <div className="embla-thumbs__viewport" ref={emblaThumbsRef}>
           <div className="embla-thumbs__container">
-            {slides.map((index) => (
+            {extraImages.map((item: any, index: number) => (
               <Thumb
-                key={index}
+                key={item.id}
                 onClick={() => onThumbClick(index)}
                 selected={index === selectedIndex}
-                index={index}
+                item={item}
               />
             ))}
           </div>

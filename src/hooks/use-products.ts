@@ -1,12 +1,10 @@
-import {
-  fetchProduct,
-  fetchProductByCategory,
-} from "@/services/productService";
+import { fetchProduct } from "@/services/productService";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 export function useProducts({
   categorySlug,
   initialData,
+  limit,
   sortBy = "createdAt",
   order,
   brand = [],
@@ -15,18 +13,22 @@ export function useProducts({
   maxPrice,
 }: {
   categorySlug?: string;
-  initialData: any;
+  initialData?: any;
+  limit?: number;
   sortBy?: string;
   order?: string;
-  brand: string[];
-  country: string[];
+  brand?: string[];
+  country?: string[];
   minPrice?: number;
   maxPrice?: number;
 }) {
-  console.log("sortby: ", sortBy);
-  console.log("brand: ", brand);
-  console.log("minPrice: ", minPrice);
-  console.log("maxPrice: ", maxPrice);
+  console.log(
+    sortBy === "createdAt" &&
+      brand.length == 0 &&
+      country.length == 0 &&
+      !minPrice &&
+      !maxPrice,
+  );
   return useInfiniteQuery({
     queryKey: [
       "products",
@@ -42,7 +44,7 @@ export function useProducts({
       return await fetchProduct({
         slug: categorySlug,
         page: pageParam,
-        limit: 15,
+        limit: limit,
         sortBy,
         order,
         brand,

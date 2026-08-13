@@ -1,5 +1,5 @@
 import { Product } from "@/types";
-import { formatPrice } from "@/utils/formatPrice";
+import { calculateDiscountPercent, formatPrice } from "@/utils/formatPrice";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 //import { formatPrice } from "../utils/format.js";
@@ -10,10 +10,7 @@ export function CatalogProductCard({ product }: { product: Product }) {
   //const addItem = useCart((s) => s.addItem);
   return (
     <article className="bg-base-0  card group h-full overflow-hidden transition border border-transparent hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-xl">
-      <Link
-        href={`/product/${product.slug}`}
-        className="relative block overflow-hidden"
-      >
+      <Link href={`/san-pham/${product.slug}`} className="relative block">
         <figure className="aspect-4/3 bg-base-300">
           {product.images ? (
             <img
@@ -28,10 +25,25 @@ export function CatalogProductCard({ product }: { product: Product }) {
         <span className="badge badge-sm absolute left-3 top-3 border-0 bg-base-100/90 text-xs font-medium text-base-content/80 backdrop-blur">
           {product.country.name}
         </span>
+        {calculateDiscountPercent(
+          product.variants[0]?.price?.originalPrice,
+          product.variants[0]?.price.salePrice,
+        ) > 0 ? (
+          <span className="px-3 py-1  absolute right-0 top-0 rounded-bl-2xl border-0 bg-red-600 text-xs font-medium text-white">
+            -
+            {calculateDiscountPercent(
+              product.variants[0]?.price?.originalPrice,
+              product.variants[0]?.price.salePrice,
+            )}
+            %
+          </span>
+        ) : (
+          ""
+        )}
       </Link>
       <div className="card-body grow gap-3 p-5 text-left">
         <Link
-          href={`/product/${product.slug}`}
+          href={`/san-pham/${product.slug}`}
           className="card-title line-clamp-2 text-lg transition group-hover:text-primary"
         >
           {product.name}
@@ -44,9 +56,16 @@ export function CatalogProductCard({ product }: { product: Product }) {
             {formatPrice(product.variants[0]?.price?.salePrice)} /{" "}
             {product.variants[0]?.unit?.name}
           </span>
-          <span className="line-through text-md ">
-            {formatPrice(product.variants[0]?.price?.originalPrice)}
-          </span>
+          {calculateDiscountPercent(
+            product.variants[0]?.price?.originalPrice,
+            product.variants[0]?.price.salePrice,
+          ) > 0 ? (
+            <span className="line-through text-md ">
+              {formatPrice(product.variants[0]?.price?.originalPrice)}
+            </span>
+          ) : (
+            ""
+          )}
         </div>
         <button
           type="button"

@@ -7,7 +7,7 @@ import { useProducts } from "@/hooks/use-products";
 import ProductFilterDesktop from "./ProductFilterDesktop";
 import MobileFilterDrawer from "./MobileFilterDrawer";
 
-export default function ProductList({
+export default function ListProductsSlug({
   listBrandFilter,
   listCountryFilter,
   categorySlug,
@@ -17,14 +17,18 @@ export default function ProductList({
   listBrandFilter: any;
   listCountryFilter: any;
   categorySlug: string;
-  categoryName: string;
+  categoryName?: string;
   initialData: any;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [sortBy, setSortBy] = useState<undefined | string>(undefined);
   const [order, setOrder] = useState<undefined | string>(undefined);
-  const [brandFilter, setBrandFilter] = useState<string[]>([]);
-  const [countryFilter, setCountryFilter] = useState<string[]>([]);
+  const [listBrandFilterSelected, setListBrandFilterSelected] = useState<
+    string[]
+  >([]);
+  const [listCountryFilterSelected, setListCountryFilterSelected] = useState<
+    string[]
+  >([]);
   const [minPrice, setMinPrice] = useState<number | undefined>();
   const [maxPrice, setMaxPrice] = useState<number | undefined>();
   const handleOpenFilter = () => {
@@ -36,8 +40,8 @@ export default function ProductList({
     initialData,
     sortBy,
     order,
-    brand: brandFilter,
-    country: countryFilter,
+    brand: listBrandFilterSelected,
+    country: listCountryFilterSelected,
     minPrice,
     maxPrice,
   });
@@ -63,104 +67,109 @@ export default function ProductList({
   };
 
   return (
-    <div className="space-y-12">
-      <section id="catolag" className="scroll-mt-24">
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-[260px_1fr] xl:grid-cols-[300px_1fr]">
-          {/* Desktop filter */}
-          <aside className="hidden sm:block">
-            <ProductFilterDesktop
-              listBrandFilter={listBrandFilter}
-              listCountryFilter={listCountryFilter}
-              setCountryFilter={setCountryFilter}
-              setBrandFilter={setBrandFilter}
-              minPrice={minPrice}
-              maxPrice={maxPrice}
-              setMinPrice={setMinPrice}
-              setMaxPrice={setMaxPrice}
-            />
-          </aside>
-          <div>
-            <div className="flex flex-row justify-between mb-5 items-center">
-              <div>
-                <h2 className="text-lg text-base-content">
-                  Danh sách sản phẩm
-                </h2>
-              </div>
-              <div className="flex flex-row gap-2 justify-end">
-                <span className="hidden lg:flex items-center ">
-                  Sắp xếp theo:{" "}
-                </span>
-                <button
-                  onClick={() => handleOpenFilter()}
-                  className="btn btn-outline sm:hidden"
-                >
-                  Bộ lọc
-                </button>
-                <button
-                  onClick={() => handleSortBestselling()}
-                  className={`btn border hover:border-primary hover:text-primary ${
-                    sortBy === "bestSelling"
-                      ? "border-primary text-primary"
-                      : "border-base-300"
-                  }`}
-                >
-                  Bán chạy
-                </button>
-                <button
-                  onClick={() => handleSortPriceAsc()}
-                  className={`btn border hover:border-primary hover:text-primary ${
-                    sortBy === "price" && order === "asc"
-                      ? "border-primary text-primary"
-                      : "border-base-300"
-                  }`}
-                >
-                  Giá tăng dần
-                </button>
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-[260px_1fr] xl:grid-cols-[300px_1fr]">
+      {/* Start Desktop filter */}
+      <aside className="hidden sm:block">
+        <ProductFilterDesktop
+          listBrandFilter={listBrandFilter}
+          listCountryFilter={listCountryFilter}
+          listCountryFilterSelected={listCountryFilterSelected}
+          listBrandFilterSelected={listBrandFilterSelected}
+          setListCountryFilterSelected={setListCountryFilterSelected}
+          setListBrandFilterSelected={setListBrandFilterSelected}
+          minPrice={minPrice}
+          maxPrice={maxPrice}
+          setMinPrice={setMinPrice}
+          setMaxPrice={setMaxPrice}
+        />
+      </aside>
+      {/* End Desktop filter */}
 
-                <button
-                  onClick={() => handleSortPriceDesc()}
-                  className={`btn border hover:border-primary hover:text-primary ${
-                    sortBy === "price" && order === "desc"
-                      ? "border-primary text-primary"
-                      : "border-base-300"
-                  }`}
-                >
-                  Giá giảm dần
-                </button>
-              </div>
-            </div>
-            <ul className="grid gap-2 sm:gap-6 grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
-              {products.map((p) => (
-                <li key={p.id}>
-                  <CatalogProductCard product={p} />
-                </li>
-              ))}
-            </ul>
-            <div className="flex m-5">
-              {hasNextPage && (
-                <button
-                  className="btn m-auto"
-                  onClick={() => fetchNextPage()}
-                  disabled={isFetchingNextPage}
-                >
-                  {isFetchingNextPage
-                    ? "Đang tải..."
-                    : `Xem thêm ${restCountProduct} sản phẩm`}
-                </button>
-              )}
-            </div>
+      {/* Start List Products */}
+      <div>
+        <div className="flex flex-row justify-between mb-5 items-center">
+          <div>
+            <h2 className="text-lg text-base-content">Danh sách sản phẩm</h2>
+          </div>
+          <div className="flex flex-row gap-2 justify-end">
+            <span className="hidden lg:flex items-center ">Sắp xếp theo: </span>
+            <button
+              onClick={() => handleOpenFilter()}
+              className="btn btn-outline sm:hidden"
+            >
+              Bộ lọc
+            </button>
+            <button
+              onClick={() => handleSortBestselling()}
+              className={`btn border hover:border-primary hover:text-primary ${
+                sortBy === "bestSelling"
+                  ? "border-primary text-primary"
+                  : "border-base-300"
+              }`}
+            >
+              Bán chạy
+            </button>
+            <button
+              onClick={() => handleSortPriceAsc()}
+              className={`btn border hover:border-primary hover:text-primary ${
+                sortBy === "price" && order === "asc"
+                  ? "border-primary text-primary"
+                  : "border-base-300"
+              }`}
+            >
+              Giá tăng dần
+            </button>
+
+            <button
+              onClick={() => handleSortPriceDesc()}
+              className={`btn border hover:border-primary hover:text-primary ${
+                sortBy === "price" && order === "desc"
+                  ? "border-primary text-primary"
+                  : "border-base-300"
+              }`}
+            >
+              Giá giảm dần
+            </button>
           </div>
         </div>
-      </section>
-
+        <ul className="grid gap-2 sm:gap-6 grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
+          {products.map((p) => (
+            <li key={p.id}>
+              <CatalogProductCard product={p} />
+            </li>
+          ))}
+        </ul>
+        <div className="flex m-5">
+          {hasNextPage && (
+            <button
+              className="btn m-auto"
+              onClick={() => fetchNextPage()}
+              disabled={isFetchingNextPage}
+            >
+              {isFetchingNextPage
+                ? "Đang tải..."
+                : `Xem thêm ${restCountProduct} sản phẩm`}
+            </button>
+          )}
+        </div>
+      </div>
+      {/* End List Products */}
       {/* Mobile filter */}
       <MobileFilterDrawer
         open={isOpen}
         onClose={() => {
           setIsOpen(false);
         }}
-        filters={null}
-        setFilters={() => {}}
+        listBrandFilter={listBrandFilter}
+        listCountryFilter={listCountryFilter}
+        listCountryFilterSelected={listCountryFilterSelected}
+        listBrandFilterSelected={listBrandFilterSelected}
+        setListCountryFilterSelected={setListCountryFilterSelected}
+        setListBrandFilterSelected={setListBrandFilterSelected}
+        minPrice={minPrice}
+        maxPrice={maxPrice}
+        setMinPrice={setMinPrice}
+        setMaxPrice={setMaxPrice}
       />
     </div>
   );

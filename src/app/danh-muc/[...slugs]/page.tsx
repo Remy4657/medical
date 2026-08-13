@@ -7,31 +7,34 @@ import ListChildrenCategory from "@/components/ListChildrenCategory";
 
 type Props = {
   params: Promise<{
-    parentSlug: string;
+    slugs: string[];
   }>;
 };
 
 const page = async ({ params }: Props) => {
-  const { parentSlug } = await params;
+  const { slugs } = await params;
+  const currentSlugPage = slugs.at(-1) as string;
+
   const productCategory = await fetchProduct({
-    slug: parentSlug,
+    slug: currentSlugPage,
   });
   if (!productCategory) {
     notFound();
   }
   const { brands, countries } = await fetchAllFilters();
-  const listChildrenCategory = await fetchChildrenCategory(parentSlug);
-  const parentSlugName =
-    productCategory.breadcrumb[productCategory.breadcrumb.length - 1]?.name;
+  const listChildrenCategory = await fetchChildrenCategory(currentSlugPage);
+
   return (
     <div>
       <Breadcrumb items={productCategory.breadcrumb} />
-      <ListChildrenCategory listChildrenCategory={listChildrenCategory} />
+
+      {listChildrenCategory.length > 0 && (
+        <ListChildrenCategory listChildrenCategory={listChildrenCategory} />
+      )}
       <ListProductsSlug
         listBrandFilter={brands}
         listCountryFilter={countries}
-        categorySlug={parentSlug}
-        categoryName={parentSlugName}
+        categorySlug={currentSlugPage}
         initialData={productCategory}
       />
     </div>

@@ -1,65 +1,57 @@
 "use client";
-import { CatalogProductCard } from "@/components/CatalogProductCard";
-import { Product } from "@/types";
-import {
-  NextButton,
-  PrevButton,
-  usePrevNextButtons,
-} from "../EmblaCarouselArrowButtons";
-import { EmblaOptionsType } from "embla-carousel";
-import useEmblaCarousel from "embla-carousel-react";
-// import "@/app/styles/carousel.css";
+import { Flame } from "lucide-react";
+import { CatalogProductCard } from "../CatalogProductCard";
+import { useProducts } from "@/hooks/use-products";
 
-export default function ListProducts({
-  listProducts,
-}: {
-  listProducts: Product[];
-}) {
-  const options: EmblaOptionsType = { slidesToScroll: "auto" };
-  const [emblaRef, emblaApi] = useEmblaCarousel(options);
+export default function ListProducts({ listProducts }: { listProducts: any }) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useProducts({
+    initialData: listProducts,
+    sortBy: "bestSelling",
+    limit: 18,
+  });
 
-  const {
-    prevBtnDisabled,
-    nextBtnDisabled,
-    onPrevButtonClick,
-    onNextButtonClick,
-  } = usePrevNextButtons(emblaApi);
+  const products = data?.pages.flatMap((page) => page?.products) ?? [];
+  const pagination = data?.pages.flatMap((page) => page?.pagination) ?? [];
+  const latestPagination = pagination[pagination.length - 1] ?? {};
+  const currentPage = latestPagination.page ?? 1;
+  const total = latestPagination.total ?? 0;
+  const limit = latestPagination.limit ?? 0;
+  const restCountProduct = total - limit * currentPage;
+
   return (
-    <div className="space-y-12">
-      <section id="catolag" className="scroll-mt-24">
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-base-content md:text-2xl uppercase font-mono">
-              Catalog
-            </h2>
+    <div className="flex flex-col mt-5 p-3 rounded-2xl bg-white">
+      <div>
+        <p className="flex flex-row px-5 py-2 text-white text-xl w-fit bg-primary rounded-t-2xl">
+          <Flame />
+          <span className="ml-1">Sản phẩm bán chạy</span>
+        </p>
+      </div>
+      <div className="grid grid-cols-1 gap-6 bg-primary rounded-2xl rounded-tl-none">
+        {/* Start List Products */}
+        <div className="">
+          <ul className=" p-3 grid grid-cols-1 gap-2 sm:gap-4  xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+            {products.map((p) => (
+              <li key={p.id}>
+                <CatalogProductCard product={p} />
+              </li>
+            ))}
+          </ul>
+          <div className="flex m-5">
+            {hasNextPage && (
+              <button
+                className="btn m-auto"
+                onClick={() => fetchNextPage()}
+                disabled={isFetchingNextPage}
+              >
+                {isFetchingNextPage
+                  ? "Đang tải..."
+                  : `Xem thêm ${restCountProduct} sản phẩm`}
+              </button>
+            )}
           </div>
         </div>
-
-        <div className="embla">
-          <div className="embla__viewport" ref={emblaRef}>
-            <div className="embla__container">
-              {listProducts.map((p) => (
-                <div className="embla__slide" key={p.id}>
-                  <CatalogProductCard product={p} />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="embla__controls">
-            <div className="embla__buttons">
-              <PrevButton
-                onClick={onPrevButtonClick}
-                disabled={prevBtnDisabled}
-              />
-              <NextButton
-                onClick={onNextButtonClick}
-                disabled={nextBtnDisabled}
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+        {/* End List Products */}
+      </div>
     </div>
   );
 }

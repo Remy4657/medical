@@ -1,7 +1,7 @@
 export const fetchProduct = async ({
   slug,
   page,
-  limit,
+  limit = 16,
   sortBy,
   order,
   brand = [],
@@ -54,7 +54,7 @@ export const fetchProduct = async ({
       params.append("country", item);
     });
     console.log(
-      `${process.env.NEXT_PUBLIC_API_URL}/products/?${params.toString()}`,
+      `fetchProduct: ${process.env.NEXT_PUBLIC_API_URL}/products/?${params.toString()}`,
     );
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/products/?${params.toString()}`,
@@ -62,6 +62,16 @@ export const fetchProduct = async ({
     return res.data;
   } catch (error) {
     console.log("error: ", error);
+  }
+};
+export const fetchAllProductsPromotion = async () => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/products/promotions`,
+    ).then((res) => res.json());
+    return res.data;
+  } catch (error) {
+    console.error(error);
   }
 };
 export const fetchAllFilters = async () => {
