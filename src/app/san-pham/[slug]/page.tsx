@@ -39,122 +39,94 @@ export default async function ProductPage({
 
         {/* Product Details */}
         <div>
-          <h1 className="text-3xl font-bold mb-4">{productDetail.name}</h1>
+          <h1 className="text-3xl font-semibold mb-4">{productDetail.name}</h1>
 
-          <div className="flex flex-col items-baseline space-x-4 mb-6">
+          <div className="flex flex-col items-baseline space-x-4 mb-6 ">
             {calculateDiscountPercent(
               productDetail.variants[0]?.price?.originalPrice,
               productDetail.variants[0]?.price.salePrice,
             ) > 0 ? (
-              <span className="text-2xl">
-                {formatPrice(productDetail.variants[0]?.price.salePrice)}/
-                {productDetail.variants[0]?.unit.name}
+              <span className=" text-primary">
+                <span className="font-semibold text-3xl">
+                  {formatPrice(productDetail.variants[0]?.price.salePrice)}
+                </span>{" "}
+                /{" "}
+                <span className="text-xl">
+                  {productDetail.variants[0]?.unit.name}
+                </span>
               </span>
             ) : (
-              <span className="text-2xl">Liên hệ</span>
+              <span className="text-2xl text-primary">Liên hệ</span>
             )}
 
             {calculateDiscountPercent(
               productDetail.variants[0]?.price?.originalPrice,
               productDetail.variants[0]?.price.salePrice,
             ) > 0 && (
-              <div className="flex flex-row text-2xl gap-5">
-                <span className="line-through text-md ">
+              <div className="flex flex-row mt-3 gap-5">
+                <span className="line-through text-2xl text-gray-500">
                   {formatPrice(productDetail.variants[0]?.price?.originalPrice)}
                 </span>
-                <span>
+                <p className="rounded-sm bg-red-600 text-md text-white px-1.5 content-center">
                   -
                   {calculateDiscountPercent(
                     productDetail.variants[0]?.price?.originalPrice,
                     productDetail.variants[0]?.price.salePrice,
                   )}
                   %
-                </span>
+                </p>
               </div>
             )}
-            <div className="space-y-5">
-              {/* Đơn vị tính */}
-              <div className="flex items-center justify-between">
-                <span className="text-base text-base-content">
-                  Chọn đơn vị tính
-                </span>
+            {/* Đơn vị tính */}
+            <div className="flex mt-5 items-center justify-between">
+              <span className="text-gray-700 text-lg">Chọn đơn vị tính</span>
 
-                <div className="dropdown dropdown-end">
+              <div className="ml-5 flex flex-row gap-3">
+                {productDetail.variants.map((item: any, index: number) => (
                   <button
-                    tabIndex={0}
-                    type="button"
-                    className="btn btn-outline btn-primary h-11 min-h-11 w-24 rounded-full px-4 text-base font-normal"
+                    key={item.id}
+                    className={`py-2 cursor-pointer border rounded-full px-4 ${index == 0 ? "border-primary text-primary" : "btn-accent"}`}
                   >
-                    <span className="flex-1">chai</span>
-
-                    {/* Arrow */}
-                    <svg
-                      className="h-4 w-4"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    {item.packageDescription}
                   </button>
-
-                  <ul
-                    tabIndex={0}
-                    className="dropdown-content menu z-50 mt-2 w-32 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg"
-                  >
-                    {["hộp", "chai"].map((item) => (
-                      <li key={item}>
-                        <button
-                          type="button"
-                          // onClick={() => setUnit(item)}
-                          className={"chai" === item ? "active" : ""}
-                        >
-                          {item}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                ))}
               </div>
+            </div>
 
-              {/* Số lượng */}
-              <div className="flex items-center justify-between">
-                <span className="text-base text-base-content">
-                  Chọn số lượng
+            {/* Số lượng */}
+            <div className="flex mt-5 items-center justify-between">
+              <span className="text-gray-700 text-lg">Chọn số lượng</span>
+
+              <div className="join h-10 ml-5 overflow-hidden rounded-full border border-base-300">
+                <button
+                  type="button"
+                  // onClick={decrease}
+                  // disabled={quantity <= 1}
+                  className="btn btn-ghost join-item h-full min-h-0 w-11 rounded-none px-0 disabled:bg-transparent"
+                >
+                  −
+                </button>
+
+                <span className="flex w-11 items-center justify-center border-x border-base-300 text-base">
+                  1
                 </span>
 
-                <div className="join h-10 overflow-hidden rounded-full border border-base-300">
-                  <button
-                    type="button"
-                    // onClick={decrease}
-                    // disabled={quantity <= 1}
-                    className="btn btn-ghost join-item h-full min-h-0 w-11 rounded-none px-0 disabled:bg-transparent"
-                  >
-                    −
-                  </button>
-
-                  <span className="flex w-11 items-center justify-center border-x border-base-300 text-base">
-                    1
-                  </span>
-
-                  <button
-                    type="button"
-                    // onClick={increase}
-                    className="btn btn-ghost join-item h-full min-h-0 w-11 rounded-none px-0"
-                  >
-                    +
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  // onClick={increase}
+                  className="btn btn-ghost join-item h-full min-h-0 w-11 rounded-none px-0"
+                >
+                  +
+                </button>
               </div>
             </div>
           </div>
 
           <div className="flex items-baseline space-x-4 mb-6">
-            <button className="btn btn-primary">Thêm vào giỏ hàng</button>
-            <button className="btn btn-outline">Mua ngay</button>
+            <button className="btn btn-outline hover:bg-none btn-primary rounded-full">
+              Thêm vào giỏ hàng
+            </button>
+            <button className="btn  btn-primary rounded-full">Mua ngay</button>
           </div>
           <div>
             <p>

@@ -1,13 +1,14 @@
 export const fetchProduct = async ({
   slug,
   page,
-  limit = 16,
+  limit,
   sortBy,
   order,
   brand = [],
   country = [],
   minPrice,
   maxPrice,
+  isPromotion,
 }: {
   slug?: string;
   page?: number;
@@ -18,6 +19,7 @@ export const fetchProduct = async ({
   country?: string[];
   minPrice?: number;
   maxPrice?: number;
+  isPromotion?: boolean;
 }) => {
   try {
     const params = new URLSearchParams();
@@ -45,6 +47,9 @@ export const fetchProduct = async ({
 
     if (maxPrice) {
       params.set("maxPrice", String(maxPrice));
+    }
+    if (isPromotion) {
+      params.set("isPromotion", String(isPromotion));
     }
     brand.forEach((item: any) => {
       params.append("brand", item);

@@ -9,7 +9,7 @@ import Link from "next/link";
 export function CatalogProductCard({ product }: { product: Product }) {
   //const addItem = useCart((s) => s.addItem);
   return (
-    <article className="bg-base-0  card group h-full overflow-hidden transition border border-transparent hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-xl">
+    <article className="bg-base-0  card group h-full overflow-hidden transition border border-base-300 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-xl">
       <Link href={`/san-pham/${product.slug}`} className="relative block">
         <figure className="aspect-4/3 bg-base-300">
           {product.images ? (
@@ -26,14 +26,14 @@ export function CatalogProductCard({ product }: { product: Product }) {
           {product.country.name}
         </span>
         {calculateDiscountPercent(
-          product.variants[0]?.price?.originalPrice,
-          product.variants[0]?.price.salePrice,
+          product.bestVariant?.price?.originalPrice,
+          product.bestVariant?.price.salePrice,
         ) > 0 ? (
           <span className="px-3 py-1  absolute right-0 top-0 rounded-bl-2xl border-0 bg-red-600 text-xs font-medium text-white">
             -
             {calculateDiscountPercent(
-              product.variants[0]?.price?.originalPrice,
-              product.variants[0]?.price.salePrice,
+              product.bestVariant?.price?.originalPrice,
+              product.bestVariant?.price.salePrice,
             )}
             %
           </span>
@@ -53,15 +53,15 @@ export function CatalogProductCard({ product }: { product: Product }) {
         </p>
         <div className="card-actions mt-auto items-start justify-start border-t border-base-200 pt-4 flex-col">
           <span className="text-md ">
-            {formatPrice(product.variants[0]?.price?.salePrice)} /{" "}
-            {product.variants[0]?.unit?.name}
+            {formatPrice(product.bestVariant?.price?.salePrice)} /{" "}
+            {product.bestVariant?.unit?.name}
           </span>
           {calculateDiscountPercent(
-            product.variants[0]?.price?.originalPrice,
-            product.variants[0]?.price.salePrice,
+            product.bestVariant?.price?.originalPrice,
+            product.bestVariant?.price.salePrice,
           ) > 0 ? (
             <span className="line-through text-md ">
-              {formatPrice(product.variants[0]?.price?.originalPrice)}
+              {formatPrice(product.bestVariant?.price?.originalPrice)}
             </span>
           ) : (
             ""

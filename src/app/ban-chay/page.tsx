@@ -1,4 +1,4 @@
-import ListProducts from "@/components/listProduct/ListProducts";
+import ListProductsNoFilter from "@/components/listProduct/ListProductsNoFilter";
 import { fetchProduct } from "@/services/productService";
 
 const page = async () => {
@@ -7,7 +7,7 @@ const page = async () => {
     limit: 18,
   });
 
-  return <ListProducts listProducts={listProducts} />;
+  return <ListProductsNoFilter listProducts={listProducts} />;
 };
 
 export default page;

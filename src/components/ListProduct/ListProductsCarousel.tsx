@@ -36,14 +36,6 @@ export default function ListProductsCarousel({
         className={`space-y-12 ${isBestSelling ? "bg-primary p-3 rounded-2xl rounded-tl-none" : ""}`}
       >
         <section id="catolag" className="scroll-mt-24">
-          {/* <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-base-content md:text-2xl uppercase font-mono">
-              Catalog
-            </h2>
-          </div>
-        </div> */}
-
           <div className="embla">
             <div
               className="embla__viewport overflow-x-auto scrollbar-hide"
@@ -52,7 +44,7 @@ export default function ListProductsCarousel({
               <div className="embla__container">
                 {listProducts.map((p) => (
                   <div
-                    className="embla__slide grow-0 shrink-0  basis-1/6 min-w-[220]"
+                    className="embla__slide grow-0 shrink-0  basis-1/6 min-w-[160] sm:min-w-[220]"
                     key={p.id}
                   >
                     <CatalogProductCard product={p} />
@@ -76,19 +68,21 @@ export default function ListProductsCarousel({
           </div>
         </section>
       </div>
-      <div className="flex justify-between items-center">
-        <button
-          className="flex flex-row cursor-pointer p-3 btn-ghost m-auto text-primary"
-          onClick={() => {
-            isBestSelling
-              ? router.push("/ban-chay")
-              : router.push("/khuyen-mai");
-          }}
-        >
-          <span className="text-md">Xem tất cả</span>
-          {/* <ChevronRight className="size-5 items-center" /> */}
-        </button>
-      </div>
+      {(isBestSelling || isPromotion) && (
+        <div className="flex justify-between items-center">
+          <button
+            className="flex flex-row cursor-pointer p-3 btn-ghost m-auto text-primary"
+            onClick={() => {
+              isBestSelling
+                ? router.push("/ban-chay")
+                : router.push("/khuyen-mai");
+            }}
+          >
+            <span className="text-md">Xem tất cả</span>
+            {/* <ChevronRight className="size-5 items-center" /> */}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

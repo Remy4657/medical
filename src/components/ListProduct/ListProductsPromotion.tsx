@@ -2,11 +2,16 @@
 import { Flame } from "lucide-react";
 import { CatalogProductCard } from "../CatalogProductCard";
 import { useProducts } from "@/hooks/use-products";
+import Image from "next/image";
 
-export default function ListProducts({ listProducts }: { listProducts: any }) {
+export default function ListProductsPromotion({
+  listProducts,
+}: {
+  listProducts: any;
+}) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useProducts({
     initialData: listProducts,
-    sortBy: "bestSelling",
+    isPromotion: true,
     limit: 18,
   });
 
@@ -20,13 +25,15 @@ export default function ListProducts({ listProducts }: { listProducts: any }) {
 
   return (
     <div className="flex flex-col mt-5 p-3 rounded-2xl bg-white">
-      <div>
-        <p className="flex flex-row px-5 py-2 text-white text-xl w-fit bg-primary rounded-t-2xl">
-          <Flame />
-          <span className="ml-1">Sản phẩm bán chạy</span>
-        </p>
+      <div className="mb-5">
+        <Image
+          src="/img/flashsale.webp"
+          alt="image"
+          width={1400}
+          height={120}
+        />
       </div>
-      <div className="grid grid-cols-1 gap-6 bg-primary rounded-2xl rounded-tl-none">
+      <div className="grid grid-cols-1 gap-6 rounded-2xl">
         {/* Start List Products */}
         <div className="">
           <ul className=" p-3 grid grid-cols-1 gap-2 sm:gap-4  xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">

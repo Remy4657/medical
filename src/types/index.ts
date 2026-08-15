@@ -5,7 +5,7 @@ export type Product = {
   category: Category; // sau transform, category là string
   description: string;
   country: Country;
-  variants: Variant[];
+  bestVariant: any;
   images: string[]; // array of image URLs for the product gallery
 };
 export type Variant = {

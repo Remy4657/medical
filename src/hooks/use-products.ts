@@ -11,6 +11,7 @@ export function useProducts({
   country = [],
   minPrice,
   maxPrice,
+  isPromotion,
 }: {
   categorySlug?: string;
   initialData?: any;
@@ -21,6 +22,7 @@ export function useProducts({
   country?: string[];
   minPrice?: number;
   maxPrice?: number;
+  isPromotion?: boolean;
 }) {
   console.log(
     sortBy === "createdAt" &&
@@ -39,6 +41,7 @@ export function useProducts({
       country,
       minPrice,
       maxPrice,
+      isPromotion,
     ],
     queryFn: async ({ pageParam }) => {
       return await fetchProduct({
@@ -51,6 +54,7 @@ export function useProducts({
         country,
         minPrice,
         maxPrice,
+        isPromotion,
       });
     },
     staleTime: Infinity,
