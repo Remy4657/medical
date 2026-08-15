@@ -8,6 +8,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 
 import { Product } from './product.entity';
@@ -16,6 +17,7 @@ import { Inventory } from './inventory.entity';
 import { ProductPrice } from './product-price.entity';
 
 @Entity('product_variant')
+@Index('idx_product_variant_product_id', ['product'])
 export class ProductVariant {
   @PrimaryGeneratedColumn()
   id: number;

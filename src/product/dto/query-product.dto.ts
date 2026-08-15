@@ -24,7 +24,7 @@ export class ProductQueryDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  limit: number = 15;
+  limit: number = 18;
 
   @IsOptional()
   @IsIn(['price', 'bestSelling', 'createdAt'])
@@ -55,4 +55,9 @@ export class ProductQueryDto {
   @Type(() => Number)
   @IsNumber()
   maxPrice?: number;
+
+  @IsOptional()
+  @Type(() => Boolean)
+  @IsIn([true, false])
+  isPromotion?: boolean;
 }

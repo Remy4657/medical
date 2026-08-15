@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -10,6 +11,7 @@ import {
 import { ProductVariant } from './product-variant.entity';
 
 @Entity('product_price')
+@Index('idx_product_price_variant_id', ['variant'])
 export class ProductPrice {
   @PrimaryGeneratedColumn()
   id: number;

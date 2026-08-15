@@ -7,6 +7,8 @@ import { In, Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { CategoryService } from '../category/category.service';
 import { ProductQueryDto } from './dto/query-product.dto';
+import { ProductVariant } from './entities/product-variant.entity';
+import { ProductPrice } from './entities/product-price.entity';
 
 @Injectable()
 export class ProductService {
@@ -27,15 +29,39 @@ export class ProductService {
       country,
       minPrice,
       maxPrice,
+      isPromotion,
     } = query;
 
-    const qb = this.productRepository
-      .createQueryBuilder('product')
-      .leftJoinAndSelect('product.category', 'category')
+    const qb = this.productRepository.createQueryBuilder('product');
+
+    const bestVariantSubQuery = qb
+      .subQuery()
+      .select('pv.id')
+      .from(ProductVariant, 'pv')
+      .innerJoin(ProductPrice, 'pp', 'pp.variant_id = pv.id')
+      .where('pv.product_id = product.id')
+      .orderBy(
+        '(pp.originalPrice - pp.salePrice) / NULLIF(pp.originalPrice, 0)',
+        'DESC',
+      )
+      .addOrderBy('pv.id', 'ASC')
+      .limit(1)
+      .getQuery();
+    if (isPromotion) {
+      return this.getPromotionProducts(query);
+    }
+    //
+
+    qb.leftJoinAndSelect('product.category', 'category')
       .leftJoinAndSelect('product.brand', 'brand')
       .leftJoinAndSelect('product.country', 'country')
       .leftJoinAndSelect('product.images', 'image')
-      .leftJoinAndSelect('product.variants', 'variant')
+      .leftJoinAndMapOne(
+        'product.bestVariant',
+        ProductVariant,
+        'variant',
+        `variant.id = ${bestVariantSubQuery}`,
+      )
       .leftJoinAndSelect('variant.price', 'price')
       .leftJoinAndSelect('variant.unit', 'unit')
 
@@ -134,6 +160,15 @@ export class ProductService {
       .leftJoinAndSelect('product.attributes', 'productAttribute')
       .leftJoinAndSelect('productAttribute.attribute', 'attribute')
       .where('product.slug = :slug', { slug })
+      .orderBy(
+        `CASE
+      WHEN price.sale_price < price.original_price
+      THEN (price.original_price - price.sale_price) / NULLIF(price.original_price, 0)
+      ELSE 0
+      END`,
+        'DESC',
+      )
+      .addOrderBy('variant.id', 'ASC')
       .getOne();
 
     if (!product) {
@@ -155,18 +190,19 @@ export class ProductService {
       totalSold: product.totalSold,
       category: product.category.name,
       brand: product.brand.name,
-      country: product.country.name,
 
+      country: product.country.name,
       breadcrumb,
 
       images: product.images.map((image) => ({
         id: image.id,
         url: image.imageUrl,
+        isPrimary: image.isPrimary,
       })),
 
       variants: product.variants.map((variant) => ({
         id: variant.id,
-
+        packageDescription: variant.packageDescription,
         price: variant.price
           ? {
               originalPrice: variant.price.originalPrice,
@@ -183,11 +219,70 @@ export class ProductService {
       })),
 
       attributes: product.attributes.map((item) => ({
+        id: item.id,
         name: item.attribute.name,
         slug: item.attribute.slug,
         type: item.attribute.type,
         value: item.value,
       })),
+    };
+  }
+
+  async getPromotionProducts(query: ProductQueryDto) {
+    const { page, limit } = query;
+
+    const now = new Date();
+    const bestVariantSubQuery = this.productRepository
+      .createQueryBuilder()
+      .subQuery()
+      .select('pv.id')
+      .from(ProductVariant, 'pv')
+      .innerJoin(ProductPrice, 'pp', 'pp.variant_id = pv.id')
+      .where('pv.product_id = product.id')
+      .andWhere('pp.salePrice < pp.originalPrice')
+      .andWhere('pp.startsAt <= :now')
+      .andWhere('(pp.endsAt IS NULL OR pp.endsAt >= :now)')
+      .orderBy(
+        '(pp.originalPrice - pp.salePrice) / NULLIF(pp.originalPrice, 0)',
+        'DESC',
+      )
+      .addOrderBy('pv.id', 'ASC')
+      .limit(1)
+      .getQuery();
+    const qb = this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.brand', 'brand')
+      .leftJoinAndSelect('product.country', 'country')
+      .leftJoinAndSelect('product.images', 'image')
+      .leftJoinAndMapOne(
+        'product.bestVariant',
+        ProductVariant,
+        'variant',
+        `variant.id = ${bestVariantSubQuery}`,
+      )
+      .leftJoinAndSelect('variant.price', 'price')
+      .leftJoinAndSelect('variant.unit', 'unit')
+
+      .where('variant.id IS NOT NULL')
+
+      .orderBy('product.createdAt', 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit)
+      .distinct(true);
+
+    qb.setParameter('now', now);
+
+    const [products, total] = await qb.getManyAndCount();
+
+    return {
+      products,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasMore: page * limit < total,
+      },
     };
   }
 }

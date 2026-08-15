@@ -29,9 +29,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   // Tùy chỉnh lỗi trả về khi token không hợp lệ
   handleRequest(err: any, user: any, info: any) {
     // Nếu có lỗi từ Passport hoặc user null
-    console.log('err: ', err);
-    console.log('user: ', user);
-    console.log('info: ', info);
+
     if (err || !user) {
       let message = 'Unauthorized';
       if (info && info.name === 'TokenExpiredError') {

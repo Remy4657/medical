@@ -80,6 +80,8 @@ export class Product {
     cascade: true,
   })
   variants: ProductVariant[];
+  // Không phải relation trong DB, chỉ dùng để map kết quả query
+  bestVariant: ProductVariant | null;
 
   @OneToMany(() => ProductAttribute, (value) => value.product)
   attributes: ProductAttribute[];
