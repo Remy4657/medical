@@ -1,20 +1,26 @@
+"use client";
+import { useCartStore } from "@/stores/useCartStore";
+import { useCommonStore } from "@/stores/useCommonStore";
 import { Product } from "@/types";
 import { calculateDiscountPercent, formatPrice } from "@/utils/formatPrice";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
-//import { formatPrice } from "../utils/format.js";
-//import { IK_PRESETS, imageKitOptimizedUrl } from "../lib/imagekitUrl.js";
-//import { useCart } from "../store/cart.js";
+import { useState } from "react";
 
 export function CatalogProductCard({ product }: { product: Product }) {
-  //const addItem = useCart((s) => s.addItem);
+  const addItem = useCartStore((state) => state.addItem);
+  const { toggleModal } = useCommonStore();
+
+  const primaryImage = product.images.find(
+    (image: any) => Number(image.sortOrder) === 0 && image.isPrimary === true,
+  )?.imageUrl;
   return (
     <article className="bg-base-0  card group h-full overflow-hidden transition border border-base-300 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-xl">
       <Link href={`/san-pham/${product.slug}`} className="relative block">
         <figure className="aspect-4/3 bg-base-300">
           {product.images ? (
             <img
-              src={undefined}
+              src={primaryImage}
               alt=""
               className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
               loading="lazy"
@@ -69,11 +75,30 @@ export function CatalogProductCard({ product }: { product: Product }) {
         </div>
         <button
           type="button"
-          //onClick={() => addItem(product.id)}
+          onClick={() => {
+            addItem({
+              variantId: product.bestVariant.id,
+              productId: product.id,
+              sku: product.bestVariant.sku,
+              productName: product.name,
+              packageDescription: product.bestVariant.packageDescription,
+              image: product?.images[0]?.imageUrl ?? "",
+              unit: {
+                id: product.bestVariant.unit.id,
+                name: product.bestVariant.unit.name,
+                code: product.bestVariant.unit.code,
+              },
+              price: {
+                originalPrice: product.bestVariant.price.originalPrice,
+                salePrice: product.bestVariant.price.salePrice,
+              },
+            });
+            toggleModal();
+          }}
           className="btn btn-primary btn-sm gap-1 shadow"
         >
           <PlusIcon className="size-4" aria-hidden />
-          Add
+          Chọn mua
         </button>
       </div>
     </article>

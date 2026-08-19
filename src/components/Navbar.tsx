@@ -1,9 +1,9 @@
 import { ChevronDown, CircleUserRound, Moon, Sun } from "lucide-react";
 import { ShoppingCartIcon, StoreIcon } from "lucide-react";
-import { authClient } from "../lib/auth-client";
 import Link from "next/link";
 import { fetchAllCategories } from "@/services/categoryService";
 import AuthInfo from "./AuthInfo";
+import { notFound } from "next/navigation";
 
 const Navbar = async () => {
   const resListCategories = await fetchAllCategories();
@@ -115,7 +115,7 @@ const Navbar = async () => {
         </div>
         <div className="flex bg-base-0">
           <div className="min-h-16 navbar-center hidden sm:flex gap-5 mx-auto">
-            {resListCategories.map((p: any) => (
+            {resListCategories?.map((p: any) => (
               <div key={p.id} className="dropdown dropdown-hover">
                 <Link
                   href={`/danh-muc/${p.slug}`}

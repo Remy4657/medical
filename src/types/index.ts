@@ -6,7 +6,7 @@ export type Product = {
   description: string;
   country: Country;
   bestVariant: any;
-  images: string[]; // array of image URLs for the product gallery
+  images: any; // array of image URLs for the product gallery
 };
 export type Variant = {
   price: Price;

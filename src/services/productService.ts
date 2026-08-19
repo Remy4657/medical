@@ -90,7 +90,7 @@ export const fetchAllFilters = async () => {
   }
 };
 
-export const fetchProductBySlug = async (slug: string) => {
+export const fetchDetailProduct = async (slug: string) => {
   try {
     console.log(`${process.env.NEXT_PUBLIC_API_URL}/product/?${slug}`);
     const res = await fetch(
@@ -98,6 +98,6 @@ export const fetchProductBySlug = async (slug: string) => {
     ).then((res) => res.json());
     return res.data;
   } catch (error) {
-    console.error(error);
+    console.log("error: ", error);
   }
 };

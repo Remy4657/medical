@@ -42,7 +42,7 @@ export default function ListProductsNoFilter({
         {/* Start List Products */}
         <div className="">
           <ul className=" p-3 grid grid-cols-1 gap-2 sm:gap-4  xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-            {products.map((p) => (
+            {products?.map((p) => (
               <li key={p.id}>
                 <CatalogProductCard product={p} />
               </li>

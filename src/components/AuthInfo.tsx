@@ -1,11 +1,21 @@
 "use client";
 import { CircleUserRound, Moon, Sun } from "lucide-react";
 import { ShoppingCartIcon, StoreIcon } from "lucide-react";
-import { authClient } from "../lib/auth-client";
+import { authClient, signOut } from "../lib/auth-client";
 import Link from "next/link";
+import { useCartStore } from "@/stores/useCartStore";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const AuthInfo = () => {
+  const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
+  const items = useCartStore((state) => state.items);
+  const [userName, setUserName] = useState<string | null>("");
+
+  useEffect(() => {
+    setUserName(session?.user.name ?? null);
+  }, [session?.user.name]);
 
   const signInWithGoogle = async () => {
     await authClient.signIn.social({
@@ -13,6 +23,11 @@ const AuthInfo = () => {
       callbackURL: "/", // sau khi login xong sẽ redirect đến dashboard
     });
   };
+  const handleLogout = async () => {
+    await signOut();
+    setUserName(null);
+  };
+  // useEffect(() => {}, [session]);
   return (
     <div className="navbar-end text-white">
       <div className="flex flex-row items-center">
@@ -42,24 +57,46 @@ const AuthInfo = () => {
         </label>
 
         <Link
-          href="/cart"
-          className="btn btn-ghost gap-2 font-medium indicator text-white"
+          href="/gio-hang"
+          className="relative btn btn-ghost gap-2 font-medium indicator text-white"
           aria-label={"Cart"}
         >
           <ShoppingCartIcon className="size-6 opacity-90" aria-hidden />
+          {items.length > 0 && (
+            <span className="absolute right-0 top-0 px-2 rounded-full bg-primary">
+              {items.length}
+            </span>
+          )}
         </Link>
         <div className="hidden sm:block px-2">
-          {session?.user ? (
-            <span className="flex">
-              <CircleUserRound />
-              Xin chào, {session.user.name}
-            </span>
+          {userName ? (
+            <div className="dropdown dropdown-hover">
+              <span className="flex cursor-pointer">
+                <CircleUserRound />
+                Xin chào, {userName}
+              </span>
+              <ul
+                tabIndex={-1}
+                className="dropdown-content menu bg-base-0 rounded-box z-1 w-52 p-2 shadow-sm text-base-content"
+              >
+                <li>
+                  <button
+                    className="btn-ghost"
+                    onClick={async () => {
+                      await handleLogout();
+                    }}
+                  >
+                    Đăng xuất
+                  </button>
+                </li>
+              </ul>
+            </div>
           ) : (
             <button
-              className="btn btn-ghost "
+              className="btn btn-ghost text-white"
               onClick={() =>
                 (
-                  document.getElementById("my_modal_2") as HTMLDialogElement
+                  document.getElementById("modal_login") as HTMLDialogElement
                 ).showModal()
               }
             >
@@ -68,7 +105,6 @@ const AuthInfo = () => {
             </button>
           )}
         </div>
-
         <dialog id="my_modal_2" className="modal">
           <div className="modal-box flex flex-col">
             <h3 className="font-bold text-lg mb-5">Xin chào!</h3>
@@ -79,6 +115,58 @@ const AuthInfo = () => {
           <form method="dialog" className="modal-backdrop">
             <button>close</button>
           </form>
+        </dialog>
+        <dialog id="modal_login" className="modal text-base-content p-5">
+          <div className="modal-box">
+            <form method="dialog">
+              {/* if there is a button in form, it will close the modal */}
+              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                ✕
+              </button>
+            </form>
+            <div>
+              <h2 className="text-center font-bold text-2xl">Đăng nhập</h2>
+              <p className="text-center">
+                {" "}
+                Vui lòng đăng nhập để hưởng những đặc quyền dành cho thành viên
+              </p>
+            </div>
+            <div className="flex mt-5">
+              <button
+                className="btn bg-white text-black border-[#e5e5e5] m-auto"
+                onClick={signInWithGoogle}
+              >
+                <svg
+                  aria-label="Google logo"
+                  width="16"
+                  height="16"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                >
+                  <g>
+                    <path d="m0 0H512V512H0" fill="#fff"></path>
+                    <path
+                      fill="#34a853"
+                      d="M153 292c30 82 118 95 171 60h62v48A192 192 0 0190 341"
+                    ></path>
+                    <path
+                      fill="#4285f4"
+                      d="m386 400a140 175 0 0053-179H260v74h102q-7 37-38 57"
+                    ></path>
+                    <path
+                      fill="#fbbc02"
+                      d="m90 341a208 200 0 010-171l63 49q-12 37 0 73"
+                    ></path>
+                    <path
+                      fill="#ea4335"
+                      d="m153 219c22-69 116-109 179-50l55-54c-78-75-230-72-297 55"
+                    ></path>
+                  </g>
+                </svg>
+                Đăng nhập với Google
+              </button>
+            </div>
+          </div>
         </dialog>
       </div>
     </div>

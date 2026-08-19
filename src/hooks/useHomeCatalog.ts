@@ -4,7 +4,6 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
 import { CategoriesResponse, ProductsResponse } from "@/types";
-import { getAllCategories, getAllProducts } from "@/services/categoryService";
 
 export const useHomeCatalog = () => {
   const router = useRouter();
@@ -25,34 +24,34 @@ export const useHomeCatalog = () => {
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  const { data: categoriesData, isLoading: loadingCategories } =
-    useQuery<CategoriesResponse>({
-      queryKey: ["product-categories"],
-      queryFn: () => getAllCategories(),
-    });
+  // const { data: categoriesData, isLoading: loadingCategories } =
+  //   useQuery<CategoriesResponse>({
+  //     queryKey: ["product-categories"],
+  //     queryFn: () => getAllCategories(),
+  //   });
 
-  const {
-    data: productsData,
-    isLoading: loadingList,
-    error,
-  } = useQuery<ProductsResponse>({
-    queryKey: ["products", categoryFilter],
-    queryFn: () => getAllProducts(),
-  });
+  // const {
+  //   data: productsData,
+  //   isLoading: loadingList,
+  //   error,
+  // } = useQuery<ProductsResponse>({
+  //   queryKey: ["products", categoryFilter],
+  //   queryFn: () => getAllProducts(),
+  // });
 
-  const categories = categoriesData?.categories ?? [];
-  const products = productsData?.products ?? [];
+  // const categories = categoriesData?.categories ?? [];
+  // const products = productsData?.products ?? [];
 
-  const categoryChipsLoading = loadingCategories && categories.length === 0;
+  // const categoryChipsLoading = loadingCategories && categories.length === 0;
 
   return {
     categoryFilter,
     setCategory,
-    categories,
-    products,
-    categoryChipsLoading,
-    loadingCategories,
-    loadingList,
-    error,
+    // categories,
+    // products,
+    // categoryChipsLoading,
+    // loadingCategories,
+    // loadingList,
+    // error,
   };
 };
