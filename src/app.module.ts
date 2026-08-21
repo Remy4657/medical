@@ -25,6 +25,12 @@ import { ProductUnit } from './product/entities/product-unit.entity';
 import { ProductVariant } from './product/entities/product-variant.entity';
 import { Attribute } from './product/entities/attribute.entity';
 import { ProductAttribute } from './product/entities/product-attribute.entity';
+import { CartModule } from './cart/cart.module';
+import { OrderModule } from './order/order.module';
+import { Cart } from './cart/entities/cart.entity';
+import { CartItem } from './cart/entities/cart-item.entity';
+import { Order } from './order/entities/order.entity';
+import { OrderItem } from './order/entities/order-item.entity';
 
 @Module({
   imports: [
@@ -56,6 +62,10 @@ import { ProductAttribute } from './product/entities/product-attribute.entity';
         ProductVariant,
         Attribute,
         ProductAttribute,
+        Cart,
+        CartItem,
+        Order,
+        OrderItem,
       ],
       synchronize: process.env.NODE_ENV !== 'production',
       logging: true,
@@ -65,6 +75,8 @@ import { ProductAttribute } from './product/entities/product-attribute.entity';
     CategoryModule,
     ProductModule,
     AuthModule,
+    CartModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [

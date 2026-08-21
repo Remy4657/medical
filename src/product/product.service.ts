@@ -55,7 +55,15 @@ export class ProductService {
     qb.leftJoinAndSelect('product.category', 'category')
       .leftJoinAndSelect('product.brand', 'brand')
       .leftJoinAndSelect('product.country', 'country')
-      .leftJoinAndSelect('product.images', 'image')
+      .leftJoinAndSelect(
+        'product.images',
+        'image',
+        'image.is_primary = :isPrimary AND image.sort_order = :sortOrder',
+        {
+          isPrimary: true,
+          sortOrder: 0,
+        },
+      )
       .leftJoinAndMapOne(
         'product.bestVariant',
         ProductVariant,
@@ -153,7 +161,7 @@ export class ProductService {
       .leftJoinAndSelect('product.brand', 'brand')
       .leftJoinAndSelect('product.country', 'country')
       .leftJoinAndSelect('product.category', 'category')
-      .leftJoinAndSelect('product.images', 'image')
+      .leftJoinAndSelect('product.images', 'images')
       .leftJoinAndSelect('product.variants', 'variant')
       .leftJoinAndSelect('variant.price', 'price')
       .leftJoinAndSelect('variant.unit', 'unit')
@@ -253,7 +261,15 @@ export class ProductService {
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.brand', 'brand')
       .leftJoinAndSelect('product.country', 'country')
-      .leftJoinAndSelect('product.images', 'image')
+      .leftJoinAndSelect(
+        'product.images',
+        'image',
+        'image.is_primary = :isPrimary AND image.sort_order = :sortOrder',
+        {
+          isPrimary: true,
+          sortOrder: 0,
+        },
+      )
       .leftJoinAndMapOne(
         'product.bestVariant',
         ProductVariant,

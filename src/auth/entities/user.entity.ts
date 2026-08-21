@@ -7,10 +7,13 @@ import {
   ManyToMany,
   JoinTable,
   UpdateDateColumn,
+  OneToOne,
 } from 'typeorm';
 import { Account } from './account.entity';
 import { Role } from '../../role/entities/role.entity';
 import { Session } from './session.entity';
+import { Cart } from '../../cart/entities/cart.entity';
+import { Order } from '../../order/entities/order.entity';
 
 @Entity('user')
 export class User {
@@ -60,6 +63,10 @@ export class User {
   @OneToMany(() => Session, (session) => session.user)
   sessions: Session[];
 
+  // User 1:N Session
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Order[];
+
   // User N:N Role
   @ManyToMany(() => Role, (role) => role.users)
   @JoinTable({
@@ -74,4 +81,9 @@ export class User {
     },
   })
   roles: Role[];
+  // User 1:1  Cart
+  @OneToOne(() => Cart, (cart) => cart.user, {
+    cascade: true,
+  })
+  cart: Cart;
 }
