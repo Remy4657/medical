@@ -1,41 +1,77 @@
+import api from "@/lib/api";
 import { CartState } from "@/types/store";
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
+
+const timers = new Map<number, ReturnType<typeof setTimeout>>();
 
 export const useCartStore = create<CartState>()(
   devtools(
     persist(
       (set, get) => ({
+        ownerId: null,
+        isLoggedIn: false,
+        isCartReady: false,
         items: [],
-        addItem: (item, quantity = 1) => {
-          set((state) => {
-            const existingItem = state.items.find(
-              (cartItem) => cartItem.variantId === item.variantId,
-            );
+        setOwnerId: (ownerId) => {
+          set({ ownerId });
+        },
+        setLoggedIn: (value) => {
+          set({
+            isLoggedIn: value,
+          });
+        },
+        setCartReady: (value) => {
+          set({
+            isCartReady: value,
+          });
+        },
+        setItems: (items) => {
+          set({ items });
+        },
+        addItem: async (item, quantity = 1) => {
+          const previousItems = get().items;
 
+          const existingItem = get().items.find(
+            (cartItem) => cartItem.variantId === item.variantId,
+          );
+          try {
+            let newQuantity = existingItem
+              ? existingItem.quantity + quantity
+              : quantity;
             if (existingItem) {
-              return {
+              set((state) => ({
+                // tìm kiếm item được click thêm vào giỏ thì tăng quantity lên 1, còn lại giữ nguyên
                 items: state.items.map((cartItem) =>
                   cartItem.variantId === item.variantId
                     ? {
                         ...cartItem,
-                        quantity: cartItem.quantity + quantity,
+                        quantity: newQuantity,
                       }
                     : cartItem,
                 ),
-              };
+              }));
+            } else {
+              set((state) => ({
+                items: [
+                  ...state.items,
+                  {
+                    ...item,
+                    quantity: newQuantity,
+                  },
+                ],
+              }));
             }
-
-            return {
-              items: [
-                ...state.items,
-                {
-                  ...item,
-                  quantity,
-                },
-              ],
-            };
-          });
+            // await api.patch(
+            //   `http://localhost:5001/api/v1/cart/items/${item.variantId}`,
+            //   {
+            //     quantity: newQuantity,
+            //   },
+            // );
+          } catch (error) {
+            console.error("Error adding item to cart:", error);
+            set({ items: previousItems });
+          }
         },
         removeItem: (variantId) => {
           set((state) => ({
@@ -43,8 +79,9 @@ export const useCartStore = create<CartState>()(
           }));
         },
 
-        increaseQuantity: (variantId) => {
+        increaseQuantity: async (variantId) => {
           set((state) => ({
+            // tìm kiếm item được click tăng thì tăng quantity lên 1, còn lại giữ nguyên
             items: state.items.map((item) =>
               item.variantId === variantId
                 ? {
@@ -70,18 +107,25 @@ export const useCartStore = create<CartState>()(
               .filter((item) => item.quantity > 0),
           }));
         },
-
-        products: [1, 2, 3],
-
-        count: null,
-
-        setCount: async () => {
-          const currentCount = get().count ?? 0;
-          set({ count: currentCount + 1 });
+        clearCart: () => {
+          set({ items: [] });
         },
+        signOut: () => {
+          set({
+            ownerId: null,
+            isLoggedIn: false,
+            isCartReady: false,
+            items: [],
+          });
+        },
+        products: [1, 2, 3],
       }),
       {
-        name: "cart-storage",
+        name: "cart-store",
+        partialize: (state) => ({
+          items: state.items,
+          ownerId: state.ownerId,
+        }),
       },
     ),
     {

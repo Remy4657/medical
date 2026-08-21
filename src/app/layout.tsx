@@ -4,7 +4,7 @@ import Layout from "@/components/Layout";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ModalAddToCart from "@/components/ModalAddToCart";
-import { notFound } from "next/navigation";
+import { CartProvider } from "@/components/cart/CartProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -22,6 +22,7 @@ export default function RootLayout({
         <div className="flex min-h-svh flex-col text-base-content overflow-hidden">
           <Navbar />
           <main className="mx-auto w-full max-w-7xl flex-1 px-4 md:px-6 xl:px-0">
+            <CartProvider />
             <Layout children={children} />
           </main>
           <Footer />

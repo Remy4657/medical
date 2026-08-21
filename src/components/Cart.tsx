@@ -1,5 +1,6 @@
 "use client";
 
+import { useCart } from "@/hooks/useCart";
 import { useCartStore } from "@/stores/useCartStore";
 import { formatPrice } from "@/utils/formatPrice";
 import { removeVietnameseTones } from "@/utils/removeVietnameseTones";
@@ -22,6 +23,9 @@ const Cart = ({ provinces }: { provinces: any }) => {
 
   const dropdownProvinceRef = useRef<HTMLDivElement>(null);
   const dropdownWardRef = useRef<HTMLDivElement>(null);
+
+  const { items } = useCartStore();
+  const { increase, decrease, remove } = useCart();
 
   // Click ra ngoài dropdown → đóng
   useEffect(() => {
@@ -51,7 +55,7 @@ const Cart = ({ provinces }: { provinces: any }) => {
       setWards([]);
       return;
     }
-    console.log("selectedCodeProvince: ", selectedCodeProvince);
+
     const fetchWards = async () => {
       try {
         const { communes } = await fetch(
@@ -69,8 +73,6 @@ const Cart = ({ provinces }: { provinces: any }) => {
     fetchWards();
   }, [selectedCodeProvince]);
 
-  const { items, increaseQuantity, decreaseQuantity, removeItem } =
-    useCartStore();
   const isEmpty = items.length === 0;
 
   const calculateSubtotal = () => {
@@ -160,10 +162,7 @@ const Cart = ({ provinces }: { provinces: any }) => {
                         {/* Product Image */}
                         <div className="shrink-0 w-24 h-24">
                           <img
-                            src={
-                              item.image ||
-                              "https://via.placeholder.com/300x300.png?text=No+Image"
-                            }
+                            src={item.image || undefined}
                             alt={item.productName}
                             className="h-full w-full object-cover rounded-lg border border-base-200"
                           />
@@ -176,7 +175,9 @@ const Cart = ({ provinces }: { provinces: any }) => {
                               {item.productName}
                             </h3>
                             <button
-                              onClick={() => removeItem(item.variantId)}
+                              onClick={() => {
+                                remove(item.variantId);
+                              }}
                               className="text-base-content/60 hover:text-base-content transition-colors p-1 rounded hover:bg-base-100"
                             >
                               <Trash2Icon className="h-4 w-4" />
@@ -223,7 +224,7 @@ const Cart = ({ provinces }: { provinces: any }) => {
                             {/* Quantity Controls */}
                             <div className="flex items-baseline space-x-2 text-sm">
                               <button
-                                onClick={() => decreaseQuantity(item.variantId)}
+                                onClick={() => decrease(item.variantId)}
                                 disabled={item.quantity <= 1}
                                 className={`btn btn-ghost btn-sm ${
                                   item.quantity <= 1
@@ -237,7 +238,7 @@ const Cart = ({ provinces }: { provinces: any }) => {
                                 {item.quantity}
                               </span>
                               <button
-                                onClick={() => increaseQuantity(item.variantId)}
+                                onClick={() => increase(item.variantId)}
                                 className="btn btn-ghost btn-sm"
                               >
                                 +

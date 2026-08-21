@@ -1,16 +1,14 @@
 "use client";
-import { useCartStore } from "@/stores/useCartStore";
+import { useCart } from "@/hooks/useCart";
 import { useCommonStore } from "@/stores/useCommonStore";
 import { Product } from "@/types";
 import { calculateDiscountPercent, formatPrice } from "@/utils/formatPrice";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 
 export function CatalogProductCard({ product }: { product: Product }) {
-  const addItem = useCartStore((state) => state.addItem);
+  const { addToCart } = useCart();
   const { toggleModal } = useCommonStore();
-
   const primaryImage = product.images.find(
     (image: any) => Number(image.sortOrder) === 0 && image.isPrimary === true,
   )?.imageUrl;
@@ -76,13 +74,13 @@ export function CatalogProductCard({ product }: { product: Product }) {
         <button
           type="button"
           onClick={() => {
-            addItem({
+            addToCart({
               variantId: product.bestVariant.id,
               productId: product.id,
               sku: product.bestVariant.sku,
               productName: product.name,
               packageDescription: product.bestVariant.packageDescription,
-              image: product?.images[0]?.imageUrl ?? "",
+              image: primaryImage,
               unit: {
                 id: product.bestVariant.unit.id,
                 name: product.bestVariant.unit.name,
@@ -92,6 +90,7 @@ export function CatalogProductCard({ product }: { product: Product }) {
                 originalPrice: product.bestVariant.price.originalPrice,
                 salePrice: product.bestVariant.price.salePrice,
               },
+              quantity: 1,
             });
             toggleModal();
           }}

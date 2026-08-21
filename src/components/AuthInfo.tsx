@@ -8,14 +8,18 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const AuthInfo = () => {
-  const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
-  const items = useCartStore((state) => state.items);
+  const { items, signOut: signOutStore } = useCartStore();
   const [userName, setUserName] = useState<string | null>("");
 
   useEffect(() => {
+    console.log("session authinfo: ", session);
     setUserName(session?.user.name ?? null);
   }, [session?.user.name]);
+
+  if (isPending) {
+    return <div>Loading...</div>;
+  }
 
   const signInWithGoogle = async () => {
     await authClient.signIn.social({
@@ -24,10 +28,9 @@ const AuthInfo = () => {
     });
   };
   const handleLogout = async () => {
-    await signOut();
-    setUserName(null);
+    await authClient.signOut();
+    signOutStore();
   };
-  // useEffect(() => {}, [session]);
   return (
     <div className="navbar-end text-white">
       <div className="flex flex-row items-center">
@@ -62,7 +65,7 @@ const AuthInfo = () => {
           aria-label={"Cart"}
         >
           <ShoppingCartIcon className="size-6 opacity-90" aria-hidden />
-          {items.length > 0 && (
+          {items?.length > 0 && (
             <span className="absolute right-0 top-0 px-2 rounded-full bg-primary">
               {items.length}
             </span>
