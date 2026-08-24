@@ -60,13 +60,12 @@ export async function mergeCartOnLogin() {
    *
    * Đây chính là base để rollback.
    */
-  const syncStates = initializeCartSync(items);
+  initializeCartSync(items);
 
   /**
    * Bây giờ logged-in cart mới sẵn sàng
    * cho add / increase / decrease / remove.
    */
-  console.log("syncStates: ", syncStates);
 
   return items;
 }

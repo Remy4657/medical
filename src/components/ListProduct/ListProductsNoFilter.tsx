@@ -1,7 +1,7 @@
 "use client";
 import { Flame } from "lucide-react";
 import { CatalogProductCard } from "../CatalogProductCard";
-import { useProducts } from "@/hooks/use-products";
+import { useProducts } from "@/hooks/useProductsQuery";
 
 export default function ListProductsNoFilter({
   listProducts,
@@ -29,7 +29,6 @@ export default function ListProductsNoFilter({
   const total = latestPagination.total ?? 0;
   const limit = latestPagination.limit ?? 0;
   const restCountProduct = total - limit * currentPage;
-  console.log("products: ", products);
   return (
     <div className="flex flex-col mt-5 p-3 rounded-2xl bg-white">
       <div>

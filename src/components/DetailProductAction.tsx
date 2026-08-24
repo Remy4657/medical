@@ -1,47 +1,51 @@
 "use client";
-import { useCartStore } from "@/stores/useCartStore";
 import { calculateDiscountPercent, formatPrice } from "@/utils/formatPrice";
 import { Check } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useCommonStore } from "@/stores/useCommonStore";
+import { useCart } from "@/hooks/useCart";
 
 type Props = {
   productDetail: any;
 };
 
 const DetailProductAction = ({ productDetail }: Props) => {
-  const addItem = useCartStore((state) => state.addItem);
+  const { addToCart } = useCart();
 
   const { toggleModal } = useCommonStore();
 
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
 
+  const [quantity, setQuantity] = useState(1);
+
   const handleAddToCart = () => {
-    if (selectedVariantIndex === null) return;
+    addToCart(
+      {
+        variantId: productDetail.variants[selectedVariantIndex].id,
+        productId: productDetail.id,
 
-    addItem({
-      variantId: productDetail.variants[selectedVariantIndex].id,
-      productId: productDetail.id,
+        productName: productDetail.name,
+        sku: productDetail.variants[selectedVariantIndex].sku,
+        packageDescription:
+          productDetail.variants[selectedVariantIndex].packageDescription,
 
-      productName: productDetail.name,
-      sku: productDetail.variants[selectedVariantIndex].sku,
-      packageDescription:
-        productDetail.variants[selectedVariantIndex].packageDescription,
+        image: productDetail.images[0]?.url ?? null,
 
-      image: productDetail.images[0]?.url ?? null,
+        unit: {
+          id: productDetail.variants[selectedVariantIndex].unit.id,
+          name: productDetail.variants[selectedVariantIndex].unit.name,
+          code: productDetail.variants[selectedVariantIndex].unit.code,
+        },
 
-      unit: {
-        id: productDetail.variants[selectedVariantIndex].unit.id,
-        name: productDetail.variants[selectedVariantIndex].unit.name,
-        code: productDetail.variants[selectedVariantIndex].unit.code,
+        price: {
+          originalPrice:
+            productDetail.variants[selectedVariantIndex].price.originalPrice,
+          salePrice:
+            productDetail.variants[selectedVariantIndex].price.salePrice,
+        },
       },
-
-      price: {
-        originalPrice:
-          productDetail.variants[selectedVariantIndex].price.originalPrice,
-        salePrice: productDetail.variants[selectedVariantIndex].price.salePrice,
-      },
-    });
+      quantity,
+    );
     toggleModal();
   };
   return (
@@ -119,20 +123,27 @@ const DetailProductAction = ({ productDetail }: Props) => {
           <div className="join h-10 ml-5 overflow-hidden rounded-full border border-base-300">
             <button
               type="button"
-              // onClick={decrease}
-              // disabled={quantity <= 1}
-              className="btn btn-ghost join-item h-full min-h-0 w-11 rounded-none px-0 disabled:bg-transparent"
+              onClick={() => {
+                setQuantity(quantity - 1);
+              }}
+              disabled={quantity <= 1}
+              className={`btn btn-ghost btn-sm join-item h-full ${
+                quantity <= 1 ? "cursor-not-allowed" : ""
+              }`}
+              // className="btn btn-ghost join-item h-full min-h-0 w-11 rounded-none px-0 disabled:bg-transparent"
             >
               −
             </button>
 
             <span className="flex w-11 items-center justify-center border-x border-base-300 text-base">
-              1
+              {quantity}
             </span>
 
             <button
               type="button"
-              // onClick={increase}
+              onClick={() => {
+                setQuantity(quantity + 1);
+              }}
               className="btn btn-ghost join-item h-full min-h-0 w-11 rounded-none px-0"
             >
               +
@@ -153,7 +164,7 @@ const DetailProductAction = ({ productDetail }: Props) => {
           onClick={() => {
             handleAddToCart();
           }}
-          className="btn  btn-primary rounded-full"
+          className="btn btn-primary rounded-full"
         >
           Chọn mua
         </button>

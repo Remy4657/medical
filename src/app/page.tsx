@@ -20,7 +20,7 @@ export default async function Page() {
   return (
     <div>
       <Slider />
-      <div className="flex flex-col mt-5 p-3 rounded-2xl bg-white">
+      <div className="flex flex-col mt-5 rounded-2xl bg-white">
         <div>
           <p className="flex flex-row px-5 py-2 text-white text-xl w-fit bg-primary rounded-t-2xl">
             <Flame />

@@ -22,7 +22,6 @@ export default function RootLayout({
         <div className="flex min-h-svh flex-col text-base-content overflow-hidden">
           <Navbar />
           <main className="mx-auto w-full max-w-7xl flex-1 px-4 md:px-6 xl:px-0">
-            <CartProvider />
             <Layout children={children} />
           </main>
           <Footer />

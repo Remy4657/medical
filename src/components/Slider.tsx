@@ -20,24 +20,27 @@ export default function Slider() {
   } = usePrevNextButtons(emblaApi);
   return (
     <div className=" mt-3 bg-transparent">
-      <section className="flex flex-row gap-5">
-        <div className="relative  max-w-[1045] m-0 rounded-2xl">
+      <section className="flex flex-col md:flex-row gap-5">
+        {/* start slide */}
+        <div className="relative rounded-2xl flex-3 order-2 md:order-1">
           <div
-            className="overflow-hidden  overflow-x-auto scrollbar-hide rounded-2xl"
+            className="overflow-hidden overflow-x-auto scrollbar-hide rounded-2xl"
             ref={emblaRef}
           >
-            <div className="flex  max-h-[422]">
+            <div className="flex flex-row w-full h-full">
               {[1, 2, 3].map((p, index) => (
                 <div
-                  className="embla__slide grow-0 shrink-0 basis-1"
+                  className="embla__slide grow-0 shrink-0 basis-1 w-full h-full"
                   key={index}
                 >
                   <Image
                     src={`/img/slider/slider${p}.webp`}
                     alt="dd"
                     width={1050}
-                    height={422}
+                    height={440}
                     loading="eager"
+
+                    className="w-full h-[220] sm:h-[260] md:h-[300] lg:h-[440]"
                   />
                 </div>
               ))}
@@ -57,9 +60,72 @@ export default function Slider() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-5 grow">
-          <div className="flex-1 bg-amber-200 rounded-2xl">sec1</div>
-          <div className="flex-1  bg-amber-100 rounded-2xl">sec2</div>
+        {/* end slide */}
+        <div className="flex flex-row min-h-[150] md:flex-col flex-1 gap-5 grow order-1 md:order-2">
+          {/* sec 1 */}
+          <div className="flex-1 relative h-auto overflow-hidden rounded-2xl">
+            {/* Text */}
+            <div className="relative z-20 px-[11] pt-[13]">
+              <h2 className="max-w-[245] text-[25px] font-medium leading-[1.25] text-[#f90083]">
+                Dược sĩ tư vấn
+                <br />
+                miễn phí 24/7
+              </h2>
+            </div>
+
+            {/* Doctor */}
+            <div className="absolute bottom-0 w-full h-full z-10">
+              <Image
+                src="/img/slider/silde-extra1.webp"
+                fill
+                alt=""
+                className="object-fill"
+              />
+            </div>
+
+            {/* Button */}
+            <div className="absolute bottom-[10] left-[10] right-[10] z-20">
+              <button
+                type="button"
+                className="flex h-[40] w-full items-center justify-center rounded-full bg-[#f90083] text-[16px] font-semibold text-white shadow-sm transition hover:bg-[#df0074]"
+              >
+                Đặt Thuốc Nhanh
+              </button>
+            </div>
+          </div>
+
+          {/* sec 2 */}
+
+          <div className="flex-1 relative h-auto overflow-hidden rounded-2xl bg-linear-to-br from-[#ffe5f2] via-[#ffd1e9] to-[#ffb8db]">
+            {/* Text */}
+            <div className="relative z-20 px-[11] pt-[13]">
+              <h2 className="max-w-[245] text-[18px] lg:text-[25px] font-medium leading-[1.25] text-[#f90083]">
+                Dược sĩ tư vấn
+                <br />
+                miễn phí 24/7
+              </h2>
+            </div>
+
+            {/* Doctor */}
+            <div className="absolute bottom-0 w-full h-full z-10">
+              <Image
+                src="/img/slider/silde-extra1.webp"
+                fill
+                alt=""
+                className="object-fill"
+              />
+            </div>
+
+            {/* Button */}
+            <div className="absolute bottom-[10] left-[10] right-[10] z-20">
+              <button
+                type="button"
+                className="flex h-[40] w-full items-center justify-center rounded-full bg-[#f90083] text-[16px] font-semibold text-white shadow-sm transition hover:bg-[#df0074]"
+              >
+                Đặt Thuốc Nhanh
+              </button>
+            </div>
+          </div>
         </div>
       </section>
     </div>

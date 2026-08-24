@@ -1,17 +1,21 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "@/lib/auth-client";
 import { mergeCartOnLogin } from "@/lib/cart-merge";
 import { useCartStore } from "@/stores/useCartStore";
+import { CartSync } from "@/lib/cart-sync";
+import { useCart } from "@/hooks/useCart";
 
 export function CartProvider() {
   const { data: session, isPending } = useSession();
-  const { signOut } = useCartStore();
+  const { signOut } = useCart();
   const setLoggedIn = useCartStore((state) => state.setLoggedIn);
   const setCartReady = useCartStore((state) => state.setCartReady);
   const ownerId = useCartStore((state) => state.ownerId);
   const setOwnerId = useCartStore((state) => state.setOwnerId);
+
+  const [isDomLoaded, setIsDomLoaded] = useState(false);
 
   useEffect(() => {
     if (isPending) {
@@ -23,10 +27,10 @@ export function CartProvider() {
      * USER CHƯA LOGIN
      * ============================
      */
-    if (!userId) {
-      signOut();
-      return;
-    }
+    // if (!userId) {
+    //   signOut();
+    //   return;
+    // }
     /**
      * ============================
      * USER ĐÃ LOGIN
@@ -47,6 +51,8 @@ export function CartProvider() {
     if (ownerId === userId) {
       setCartReady(true);
       setLoggedIn(true);
+      setIsDomLoaded(true);
+
       return;
     }
 
@@ -63,43 +69,19 @@ export function CartProvider() {
       setCartReady(false);
       const merge = async () => {
         try {
-          /**
-           * Đây chính là:
-           *
-           * LOCAL CART
-           *      +
-           * DB CART
-           *      ↓
-           * MERGE
-           */
           await mergeCartOnLogin();
-
-          /**
-           * Đánh dấu cart đã thuộc về
-           * user này.
-           *
-           * Quan trọng:
-           * ownerId được persist.
-           */
           setOwnerId(userId);
           setLoggedIn(true);
           setCartReady(true);
         } catch (error) {
           console.error("Failed to merge cart:", error);
-
-          /**
-           * Quan trọng:
-           *
-           * Nếu merge thất bại,
-           * KHÔNG xóa local cart.
-           *
-           * Và cart vẫn chưa ready
-           * => không cho PATCH API.
-           */
+          // không cho PATCH API.
           setCartReady(false);
         }
       };
       merge();
+      setIsDomLoaded(true);
+
       return;
     }
     /**
@@ -116,8 +98,16 @@ export function CartProvider() {
      *
      * Đây là lý do logout phải clear cart.
      */
+    //signOut();
     setCartReady(false);
   }, [session, isPending, setLoggedIn, setCartReady]);
 
-  return null;
+  if (!isDomLoaded) {
+    return;
+  }
+  return (
+    <>
+      <CartSync isLoggedIn={!!session?.user} />;
+    </>
+  );
 }

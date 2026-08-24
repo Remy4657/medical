@@ -41,10 +41,10 @@ export default function ListProductsCarousel({
               className="embla__viewport overflow-x-auto scrollbar-hide"
               ref={emblaRef}
             >
-              <div className="embla__container">
+              <div className="embla__container gap-3">
                 {listProducts.map((p) => (
                   <div
-                    className="embla__slide grow-0 shrink-0  basis-1/6 min-w-[160] sm:min-w-[220]"
+                    className="embla__slide grow-0 shrink-0  basis-1/6 min-w-[160] sm:basis-[calc((100%-60px)/6)] sm:min-w-[200]"
                     key={p.id}
                   >
                     <CatalogProductCard product={p} />

@@ -3,7 +3,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { CatalogProductCard } from "../CatalogProductCard";
 import { useEffect, useState } from "react";
-import { useProducts } from "@/hooks/use-products";
+import { useProducts } from "@/hooks/useProductsQuery";
 import ProductFilterDesktop from "./ProductFilterDesktop";
 import MobileFilterDrawer from "./MobileFilterDrawer";
 

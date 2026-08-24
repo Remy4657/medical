@@ -1,9 +1,6 @@
-import api from "@/lib/api";
 import { CartState } from "@/types/store";
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-
-const timers = new Map<number, ReturnType<typeof setTimeout>>();
 
 export const useCartStore = create<CartState>()(
   devtools(
@@ -62,12 +59,6 @@ export const useCartStore = create<CartState>()(
                 ],
               }));
             }
-            // await api.patch(
-            //   `http://localhost:5001/api/v1/cart/items/${item.variantId}`,
-            //   {
-            //     quantity: newQuantity,
-            //   },
-            // );
           } catch (error) {
             console.error("Error adding item to cart:", error);
             set({ items: previousItems });

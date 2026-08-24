@@ -90,7 +90,6 @@ export function CatalogProductCard({ product }: { product: Product }) {
                 originalPrice: product.bestVariant.price.originalPrice,
                 salePrice: product.bestVariant.price.salePrice,
               },
-              quantity: 1,
             });
             toggleModal();
           }}

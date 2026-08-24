@@ -1,16 +1,17 @@
 "use client";
 import { CircleUserRound, Moon, Sun } from "lucide-react";
 import { ShoppingCartIcon, StoreIcon } from "lucide-react";
-import { authClient, signOut } from "../lib/auth-client";
+import { authClient } from "../lib/auth-client";
 import Link from "next/link";
 import { useCartStore } from "@/stores/useCartStore";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useCart } from "@/hooks/useCart";
 
 const AuthInfo = () => {
   const { data: session, isPending } = authClient.useSession();
-  const { items, signOut: signOutStore } = useCartStore();
+  const { items } = useCartStore();
   const [userName, setUserName] = useState<string | null>("");
+  const { signOut } = useCart();
 
   useEffect(() => {
     console.log("session authinfo: ", session);
@@ -28,8 +29,7 @@ const AuthInfo = () => {
     });
   };
   const handleLogout = async () => {
-    await authClient.signOut();
-    signOutStore();
+    signOut();
   };
   return (
     <div className="navbar-end text-white">
@@ -91,6 +91,11 @@ const AuthInfo = () => {
                   >
                     Đăng xuất
                   </button>
+                </li>
+                <li>
+                  <Link className="btn-ghost" href="/don-hang-cua-toi">
+                    Đơn hàng của tôi
+                  </Link>
                 </li>
               </ul>
             </div>

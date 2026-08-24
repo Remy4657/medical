@@ -1,7 +1,7 @@
 "use client";
 import { Flame } from "lucide-react";
 import { CatalogProductCard } from "../CatalogProductCard";
-import { useProducts } from "@/hooks/use-products";
+import { useProducts } from "@/hooks/useProductsQuery";
 import Image from "next/image";
 
 export default function ListProductsPromotion({

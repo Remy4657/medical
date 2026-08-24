@@ -184,11 +184,11 @@ const Cart = ({ provinces }: { provinces: any }) => {
                             </button>
                           </div>
 
-                          {/* {item.packageDescription && (
-                        <p className="text-sm text-base-content/60 line-clamp-2">
-                          {item.packageDescription}
-                        </p>
-                      )} */}
+                          {item.packageDescription && (
+                            <p className="text-sm text-base-content/60 line-clamp-2">
+                              {item.packageDescription}
+                            </p>
+                          )}
 
                           <div className="flex items-baseline space-x-4">
                             <div className="flex items-baseline space-x-2">
@@ -202,7 +202,7 @@ const Cart = ({ provinces }: { provinces: any }) => {
                                     {formatPrice(item.price.originalPrice)}
                                   </span>
                                   <span className="ml-1 text-xs text-red-600">
-                                    -
+                                    −
                                     {(
                                       ((Number(item.price.originalPrice) -
                                         Number(item.price.salePrice)) /
@@ -227,12 +227,10 @@ const Cart = ({ provinces }: { provinces: any }) => {
                                 onClick={() => decrease(item.variantId)}
                                 disabled={item.quantity <= 1}
                                 className={`btn btn-ghost btn-sm ${
-                                  item.quantity <= 1
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : ""
+                                  item.quantity <= 1 ? "cursor-not-allowed" : ""
                                 }`}
                               >
-                                -
+                                −
                               </button>
                               <span className="w-8 text-center">
                                 {item.quantity}

@@ -3,6 +3,8 @@
 import { useCartStore } from "@/stores/useCartStore";
 import api from "./api";
 import { CartItem } from "@/types/store";
+import { useCartQuery } from "@/hooks/useCartQuery";
+import { useEffect } from "react";
 
 /**
  * Mỗi variant có một sync state riêng.
@@ -47,6 +49,18 @@ function getCurrentQuantity(variantId: number): number {
   return item?.quantity ?? 0;
 }
 
+export function CartSync({ isLoggedIn }: { isLoggedIn: boolean }) {
+  const { data, isSuccess } = useCartQuery(isLoggedIn);
+  const setItems = useCartStore((state) => state.setItems);
+
+  useEffect(() => {
+    if (!isSuccess || !data) return;
+
+    setItems(data.items);
+  }, [data, isSuccess, setItems]);
+  return null;
+}
+
 /**
  * Được gọi sau khi login + merge thành công.
  *
@@ -87,8 +101,6 @@ export function initializeCartSync(items: CartItem[]) {
  */
 export function scheduleCartSync(variantId: number) {
   const store = useCartStore.getState();
-  console.log("scheduleCartSync store: ", store);
-  // Guest => không gọi API
   if (!store.isLoggedIn) {
     return;
   }
@@ -100,7 +112,6 @@ export function scheduleCartSync(variantId: number) {
   }
 
   let state = syncStates.get(variantId);
-  console.log("scheduleCartSync state: ", state);
   /**
    * Trường hợp variant chưa có sync state.
    *
@@ -111,6 +122,7 @@ export function scheduleCartSync(variantId: number) {
    * Zustand quantity = 1
    */
   if (!state) {
+    // Lấy quantity mới nhất từ Zustand.
     const currentQuantity = getCurrentQuantity(variantId);
 
     state = {
@@ -121,9 +133,6 @@ export function scheduleCartSync(variantId: number) {
 
     syncStates.set(variantId, state);
   }
-
-  // Lấy quantity mới nhất từ Zustand.
-  state.desiredQuantity = getCurrentQuantity(variantId);
 
   /**
    * Nếu user click liên tục:
@@ -143,16 +152,11 @@ export function scheduleCartSync(variantId: number) {
   }, DEBOUNCE_TIME);
 }
 
-/**
- * Gửi quantity hiện tại lên server.
- */
 async function syncCartItem(variantId: number) {
   const state = syncStates.get(variantId);
-  console.log("state: ", state);
   if (!state) {
     return;
   }
-
   state.timer = undefined;
 
   /**
@@ -166,9 +170,7 @@ async function syncCartItem(variantId: number) {
   if (state.inFlight) {
     return;
   }
-
   const quantityToSync = state.desiredQuantity;
-
   state.inFlight = true;
 
   try {
