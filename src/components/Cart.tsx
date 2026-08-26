@@ -4,22 +4,108 @@ import { useCart } from "@/hooks/useCart";
 import { useCartStore } from "@/stores/useCartStore";
 import { formatPrice } from "@/utils/formatPrice";
 import { removeVietnameseTones } from "@/utils/removeVietnameseTones";
-import { Trash2Icon, ChevronLeftIcon, ChevronDown } from "lucide-react";
+
+import {
+  Trash2Icon,
+  ChevronLeftIcon,
+  ChevronDown,
+  Loader2,
+} from "lucide-react";
+
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createOrder } from "@/services/orderService";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { createPayment } from "@/services/paymentService";
+import PaymentModal from "./PaymentModal";
 
-const Cart = ({ provinces }: { provinces: any }) => {
-  const [isClickPovinceDropdown, setIsClickPrinceDropdown] = useState(false);
+/* =========================================================
+ * ZOD SCHEMA
+ * =======================================================*/
+
+const vietnamesePhoneRegex = /^(0|\+84)(3|5|7|8|9)[0-9]{8}$/;
+
+const orderFormSchema = z.object({
+  receiverName: z
+    .string()
+    .trim()
+    .min(2, "Họ và tên phải có ít nhất 2 ký tự")
+    .max(100, "Họ và tên không được vượt quá 100 ký tự"),
+
+  receiverPhone: z
+    .string()
+    .trim()
+    .min(1, "Số điện thoại là bắt buộc")
+    .regex(vietnamesePhoneRegex, "Số điện thoại không hợp lệ"),
+
+  email: z
+    .string()
+    .trim()
+    .max(255, "Email không được vượt quá 255 ký tự")
+    .refine(
+      (value) => {
+        if (!value) return true;
+        return z.string().email().safeParse(value).success;
+      },
+      {
+        message: "Email không hợp lệ",
+      },
+    ),
+
+  province: z.string().trim().min(1, "Vui lòng chọn tỉnh/thành phố"),
+  provinceCode: z.string().min(1, "Vui lòng chọn tỉnh/thành phố"),
+  ward: z.string().trim().min(1, "Vui lòng chọn phường/xã"),
+  wardCode: z.string().min(1, "Vui lòng chọn phường/xã"),
+  detailedAddress: z
+    .string()
+    .trim()
+    .min(5, "Địa chỉ cụ thể phải có ít nhất 5 ký tự")
+    .max(255, "Địa chỉ cụ thể không được vượt quá 255 ký tự"),
+
+  note: z.string().trim().max(500, "Ghi chú không được vượt quá 500 ký tự"),
+
+  paymentMethod: z.enum(["COD", "BANK"], {
+    message: "Vui lòng chọn phương thức thanh toán",
+  }),
+});
+
+const orderItemsSchema = z
+  .array(
+    z.object({
+      variantId: z.number().int().positive(),
+      quantity: z.number().int().min(1).max(999),
+      price: z.number().int(),
+    }),
+  )
+  .min(1, "Giỏ hàng không được trống");
+
+type OrderFormValues = z.infer<typeof orderFormSchema>;
+type OrderItemPayload = {
+  variantId: number;
+  quantity: number;
+};
+type CartProps = {
+  provinces: any[];
+};
+
+const Cart = ({ provinces }: CartProps) => {
+  const router = useRouter();
+
+  const [payment, setPayment] = useState<any>(null);
+
+  const [isClickProvinceDropdown, setIsClickProvinceDropdown] = useState(false);
+
   const [isClickWardDropdown, setIsClickWardDropdown] = useState(false);
-
-  const [selectedNameProvince, setSelectedNameProvince] = useState("");
-  const [selectedCodeProvince, setSelectedCodeProvince] = useState("");
 
   const [searchKeyProvince, setSearchKeyProvince] = useState("");
   const [searchKeyWard, setSearchKeyWard] = useState("");
 
-  const [selectedWard, setSelectedWard] = useState("");
-  const [wards, setWards] = useState([]);
+  const [wards, setWards] = useState<any[]>([]);
+  const [isLoadingWards, setIsLoadingWards] = useState(false);
 
   const dropdownProvinceRef = useRef<HTMLDivElement>(null);
   const dropdownWardRef = useRef<HTMLDivElement>(null);
@@ -27,18 +113,122 @@ const Cart = ({ provinces }: { provinces: any }) => {
   const { items } = useCartStore();
   const { increase, decrease, remove } = useCart();
 
-  // Click ra ngoài dropdown → đóng
+  /* =========================================================
+   * REACT HOOK FORM
+   * =======================================================*/
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<OrderFormValues>({
+    resolver: zodResolver(orderFormSchema),
+
+    mode: "onBlur",
+
+    defaultValues: {
+      receiverName: "",
+      receiverPhone: "",
+      email: "",
+
+      province: "",
+      provinceCode: "",
+
+      ward: "",
+      wardCode: "",
+
+      detailedAddress: "",
+      note: "",
+
+      paymentMethod: "COD",
+    },
+  });
+
+  const selectedProvince = watch("province");
+  const selectedProvinceCode = watch("provinceCode");
+  const selectedWard = watch("ward");
+  const selectedPaymentMethod = watch("paymentMethod");
+
+  /* =========================================================
+   * ITEMS
+   * =======================================================*/
+
+  const orderItems: OrderItemPayload[] = useMemo(() => {
+    return items.map((item) => ({
+      variantId: Number(item.variantId),
+      quantity: Number(item.quantity),
+      price: Number(item.price.salePrice),
+    }));
+  }, [items]);
+
+  /* =========================================================
+   * FETCH WARDS
+   * =======================================================*/
+
   useEffect(() => {
-    const handleClickOutside = (event: any) => {
+    if (!selectedProvinceCode) {
+      setWards([]);
+
+      setValue("ward", "");
+      setValue("wardCode", "");
+
+      return;
+    }
+
+    const fetchWards = async () => {
+      try {
+        setIsLoadingWards(true);
+
+        const response = await fetch(
+          `https://production.cas.so/address-kit/2025-07-01/provinces/${selectedProvinceCode}/communes`,
+        );
+
+        if (!response.ok) {
+          throw new Error("Không thể lấy danh sách phường/xã");
+        }
+
+        const data = await response.json();
+
+        setWards(data.communes ?? []);
+
+        // Province thay đổi thì phải reset ward
+        setValue("ward", "");
+        setValue("wardCode", "");
+      } catch (error) {
+        console.error("Không thể lấy danh sách xã:", error);
+
+        setWards([]);
+
+        setValue("ward", "");
+        setValue("wardCode", "");
+      } finally {
+        setIsLoadingWards(false);
+      }
+    };
+
+    fetchWards();
+  }, [selectedProvinceCode, setValue]);
+
+  /* =========================================================
+   * CLICK OUTSIDE DROPDOWN
+   * =======================================================*/
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
       if (
         dropdownProvinceRef.current &&
-        !dropdownProvinceRef.current.contains(event.target)
+        !dropdownProvinceRef.current.contains(target)
       ) {
-        setIsClickPrinceDropdown(false);
+        setIsClickProvinceDropdown(false);
       }
+
       if (
         dropdownWardRef.current &&
-        !dropdownWardRef.current.contains(event.target)
+        !dropdownWardRef.current.contains(target)
       ) {
         setIsClickWardDropdown(false);
       }
@@ -50,92 +240,207 @@ const Cart = ({ provinces }: { provinces: any }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  useEffect(() => {
-    if (!selectedCodeProvince) {
-      setWards([]);
-      return;
-    }
 
-    const fetchWards = async () => {
-      try {
-        const { communes } = await fetch(
-          `https://production.cas.so/address-kit/2025-07-01/provinces/${selectedCodeProvince}/communes`,
-        ).then((res) => res.json());
+  /* =========================================================
+   * FILTER PROVINCES / WARDS
+   * =======================================================*/
 
-        setWards(communes);
-      } catch (error) {
-        console.error("Không thể lấy danh sách xã:", error);
-        setWards([]);
-      } finally {
-      }
-    };
-
-    fetchWards();
-  }, [selectedCodeProvince]);
-
-  const isEmpty = items.length === 0;
-
-  const calculateSubtotal = () => {
-    return items.reduce((sum, item) => {
-      return sum + Number(item.price.salePrice) * item.quantity;
-    }, 0);
-  };
-
-  const calculateShipping = () => {
-    const subtotal = calculateSubtotal();
-    return subtotal >= 500000 ? 0 : 30000; // Free shipping over 500k
-  };
-
-  const calculateTax = () => {
-    // Assuming 8% VAT
-    return Math.round(calculateSubtotal() * 0.08);
-  };
-
-  const calculateTotal = () => {
-    return calculateSubtotal() + calculateShipping() + calculateTax();
-  };
   const filteredProvinces = provinces.filter((province: any) =>
     removeVietnameseTones(province.name).includes(
       removeVietnameseTones(searchKeyProvince),
     ),
   );
+
   const filteredWards = wards.filter((ward: any) =>
     removeVietnameseTones(ward.name).includes(
       removeVietnameseTones(searchKeyWard),
     ),
   );
+
+  /* =========================================================
+   * SELECT PROVINCE
+   * =======================================================*/
+
   const handleSelectProvince = (province: any) => {
-    setSelectedNameProvince(province.name);
-    setSelectedCodeProvince(province.code);
+    setValue("province", province.name, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+
+    setValue("provinceCode", String(province.code), {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+
+    // Reset ward khi đổi tỉnh
+    setValue("ward", "");
+    setValue("wardCode", "");
+
     setSearchKeyProvince("");
-    setIsClickPrinceDropdown(false);
+    setIsClickProvinceDropdown(false);
   };
+
+  /* =========================================================
+   * SELECT WARD
+   * =======================================================*/
+
   const handleSelectWard = (ward: any) => {
-    setSelectedWard(ward.name);
+    setValue("ward", ward.name, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+
+    setValue("wardCode", String(ward.code), {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+
     setSearchKeyWard("");
     setIsClickWardDropdown(false);
   };
+
+  /* =========================================================
+   * CALCULATE CART
+   * =======================================================*/
+
+  const calculateSubtotal = () => {
+    return items.reduce((sum, item) => {
+      return sum + Number(item.price.salePrice) * Number(item.quantity);
+    }, 0);
+  };
+
+  const calculateShipping = () => {
+    const subtotal = calculateSubtotal();
+
+    return subtotal >= 500000 ? 0 : 30000;
+  };
+
+  const calculateTax = () => {
+    return Math.round(calculateSubtotal() * 0.08);
+  };
+
+  const calculateTotal = () => {
+    return calculateSubtotal() + calculateShipping();
+  };
+
+  /* =========================================================
+   * SUBMIT
+   * =======================================================*/
+
+  const onSubmit = async (data: OrderFormValues) => {
+    /* ---------------------------------------------
+     * Validate items bằng Zod
+     * -------------------------------------------*/
+
+    const itemsResult = orderItemsSchema.safeParse(orderItems);
+
+    if (!itemsResult.success) {
+      toast.error("Giỏ hàng không hợp lệ");
+
+      return;
+    }
+
+    /* ---------------------------------------------
+     * Build shipping address
+     * -------------------------------------------*/
+
+    const shippingAddress = [
+      data.detailedAddress.trim(),
+      data.ward.trim(),
+      data.province.trim(),
+    ]
+      .filter(Boolean)
+      .join(", ");
+
+    /* ---------------------------------------------
+     * API BODY
+     * -------------------------------------------*/
+
+    const orderData = {
+      receiverName: data.receiverName.trim(),
+      receiverPhone: data.receiverPhone.trim(),
+      shippingAddress,
+      paymentMethod: data.paymentMethod,
+      note: data.note.trim() || null,
+      items: itemsResult.data.map((item) => ({
+        variantId: item.variantId,
+        quantity: item.quantity,
+        clientSalePrice: item.price,
+      })),
+    };
+
+    try {
+      const { data, statusCode } = await createOrder(orderData);
+
+      if (statusCode === 201) {
+        console.log("data: ", data);
+        if (data.paymentMethod === "COD") {
+          router.push("dat-hang/success");
+        } else {
+          const res = await createPayment(data.payosOrderCode);
+          console.log("res: ", res);
+          setPayment(res);
+          //router.push(res.checkoutUrl);
+        }
+      }
+    } catch (error: any) {
+      console.error("Lỗi khi tạo đơn hàng:", error.response);
+
+      /*
+       * Ví dụ backend trả:
+       *
+       * {
+       *   statusCode: "PRICE_CHANGED",
+       *   message: "Giá sản phẩm đã thay đổi",
+       *   items: []
+       * }
+       */
+
+      if (error.response.data?.statusCode === 409) {
+        const changedItems = error.response.data.items;
+        useCartStore.getState().setItems(changedItems);
+        toast.info(
+          "Giá một số sản phẩm đã thay đổi. Giỏ hàng đã được cập nhật.",
+        );
+
+        return;
+      }
+
+      // các lỗi khác
+      // toast.error("Đặt hàng thất bại");
+    }
+  };
+
+  const isEmpty = items.length === 0;
+
+  /* =========================================================
+   * RENDER
+   * =======================================================*/
+
   return (
     <div className="min-h-screen bg-base-50">
-      <Link
-        href="/"
-        className="flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors"
-      >
-        <ChevronLeftIcon className="h-5 w-5" />
-        <span className="text-lg font-semibold">Trang chủ</span>
-      </Link>
+      <div className="mx-auto max-w-7xl px-4 py-6">
+        {/* Back */}
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-primary transition-colors hover:text-primary/80"
+        >
+          <ChevronLeftIcon className="h-5 w-5" />
 
-      {/* Main Content */}
-      <div className=" mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        {/* Empty Cart State */}
+          <span className="text-lg font-semibold">Tiếp tục mua sắm</span>
+        </Link>
+
+        {/* Empty cart */}
         {isEmpty && (
-          <div className="bg-base-0 rounded-2xl text-center py-20">
-            <h2 className="text-xl font-semibold text-base-content mb-3">
+          <div className="mt-8 rounded-2xl bg-base-0 py-20 text-center">
+            <h2 className="mb-3 text-xl font-semibold text-base-content">
               Giỏ hàng hiện đang trống
             </h2>
-            <p className="text-base-content/60 mb-6">
+
+            <p className="mb-6 text-base-content/60">
               Hãy khám phá và thêm sản phẩm vào giỏ hàng của bạn
             </p>
+
             <Link href="/" className="btn btn-primary btn-md">
               Mua sắm ngay
             </Link>
@@ -144,104 +449,105 @@ const Cart = ({ provinces }: { provinces: any }) => {
 
         {!isEmpty && (
           <>
-            <h2 className="text-lg font-semibold text-base-content">
+            <h2 className="mt-8 text-lg font-semibold text-base-content">
               Sản phẩm trong giỏ hàng
             </h2>
-            <div className="flex flex-row justify-between gap-5">
-              {/* Cart Items */}
-              <div className="flex flex-col gap-5  flex-5">
-                {/* start overview cart */}
 
-                <div className="bg-base-0 p-6 rounded-2xl">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              noValidate
+              className="mt-4 flex flex-col gap-5 lg:flex-row"
+            >
+              {/* =================================================
+               * LEFT
+               * ===============================================*/}
+
+              <div className="flex min-w-0 flex-1 flex-col gap-5">
+                {/* Cart items */}
+                <div className="rounded-2xl bg-base-0 p-6">
                   <div className="divide-y divide-base-200">
                     {items.map((item) => (
                       <div
                         key={item.variantId}
-                        className="flex items-start py-6"
+                        className="flex items-start py-6 first:pt-0 last:pb-0"
                       >
-                        {/* Product Image */}
-                        <div className="shrink-0 w-24 h-24">
+                        {/* Image */}
+                        <div className="h-24 w-24 shrink-0">
                           <img
                             src={item.image || undefined}
                             alt={item.productName}
-                            className="h-full w-full object-cover rounded-lg border border-base-200"
+                            className="h-full w-full rounded-lg border border-base-200 object-cover"
                           />
                         </div>
 
-                        {/* Product Details */}
-                        <div className="ml-4 flex-1 space-y-2">
-                          <div className="flex justify-between">
-                            <h3 className="text-base font-medium text-base-content line-clamp-1 max-w-xs">
+                        {/* Detail */}
+                        <div className="ml-4 min-w-0 flex-1 space-y-2">
+                          <div className="flex justify-between gap-3">
+                            <h3 className="line-clamp-2 max-w-xs text-base font-medium text-base-content">
                               {item.productName}
                             </h3>
+
                             <button
-                              onClick={() => {
-                                remove(item.variantId);
-                              }}
-                              className="text-base-content/60 hover:text-base-content transition-colors p-1 rounded hover:bg-base-100"
+                              type="button"
+                              onClick={() => remove(item.variantId)}
+                              className="rounded p-1 text-base-content/60 transition-colors hover:bg-base-100 hover:text-error"
                             >
                               <Trash2Icon className="h-4 w-4" />
                             </button>
                           </div>
 
                           {item.packageDescription && (
-                            <p className="text-sm text-base-content/60 line-clamp-2">
+                            <p className="line-clamp-2 text-sm text-base-content/60">
                               {item.packageDescription}
                             </p>
                           )}
 
-                          <div className="flex items-baseline space-x-4">
-                            <div className="flex items-baseline space-x-2">
-                              <span className="text-base font-semibold text-base-content">
+                          <div className="flex flex-wrap items-center gap-4">
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold">
                                 {formatPrice(item.price.salePrice)}
                               </span>
+
                               {Number(item.price.originalPrice) >
                                 Number(item.price.salePrice) && (
-                                <>
-                                  <span className="text-base-content/50 line-through">
-                                    {formatPrice(item.price.originalPrice)}
-                                  </span>
-                                  <span className="ml-1 text-xs text-red-600">
-                                    −
-                                    {(
-                                      ((Number(item.price.originalPrice) -
-                                        Number(item.price.salePrice)) /
-                                        Number(item.price.originalPrice)) *
-                                      100
-                                    ).toFixed(0)}
-                                    %
-                                  </span>
-                                </>
+                                <span className="text-sm text-base-content/50 line-through">
+                                  {formatPrice(item.price.originalPrice)}
+                                </span>
                               )}
                             </div>
-                            <span className="ml-4 text-base font-semibold text-base-content">
-                              {formatPrice(
-                                (
-                                  Number(item.price.salePrice) * item.quantity
-                                ).toString(),
-                              )}
-                            </span>
-                            {/* Quantity Controls */}
-                            <div className="flex items-baseline space-x-2 text-sm">
+
+                            {/* Quantity */}
+                            <div className="flex items-center rounded-lg border border-base-300">
                               <button
+                                type="button"
                                 onClick={() => decrease(item.variantId)}
                                 disabled={item.quantity <= 1}
-                                className={`btn btn-ghost btn-sm ${
-                                  item.quantity <= 1 ? "cursor-not-allowed" : ""
-                                }`}
+                                className="px-3 py-1 text-lg disabled:cursor-not-allowed disabled:opacity-40"
                               >
                                 −
                               </button>
+
                               <span className="w-8 text-center">
                                 {item.quantity}
                               </span>
+
                               <button
+                                type="button"
                                 onClick={() => increase(item.variantId)}
-                                className="btn btn-ghost btn-sm"
+                                className="px-3 py-1 text-lg"
                               >
                                 +
                               </button>
                             </div>
+
+                            <span className="font-semibold">
+                              {formatPrice(
+                                (
+                                  Number(item.price.salePrice) *
+                                  Number(item.quantity)
+                                ).toString(),
+                              )}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -249,73 +555,126 @@ const Cart = ({ provinces }: { provinces: any }) => {
                   </div>
                 </div>
 
-                {/* end overview cart */}
+                {/* =================================================
+                 * CUSTOMER INFORMATION
+                 * ===============================================*/}
 
-                {/* start user info  */}
-                <div className="bg-transparent">
-                  <h2 className="text-lg font-semibold text-base-content">
+                <div>
+                  <h2 className="mb-3 text-lg font-semibold text-base-content">
                     Thông tin người đặt
                   </h2>
-                  <div className="bg-base-0 p-6 rounded-2xl">
-                    <h2 className="text-lg font-semibold">Thông tin cá nhân</h2>
-                    <div className="flex flex-col gap-3">
-                      <div className="flex flex-row gap-3">
-                        <input
-                          type="text"
-                          placeholder="Họ và tên người đặt"
-                          className="input input-xl flex-1 bg-base-0"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Số điện thoại"
-                          className="input input-xl flex-1 bg-base-0"
-                        />
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Email (không bắt buộc)"
-                        className="mt-5 input input-xl w-full bg-base-0"
-                      />
-                    </div>
-                    <h2 className="text-lg font-semibold mt-5">
-                      Địa chỉ nhận hàng
-                    </h2>
 
-                    <div className="flex flex-row gap-3">
-                      {/* start province */}
-                      <div
-                        ref={dropdownProvinceRef}
-                        className="relative w-full flex-1"
-                      >
-                        {/* Ô dropdown */}
+                  <div className="rounded-2xl bg-base-0 p-6">
+                    <h3 className="mb-4 text-lg font-semibold">
+                      Thông tin cá nhân
+                    </h3>
+
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                      {/* Receiver name */}
+                      <div>
+                        <input
+                          {...register("receiverName")}
+                          type="text"
+                          maxLength={100}
+                          placeholder="Họ và tên người đặt"
+                          className={`input input-xl w-full bg-base-0 ${
+                            errors.receiverName ? "input-error" : ""
+                          }`}
+                        />
+
+                        {errors.receiverName && (
+                          <p className="mt-1 text-sm text-error">
+                            {errors.receiverName.message}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Phone */}
+                      <div>
+                        <input
+                          {...register("receiverPhone")}
+                          type="tel"
+                          inputMode="numeric"
+                          maxLength={10}
+                          placeholder="Số điện thoại"
+                          className={`input input-xl w-full bg-base-0 ${
+                            errors.receiverPhone ? "input-error" : ""
+                          }`}
+                        />
+
+                        {errors.receiverPhone && (
+                          <p className="mt-1 text-sm text-error">
+                            {errors.receiverPhone.message}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Email */}
+                      <div className="md:col-span-2">
+                        <input
+                          {...register("email")}
+                          type="email"
+                          maxLength={255}
+                          placeholder="Email (không bắt buộc)"
+                          className={`input input-xl w-full bg-base-0 ${
+                            errors.email ? "input-error" : ""
+                          }`}
+                        />
+
+                        {errors.email && (
+                          <p className="mt-1 text-sm text-error">
+                            {errors.email.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Address */}
+                    <h3 className="mb-4 mt-6 text-lg font-semibold">
+                      Địa chỉ nhận hàng
+                    </h3>
+
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                      {/* Province */}
+                      <div ref={dropdownProvinceRef} className="relative">
                         <button
                           type="button"
-                          className="input input-bordered flex w-full items-center justify-between text-left bg-base-0"
+                          className={`input input-bordered flex w-full items-center justify-between bg-base-0 text-left ${
+                            errors.province ? "input-error" : ""
+                          }`}
                           onClick={() =>
-                            setIsClickPrinceDropdown(!isClickPovinceDropdown)
+                            setIsClickProvinceDropdown((prev) => !prev)
                           }
                         >
                           <span
                             className={
-                              selectedNameProvince ? "" : "text-gray-400"
+                              selectedProvince
+                                ? "text-base-content"
+                                : "text-gray-400"
                             }
                           >
-                            {selectedNameProvince || "Chọn tỉnh/thành phố"}
+                            {selectedProvince || "Chọn tỉnh/thành phố"}
                           </span>
 
                           <ChevronDown
-                            className={`transition-transform ${isClickPovinceDropdown ? "rotate-180" : ""}`}
+                            className={`transition-transform ${
+                              isClickProvinceDropdown ? "rotate-180" : ""
+                            }`}
                           />
                         </button>
 
-                        {/* Dropdown */}
-                        {isClickPovinceDropdown && (
-                          <div className="bg-base-0 absolute z-50 mt-1 w-full rounded-box p-2 shadow-lg">
-                            {/* Input tìm kiếm */}
+                        {errors.province && (
+                          <p className="mt-1 text-sm text-error">
+                            {errors.province.message}
+                          </p>
+                        )}
+
+                        {isClickProvinceDropdown && (
+                          <div className="absolute z-50 mt-1 w-full rounded-box bg-base-0 p-2 shadow-xl">
                             <input
                               type="text"
                               placeholder="Tìm tỉnh/thành phố..."
-                              className="bg-base-0 input input-bordered mb-2 w-full"
+                              className="input input-bordered mb-2 w-full bg-base-0"
                               value={searchKeyProvince}
                               onChange={(e) =>
                                 setSearchKeyProvince(e.target.value)
@@ -323,27 +682,24 @@ const Cart = ({ provinces }: { provinces: any }) => {
                               autoFocus
                             />
 
-                            {/* Danh sách */}
-                            <ul className=" max-h-60 w-full overflow-y-auto p-0">
+                            <ul className="max-h-60 overflow-y-auto">
                               {filteredProvinces.length > 0 ? (
                                 filteredProvinces.map((province: any) => (
-                                  <li key={province.code} className="mt-3">
+                                  <li key={province.code}>
                                     <button
                                       type="button"
                                       onClick={() =>
                                         handleSelectProvince(province)
                                       }
+                                      className="w-full rounded-lg px-3 py-2 text-left hover:bg-base-200"
                                     >
                                       {province.name}
                                     </button>
                                   </li>
                                 ))
                               ) : (
-                                <li>
-                                  <span className="text-gray-400">
-                                    Không tìm thấy tỉnh/thành phố với từ khóa
-                                    trên
-                                  </span>
+                                <li className="p-3 text-sm text-gray-400">
+                                  Không tìm thấy tỉnh/thành phố
                                 </li>
                               )}
                             </ul>
@@ -351,32 +707,49 @@ const Cart = ({ provinces }: { provinces: any }) => {
                         )}
                       </div>
 
-                      {/* start Ward */}
-                      <div
-                        ref={dropdownWardRef}
-                        className="bg-base-0 relative w-full flex-1"
-                      >
-                        {/* Ô dropdown */}
+                      {/* Ward */}
+                      <div ref={dropdownWardRef} className="relative">
                         <button
                           type="button"
-                          className="input input-bordered flex w-full items-center justify-between text-left bg-base-0"
+                          disabled={!selectedProvinceCode || isLoadingWards}
+                          className={`input input-bordered flex w-full items-center justify-between bg-base-0 text-left disabled:opacity-60 ${
+                            errors.ward ? "input-error" : ""
+                          }`}
                           onClick={() =>
-                            setIsClickWardDropdown(!isClickWardDropdown)
+                            setIsClickWardDropdown((prev) => !prev)
                           }
-                          disabled={wards.length > 0 ? false : true}
                         >
-                          <span className={selectedWard ? "" : "text-gray-400"}>
-                            {selectedWard || "Chọn phường/xã"}
+                          <span
+                            className={
+                              selectedWard
+                                ? "text-base-content"
+                                : "text-gray-400"
+                            }
+                          >
+                            {isLoadingWards
+                              ? "Đang tải..."
+                              : selectedWard || "Chọn phường/xã"}
                           </span>
-                          <ChevronDown
-                            className={`transition-transform ${isClickWardDropdown ? "rotate-180" : ""}`}
-                          />
+
+                          {isLoadingWards ? (
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                          ) : (
+                            <ChevronDown
+                              className={`transition-transform ${
+                                isClickWardDropdown ? "rotate-180" : ""
+                              }`}
+                            />
+                          )}
                         </button>
 
-                        {/* Dropdown */}
+                        {errors.ward && (
+                          <p className="mt-1 text-sm text-error">
+                            {errors.ward.message}
+                          </p>
+                        )}
+
                         {isClickWardDropdown && (
-                          <div className="absolute z-50 mt-1 w-full rounded-box p-2 shadow-lg bg-base-0">
-                            {/* Input tìm kiếm */}
+                          <div className="absolute z-50 mt-1 w-full rounded-box bg-base-0 p-2 shadow-xl">
                             <input
                               type="text"
                               placeholder="Tìm phường/xã..."
@@ -386,24 +759,22 @@ const Cart = ({ provinces }: { provinces: any }) => {
                               autoFocus
                             />
 
-                            {/* Danh sách */}
-                            <ul className=" max-h-60 w-full overflow-y-auto p-0">
+                            <ul className="max-h-60 overflow-y-auto">
                               {filteredWards.length > 0 ? (
                                 filteredWards.map((ward: any) => (
-                                  <li key={ward.code} className="mt-3">
+                                  <li key={ward.code}>
                                     <button
                                       type="button"
                                       onClick={() => handleSelectWard(ward)}
+                                      className="w-full rounded-lg px-3 py-2 text-left hover:bg-base-200"
                                     >
                                       {ward.name}
                                     </button>
                                   </li>
                                 ))
                               ) : (
-                                <li>
-                                  <span className="text-gray-400">
-                                    Không tìm thấy phường/xã với từ khóa trên
-                                  </span>
+                                <li className="p-3 text-sm text-gray-400">
+                                  Không tìm thấy phường/xã
                                 </li>
                               )}
                             </ul>
@@ -411,101 +782,180 @@ const Cart = ({ provinces }: { provinces: any }) => {
                         )}
                       </div>
                     </div>
-                    <div className="flex flex-col mt-5 gap-3">
+
+                    {/* Detailed address */}
+                    <div className="mt-4">
                       <input
+                        {...register("detailedAddress")}
                         type="text"
+                        maxLength={255}
                         placeholder="Nhập địa chỉ cụ thể"
-                        className="input input-xl w-full bg-base-0"
+                        className={`input input-xl w-full bg-base-0 ${
+                          errors.detailedAddress ? "input-error" : ""
+                        }`}
                       />
-                      <input
-                        type="text"
+
+                      {errors.detailedAddress && (
+                        <p className="mt-1 text-sm text-error">
+                          {errors.detailedAddress.message}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Note */}
+                    <div className="mt-4">
+                      <textarea
+                        {...register("note")}
+                        maxLength={500}
                         placeholder="Ghi chú cho người bán (không bắt buộc)"
-                        className="input input-xl w-full bg-base-0"
+                        className={`textarea textarea-lg min-h-[110px] w-full resize-none bg-base-0 ${
+                          errors.note ? "textarea-error" : ""
+                        }`}
                       />
+
+                      {errors.note && (
+                        <p className="mt-1 text-sm text-error">
+                          {errors.note.message}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                {/* end user info */}
+                {/* =================================================
+                 * PAYMENT
+                 * ===============================================*/}
 
-                {/* start payment method */}
-                <div className="bg-transparent">
-                  <h2 className="text-lg font-semibold text-base-content">
+                <div>
+                  <h2 className="mb-3 text-lg font-semibold text-base-content">
                     Phương thức thanh toán
                   </h2>
-                  <div className="bg-base-0 p-6 rounded-2xl flex flex-col gap-5">
-                    <div className="flex flex-row gap-5 justify-start items-center">
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="cod"
-                        className="checkbox checkbox-xl"
-                      />
-                      <span>Thanh toán khi nhận hàng</span>
+
+                  <div className="rounded-2xl bg-base-0 p-6">
+                    <div className="flex flex-col gap-4">
+                      {/* COD */}
+                      <label
+                        className={`flex cursor-pointer items-center gap-4 rounded-xl border p-4 transition ${
+                          selectedPaymentMethod === "COD"
+                            ? "border-primary bg-primary/5"
+                            : "border-base-300"
+                        }`}
+                      >
+                        <input
+                          {...register("paymentMethod")}
+                          type="radio"
+                          value="COD"
+                          className="checkbox checkbox-lg checkbox-primary"
+                        />
+
+                        <span>Thanh toán khi nhận hàng</span>
+                      </label>
+
+                      {/* BANK */}
+                      <label
+                        className={`flex cursor-pointer items-center gap-4 rounded-xl border p-4 transition ${
+                          selectedPaymentMethod === "BANK"
+                            ? "border-primary bg-primary/5"
+                            : "border-base-300"
+                        }`}
+                      >
+                        <input
+                          {...register("paymentMethod")}
+                          type="radio"
+                          value="BANK"
+                          className="checkbox checkbox-lg checkbox-primary"
+                        />
+
+                        <span>Thanh toán bằng chuyển khoản (QR Code)</span>
+                      </label>
                     </div>
-                    <div className="flex flex-row gap-5 justify-start items-center">
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="bank"
-                        className="checkbox checkbox-xl"
-                      />
-                      <span>Thanh toán bằng chuyển khoản (Qr code)</span>
-                    </div>
+
+                    {errors.paymentMethod && (
+                      <p className="mt-2 text-sm text-error">
+                        {errors.paymentMethod.message}
+                      </p>
+                    )}
                   </div>
                 </div>
-
-                {/* end payment method */}
               </div>
 
-              {/* Order Summary */}
-              <div className="flex-2 bg-base-0 rounded-2xl p-6">
-                <h2 className="text-lg font-semibold mb-4 text-base-content">
+              {/* =================================================
+               * RIGHT - ORDER SUMMARY
+               * ===============================================*/}
+
+              <div className="h-fit w-full rounded-2xl bg-base-0 p-6 lg:sticky lg:top-5 lg:w-[360px] lg:shrink-0">
+                <h2 className="mb-4 text-lg font-semibold text-base-content">
                   Tóm tắt đơn hàng
                 </h2>
                 <div className="space-y-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-base-content/60">Tạm tính:</span>
+
                     <span className="font-medium">
                       {formatPrice(calculateSubtotal().toString())}
                     </span>
                   </div>
+
                   <div className="flex justify-between text-sm">
                     <span className="text-base-content/60">
                       Phí vận chuyển:
                     </span>
+
                     <span className="font-medium">
                       {calculateShipping() > 0
                         ? formatPrice(calculateShipping().toString())
                         : "Miễn phí"}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm">
+
+                  {/* <div className="flex justify-between text-sm">
                     <span className="text-base-content/60">Thuế VAT (8%):</span>
+
                     <span className="font-medium">
                       {formatPrice(calculateTax().toString())}
                     </span>
-                  </div>
-                  <div className="flex justify-between pt-3 border-t border-base-200">
-                    <span className="text-xl font-bold text-base-content">
-                      Tổng cộng:
-                    </span>
+                  </div> */}
+
+                  <div className="flex justify-between border-t border-base-200 pt-3">
+                    <span className="text-xl font-bold">Tổng cộng:</span>
+
                     <span className="text-2xl font-bold text-primary">
                       {formatPrice(calculateTotal().toString())}
                     </span>
                   </div>
                 </div>
+
+                {/* Submit */}
                 <button
-                  className="w-full btn btn-primary btn-lg mt-4"
-                  onClick={() => {
-                    // In real app, navigate to checkout
-                    alert("Chức năng thanh toán đang được phát triển");
-                  }}
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="btn btn-primary btn-lg mt-5 w-full"
                 >
-                  Thanh toán
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      Đang xử lý...
+                    </>
+                  ) : (
+                    "Đặt hàng"
+                  )}
                 </button>
               </div>
-            </div>
+            </form>
+            {payment && (
+              <PaymentModal
+                isOpenModal={true}
+                checkoutUrl={payment.checkoutUrl}
+                orderCode={payment.orderCode}
+                expiredAt={payment.expiredAt}
+                onClose={() => {
+                  setPayment(null);
+                }}
+                onSuccess={() => {
+                  console.log("PayOS báo thanh toán thành công");
+                }}
+              />
+            )}
           </>
         )}
       </div>

@@ -3,8 +3,6 @@ import "./globals.css";
 import Layout from "@/components/Layout";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ModalAddToCart from "@/components/ModalAddToCart";
-import { CartProvider } from "@/components/cart/CartProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,7 +23,6 @@ export default function RootLayout({
             <Layout children={children} />
           </main>
           <Footer />
-          <ModalAddToCart />
         </div>
       </body>
     </html>

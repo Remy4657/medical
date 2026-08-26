@@ -1,16 +1,27 @@
 "use client";
 import { EmblaOptionsType } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
+import Fade from "embla-carousel-fade";
+import Autoplay from "embla-carousel-autoplay";
 import {
   NextButton,
   PrevButton,
   usePrevNextButtons,
-} from "./EmblaCarouselArrowButtons";
+} from "./carousel/EmblaCarouselArrowButtons";
 import Image from "next/image";
+import { DotButton, useDotButton } from "./carousel/EmblaCarouselDotButton";
 
 export default function Slider() {
-  const options: EmblaOptionsType = { slidesToScroll: "auto" };
-  const [emblaRef, emblaApi] = useEmblaCarousel(options);
+  const options: EmblaOptionsType = {
+    slidesToScroll: "auto",
+    loop: true,
+  };
+  const [emblaRef, emblaApi] = useEmblaCarousel(options, [
+    Autoplay({ delay: 6000 }),
+  ]);
+
+  const { selectedIndex, scrollSnaps, onDotButtonClick } =
+    useDotButton(emblaApi);
 
   const {
     prevBtnDisabled,
@@ -58,6 +69,17 @@ export default function Slider() {
                 disabled={nextBtnDisabled}
               />
             </div>
+            <div className="absolute bottom-1 left-0 right-0 embla__dots">
+              {scrollSnaps.map((_, index) => (
+                <DotButton
+                  key={index}
+                  onClick={() => onDotButtonClick(index)}
+                  className={"embla__dot ".concat(
+                    index === selectedIndex ? " embla__dot--selected" : "",
+                  )}
+                />
+              ))}
+            </div>
           </div>
         </div>
         {/* end slide */}
@@ -95,7 +117,6 @@ export default function Slider() {
           </div>
 
           {/* sec 2 */}
-
           <div className="flex-1 relative h-auto overflow-hidden rounded-2xl bg-linear-to-br from-[#ffe5f2] via-[#ffd1e9] to-[#ffb8db]">
             {/* Text */}
             <div className="relative z-20 px-[11] pt-[13]">

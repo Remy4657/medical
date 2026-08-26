@@ -5,7 +5,7 @@ import {
   NextButton,
   PrevButton,
   usePrevNextButtons,
-} from "../EmblaCarouselArrowButtons";
+} from "../carousel/EmblaCarouselArrowButtons";
 import { EmblaOptionsType } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
 import { useRouter } from "next/navigation";

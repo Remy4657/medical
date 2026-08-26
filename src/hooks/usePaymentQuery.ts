@@ -1,11 +1,11 @@
 import { getCartByUserId } from "@/services/cartService";
+import { createPayment } from "@/services/paymentService";
 import { useQuery } from "@tanstack/react-query";
 
-export const useCartQuery = (isLoggedIn: boolean) =>
+export const useCartQuery = (payosOrderCode: number) =>
   useQuery({
-    queryKey: ["cart"],
-    queryFn: getCartByUserId,
-    enabled: isLoggedIn,
+    queryKey: ["payment", "create"],
+    queryFn: async () => createPayment(payosOrderCode),
     staleTime: 1000 * 5,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

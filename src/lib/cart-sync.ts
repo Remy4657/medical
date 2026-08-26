@@ -101,6 +101,9 @@ export function initializeCartSync(items: CartItem[]) {
  */
 export function scheduleCartSync(variantId: number) {
   const store = useCartStore.getState();
+  console.log("store: ", store);
+  console.log("store.isLoggedIn: ", store.isLoggedIn);
+  console.log("store.isCartReady: ", store.isCartReady);
   if (!store.isLoggedIn) {
     return;
   }

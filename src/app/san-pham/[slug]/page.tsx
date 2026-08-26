@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import Link from "next/link";
-import EmblaCarouselThumbs from "@/components/EmblaCarouselThumbs";
+import EmblaCarouselThumbs from "@/components/carousel/EmblaCarouselThumbs";
 import { fetchProduct, fetchDetailProduct } from "@/services/productService";
 import { calculateDiscountPercent, formatPrice } from "@/utils/formatPrice";
 import Breadcrumb from "@/components/BreadCrumb";

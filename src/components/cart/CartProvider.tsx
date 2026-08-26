@@ -47,8 +47,9 @@ export function CartProvider() {
      * Refresh:
      * ownerId vẫn được persist
      * => KHÔNG merge lại.
+     * đăng nhập rồi thì refresh không merge
      */
-    if (ownerId === userId) {
+    if (ownerId === userId && userId && ownerId) {
       setCartReady(true);
       setLoggedIn(true);
       setIsDomLoaded(true);
@@ -65,7 +66,7 @@ export function CartProvider() {
      *
      * User vừa login => merge.
      */
-    if (ownerId === null) {
+    if (ownerId === null && userId) {
       setCartReady(false);
       const merge = async () => {
         try {
@@ -99,7 +100,7 @@ export function CartProvider() {
      * Đây là lý do logout phải clear cart.
      */
     //signOut();
-    setCartReady(false);
+    //setCartReady(false);
   }, [session, isPending, setLoggedIn, setCartReady]);
 
   if (!isDomLoaded) {
@@ -107,7 +108,7 @@ export function CartProvider() {
   }
   return (
     <>
-      <CartSync isLoggedIn={!!session?.user} />;
+      <CartSync isLoggedIn={!!session?.user} />
     </>
   );
 }
