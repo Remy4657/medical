@@ -32,11 +32,11 @@ export class AuthGuard implements CanActivate {
       headers: fromNodeHeaders(request.headers),
     });
 
-    if (!session) {
-      throw new UnauthorizedException('Unauthorized');
-    }
+    // if (!session) {
+    //   throw new UnauthorizedException('Unauthorized');
+    // }
     // Gắn user vào request
-    request.user = session.user;
+    request.user = session?.user ?? null;
 
     return true;
   }

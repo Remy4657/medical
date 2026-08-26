@@ -282,7 +282,6 @@ export class CartService {
       .orderBy('cart_item.created_at', 'DESC')
 
       .getMany();
-    console.log('tems.product.images', items);
     return items.map((item) => {
       const variant = item.variant;
 

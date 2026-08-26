@@ -26,7 +26,7 @@ export class Order {
   orderCode: string;
 
   @ManyToOne(() => User, (user) => user.orders, {
-    nullable: false,
+    nullable: true,
     onDelete: 'RESTRICT',
   })
   @JoinColumn({ name: 'user_id' })
@@ -51,6 +51,54 @@ export class Order {
     length: 30,
   })
   paymentMethod: string;
+
+  /**
+   * ============================
+   * PAYOS
+   * ============================
+   */
+
+  @Column({
+    type: 'bigint',
+    nullable: true,
+    unique: true,
+  })
+  payosOrderCode: number | null;
+
+  /**
+   * PayOS paymentLinkId
+   */
+  @Column({
+    type: 'varchar',
+    length: 100,
+    nullable: true,
+  })
+  payosPaymentLinkId: string | null;
+
+  /**
+   * Mã reference giao dịch do ngân hàng / PayOS trả về
+   */
+  @Column({
+    type: 'varchar',
+    length: 100,
+    nullable: true,
+  })
+  payosReference: string | null;
+
+  /**
+   * Thời gian PayOS ghi nhận giao dịch thành công
+   */
+  @Column({
+    type: 'timestamp',
+    nullable: true,
+  })
+  paidAt: Date | null;
+
+  /**
+   * ============================
+   * PRICE
+   * ============================
+   */
 
   @Column({
     type: 'numeric',

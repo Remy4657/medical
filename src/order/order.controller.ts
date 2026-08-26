@@ -1,46 +1,34 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { CurrentUserId } from '../auth/current-user.decorator';
 import { AuthGuard } from '../common/guards/auth.guard';
+import { GetOrdersQueryDto } from './dto/get-orders.dto';
 
-@Controller('order')
+@Controller('api/v1/orders')
 @UseGuards(AuthGuard)
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.orderService.create(createOrderDto);
+  async createOrder(
+    @CurrentUserId() userId: string,
+    @Body() dto: CreateOrderDto,
+  ) {
+    return this.orderService.createOrder(userId, dto);
   }
 
+  /**
+   * GET /orders?page=1&limit=10
+   *
+   * Lấy danh sách order của user hiện tại
+   */
   @Get()
-  findAll() {
-    return this.orderService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.orderService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.orderService.update(+id, updateOrderDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.orderService.remove(+id);
+  async getMyOrders(
+    @CurrentUserId() userId: string,
+    @Query() query: GetOrdersQueryDto,
+  ) {
+    return this.orderService.getMyOrders(userId, query);
   }
 }

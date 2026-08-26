@@ -31,6 +31,7 @@ import { Cart } from './cart/entities/cart.entity';
 import { CartItem } from './cart/entities/cart-item.entity';
 import { Order } from './order/entities/order.entity';
 import { OrderItem } from './order/entities/order-item.entity';
+import { PayOSModule } from './payos/payos.module';
 
 @Module({
   imports: [
@@ -77,6 +78,7 @@ import { OrderItem } from './order/entities/order-item.entity';
     AuthModule,
     CartModule,
     OrderModule,
+    PayOSModule,
   ],
   controllers: [AppController],
   providers: [
