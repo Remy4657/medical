@@ -5,7 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { CartProvider } from "./cart/CartProvider";
 import { Toaster } from "sonner";
-import ModalAddToCart from "./ModalAddToCart";
+import ModalAddToCart from "./modal/ModalAddToCart";
+import ModalLogin from "./modal/ModalLogin";
 
 const queryClient = new QueryClient();
 
@@ -18,6 +19,7 @@ function Layout({ children }: { children: ReactNode }) {
       <CartProvider />
 
       {children}
+      <ModalLogin />
       <ModalAddToCart />
       <Toaster
         position="top-right"

@@ -5,6 +5,7 @@ const page = async () => {
   try {
     const { provinces } = await fetch(
       "https://production.cas.so/address-kit/2025-07-01/provinces",
+      { credentials: "include" },
     ).then((res) => res.json());
     return <Cart provinces={provinces} />;
   } catch (error) {

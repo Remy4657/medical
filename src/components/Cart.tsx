@@ -176,7 +176,6 @@ const Cart = ({ provinces }: CartProps) => {
 
       return;
     }
-
     const fetchWards = async () => {
       try {
         setIsLoadingWards(true);
@@ -378,9 +377,9 @@ const Cart = ({ provinces }: CartProps) => {
           router.push("dat-hang/success");
         } else {
           const res = await createPayment(data.payosOrderCode);
-          console.log("res: ", res);
-          setPayment(res);
-          //router.push(res.checkoutUrl);
+          //console.log("res: ", res);
+          //setPayment(res);
+          router.push(res.checkoutUrl);
         }
       }
     } catch (error: any) {
@@ -942,11 +941,22 @@ const Cart = ({ provinces }: CartProps) => {
                 </button>
               </div>
             </form>
-            {payment && (
+            {/* <button
+              onClick={() => {
+                setPayment({
+                  isOpenModal: true,
+                  checkoutUrl:
+                    "https://pay.payos.vn/web/4a77e563f9684f7f8d14c13fd8e48c0d/",
+                  expiredAt: Math.floor(Date.now() / 1000) + 10,
+                });
+              }}
+            >
+              click
+            </button> */}
+            {/* {payment && (
               <PaymentModal
                 isOpenModal={true}
                 checkoutUrl={payment.checkoutUrl}
-                orderCode={payment.orderCode}
                 expiredAt={payment.expiredAt}
                 onClose={() => {
                   setPayment(null);
@@ -955,7 +965,7 @@ const Cart = ({ provinces }: CartProps) => {
                   console.log("PayOS báo thanh toán thành công");
                 }}
               />
-            )}
+            )} */}
           </>
         )}
       </div>

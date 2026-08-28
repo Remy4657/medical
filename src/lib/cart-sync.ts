@@ -101,9 +101,7 @@ export function initializeCartSync(items: CartItem[]) {
  */
 export function scheduleCartSync(variantId: number) {
   const store = useCartStore.getState();
-  console.log("store: ", store);
-  console.log("store.isLoggedIn: ", store.isLoggedIn);
-  console.log("store.isCartReady: ", store.isCartReady);
+
   if (!store.isLoggedIn) {
     return;
   }
@@ -124,10 +122,11 @@ export function scheduleCartSync(variantId: number) {
    * user Add To Cart
    * Zustand quantity = 1
    */
+  // nếu variant lần đầu được thêm vào giỏ hàng (mảng items chưa có variant này)
+  const currentQuantity = getCurrentQuantity(variantId);
+  console.log("===========================================state: ", state);
   if (!state) {
     // Lấy quantity mới nhất từ Zustand.
-    const currentQuantity = getCurrentQuantity(variantId);
-
     state = {
       confirmedQuantity: 0,
       desiredQuantity: currentQuantity,
@@ -136,6 +135,7 @@ export function scheduleCartSync(variantId: number) {
 
     syncStates.set(variantId, state);
   }
+  console.log("syncStates: ", syncStates);
 
   /**
    * Nếu user click liên tục:
@@ -173,7 +173,9 @@ async function syncCartItem(variantId: number) {
   if (state.inFlight) {
     return;
   }
-  const quantityToSync = state.desiredQuantity;
+  //const quantityToSync = state.desiredQuantity;
+  const quantityToSync = getCurrentQuantity(variantId);
+
   state.inFlight = true;
 
   try {
@@ -181,71 +183,30 @@ async function syncCartItem(variantId: number) {
       quantity: quantityToSync,
     });
 
-    /**
-     * Server đã xác nhận quantity này.
-     */
-    state.confirmedQuantity = quantityToSync;
+    state.confirmedQuantity = quantityToSync; // nếu call api thành công, lưu lại để rollback
   } catch (error) {
     console.error("Sync cart failed:", error);
 
-    /**
-     * Lấy quantity UI hiện tại.
-     *
-     * Có thể trong lúc request chạy
-     * user đã click thêm.
-     */
     const currentQuantity = getCurrentQuantity(variantId);
 
-    /**
-     * Ví dụ:
-     *
-     * request đang gửi quantity = 5
-     *
-     * trường hợp A:
-     * currentQuantity = 5
-     *
-     * => user không thay đổi thêm
-     * => rollback được.
-     *
-     * trường hợp B:
-     * currentQuantity = 6
-     *
-     * => user đã click thêm
-     * => KHÔNG rollback.
-     */
     if (currentQuantity === quantityToSync) {
-      rollbackQuantity(variantId, state.confirmedQuantity);
-
-      state.desiredQuantity = state.confirmedQuantity;
+      rollbackQuantity(variantId, state.confirmedQuantity); // cập nhật lại số lượng quantity của variant trong redux đê hiển thị UI
+      state.desiredQuantity = state.confirmedQuantity; // cập nhật lại state.desiredQuantity = state.confirmedQuantity nếu không thành công
     }
   } finally {
     state.inFlight = false;
 
-    /**
-     * Kiểm tra xem trong lúc API đang chạy
-     * user có thao tác tiếp hay không.
-     *
-     * Ví dụ:
-     *
-     * confirmed = 3
-     *
-     * request gửi 5
-     *
-     * user click thêm:
-     * 5 -> 6
-     *
-     * API 5 thành công.
-     *
-     * Nhưng server vẫn đang là 5,
-     * UI đang muốn 6.
-     *
-     * => phải gửi tiếp quantity = 6.
-     */
-    const latestQuantity = getCurrentQuantity(variantId);
+    const latestQuantity = getCurrentQuantity(variantId); // phải gọi lại getCurrentQuantity vì có thể rơi vào trường hợp cacch, rollback sẽ làm thay đổi quantity nên gọi lại để lấy giá trị mới nhất
+    console.log("latestQuantity: ", latestQuantity);
+    console.log("state.confirmedQuantity: ", state.confirmedQuantity);
 
+    /*
+     * TH success: thì state.confirmedQuantity được gán = currentQuantity rồi nên dk if sai
+     * TH catch:   thì rollback cập nhật lại currentQuantity trong redux => dk if cũng sai nên không duplicate syncart
+     *
+     * */
     if (latestQuantity !== state.confirmedQuantity) {
       state.desiredQuantity = latestQuantity;
-
       scheduleCartSync(variantId);
     }
   }

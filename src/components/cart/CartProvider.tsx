@@ -10,6 +10,7 @@ import { useCart } from "@/hooks/useCart";
 export function CartProvider() {
   const { data: session, isPending } = useSession();
   const { signOut } = useCart();
+  const isLoggedIn = useCartStore((state) => state.isLoggedIn);
   const setLoggedIn = useCartStore((state) => state.setLoggedIn);
   const setCartReady = useCartStore((state) => state.setCartReady);
   const ownerId = useCartStore((state) => state.ownerId);
@@ -53,7 +54,6 @@ export function CartProvider() {
       setCartReady(true);
       setLoggedIn(true);
       setIsDomLoaded(true);
-
       return;
     }
 
@@ -74,14 +74,16 @@ export function CartProvider() {
           setOwnerId(userId);
           setLoggedIn(true);
           setCartReady(true);
+          setIsDomLoaded(true);
         } catch (error) {
+          setIsDomLoaded(false);
+
           console.error("Failed to merge cart:", error);
           // không cho PATCH API.
           setCartReady(false);
         }
       };
       merge();
-      setIsDomLoaded(true);
 
       return;
     }
@@ -100,7 +102,7 @@ export function CartProvider() {
      * Đây là lý do logout phải clear cart.
      */
     //signOut();
-    //setCartReady(false);
+    setCartReady(false);
   }, [session, isPending, setLoggedIn, setCartReady]);
 
   if (!isDomLoaded) {

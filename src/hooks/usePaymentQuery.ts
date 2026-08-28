@@ -2,7 +2,7 @@ import { getCartByUserId } from "@/services/cartService";
 import { createPayment } from "@/services/paymentService";
 import { useQuery } from "@tanstack/react-query";
 
-export const useCartQuery = (payosOrderCode: number) =>
+export const usePaymentQuery = (payosOrderCode: number) =>
   useQuery({
     queryKey: ["payment", "create"],
     queryFn: async () => createPayment(payosOrderCode),

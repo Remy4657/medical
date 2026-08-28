@@ -6,7 +6,6 @@ import { usePayOS, PayOSConfig } from "payos-checkout";
 interface PaymentModalProps {
   isOpenModal: boolean;
   checkoutUrl: string;
-  orderCode: number;
   expiredAt: number;
   onClose: () => void;
   onSuccess: () => void;
@@ -15,7 +14,6 @@ interface PaymentModalProps {
 export default function PaymentModal({
   isOpenModal,
   checkoutUrl,
-  orderCode,
   expiredAt,
   onClose,
   onSuccess,
@@ -28,8 +26,6 @@ export default function PaymentModal({
    * Countdown
    */
   useEffect(() => {
-    if (!isOpenModal) return;
-
     const timer = setInterval(() => {
       const now = Math.floor(Date.now() / 1000);
 
@@ -45,25 +41,23 @@ export default function PaymentModal({
     return () => {
       clearInterval(timer);
     };
-  }, [isOpenModal, expiredAt]);
+  }, [isOpenModal]);
 
   const minutes = Math.floor(remaining / 60);
-
   const seconds = remaining % 60;
 
   const config: PayOSConfig = useMemo(
     () => ({
       RETURN_URL: `${window.location.origin}` + `/dat-hang/success`,
       ELEMENT_ID: "payos-checkout",
-      CHECKOUT_URL: checkoutUrl,
+      CHECKOUT_URL:
+        "https://pay.payos.vn/web/bba077eba6bc4cd28287b18e95f216e3/",
 
       // Quan trọng
-      embedded: true,
+      //embedded: true,
 
       onSuccess: (event) => {
         console.log("PayOS success:", event);
-
-        onSuccess();
       },
 
       onCancel: (event) => {
@@ -74,10 +68,10 @@ export default function PaymentModal({
         console.log("PayOS exit");
       },
     }),
-    [checkoutUrl, orderCode, onSuccess],
+    [checkoutUrl],
   );
 
-  const { open: opePayOs, exit: exitPayOs } = usePayOS(config);
+  const { open: openPayOs, exit: exitPayOs } = usePayOS(config);
 
   /**
    * Mỗi khi modal mở,
@@ -88,21 +82,13 @@ export default function PaymentModal({
     if (!checkoutUrl) return;
 
     const timer = setTimeout(() => {
-      opePayOs();
-    }, 50);
+      openPayOs();
+    }, 200);
 
     return () => {
       clearTimeout(timer);
-      exitPayOs();
     };
-  }, [isOpenModal, opePayOs, exitPayOs, checkoutUrl]);
-
-  /**
-   * Không mở modal
-   */
-  if (!isOpenModal) {
-    return null;
-  }
+  }, [isOpenModal]);
 
   /**
    * Hết hạn
@@ -116,8 +102,6 @@ export default function PaymentModal({
         <div className="flex items-center justify-between border-b px-5 py-4">
           <div>
             <h2 className="text-lg font-semibold">Thanh toán đơn hàng</h2>
-
-            <p className="text-sm text-base-content/60">Mã đơn: {orderCode}</p>
           </div>
 
           <button
@@ -148,18 +132,28 @@ export default function PaymentModal({
         </div>
 
         {/* PayOS */}
-        {!expired && <div id="payos-checkout" className="min-h-[600px]" />}
+        <div>
+          {!expired && (
+            <div id="payos-checkout" className="min-h-[600] min-w-[800]" />
+          )}
 
-        {/* Expired */}
-        {expired && (
-          <div className="flex flex-col items-center gap-4 p-10">
-            <p>Phiên thanh toán đã hết hạn.</p>
+          {/* Expired */}
+          {expired && (
+            <div className="flex flex-col items-center gap-4 p-10">
+              <p>Phiên thanh toán đã hết hạn.</p>
 
-            <button type="button" className="btn btn-primary" onClick={onClose}>
-              Đóng
-            </button>
-          </div>
-        )}
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => {
+                  onClose();
+                }}
+              >
+                Đóng
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

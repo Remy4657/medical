@@ -56,7 +56,7 @@ const FeaturedCategory = () => {
   return (
     <div>
       <h1 className="my-5 text-xl font-medium">Danh mục nổi bật</h1>
-      <div className="grid gap-3 grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      <div className="grid gap-4 lg:gap-5 grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {listCategories.map((item: any, index) => {
           return (
             <Link
