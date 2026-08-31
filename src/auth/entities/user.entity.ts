@@ -25,8 +25,24 @@ export class User {
   @Column({
     type: 'varchar',
     unique: true,
+    nullable: true,
   })
   email: string;
+
+  @Column({
+    type: 'varchar',
+    unique: true,
+    nullable: true,
+    name: 'phoneNumber',
+  })
+  phoneNumber: string | null;
+
+  @Column({
+    type: 'boolean',
+    default: false,
+    name: 'phoneNumberVerified',
+  })
+  phoneNumberVerified: boolean;
 
   @Column({
     type: 'varchar',

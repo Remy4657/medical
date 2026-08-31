@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 import { User } from './user.entity';
@@ -21,12 +22,6 @@ export class Session {
     unique: true,
   })
   token: string;
-
-  @Column({
-    type: 'varchar',
-    name: 'userId',
-  })
-  userId: string;
 
   @Column({
     type: 'timestamp',
@@ -51,14 +46,14 @@ export class Session {
   @CreateDateColumn({ type: 'timestamp', name: 'createdAt' })
   createdAt: Date;
 
-  @CreateDateColumn({ type: 'timestamp', name: 'updatedAt' })
+  @UpdateDateColumn({ type: 'timestamp', name: 'updatedAt' })
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.sessions, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({
-    name: 'user_id',
+    name: 'userId',
     referencedColumnName: 'id',
   })
   user: User;

@@ -18,9 +18,11 @@ export class PayOSController {
    *
    * POST /api/v1/payments/create/:orderId
    */
-  @Post('create/:orderId')
-  async createPayment(@Param('orderId', ParseIntPipe) orderId: number) {
-    return this.payOSService.createPayment(orderId);
+  @Post('create/:payosOrderCode')
+  async createPayment(
+    @Param('payosOrderCode', ParseIntPipe) payosOrderCode: number,
+  ) {
+    return this.payOSService.createPayment(payosOrderCode);
   }
 
   /**

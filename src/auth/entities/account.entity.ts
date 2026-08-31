@@ -22,12 +22,6 @@ export class Account {
   accountId: string;
 
   @Column({
-    type: 'varchar',
-    name: 'userId',
-  })
-  userId: string;
-
-  @Column({
     name: 'providerId',
   })
   providerId: string;
@@ -89,7 +83,7 @@ export class Account {
     onDelete: 'CASCADE',
   })
   @JoinColumn({
-    name: 'user_id',
+    name: 'userId',
     referencedColumnName: 'id',
   })
   user: User;

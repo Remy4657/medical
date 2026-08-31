@@ -79,7 +79,7 @@ export class PayOSService {
 
         returnUrl: `${frontendUrl}/dat-hang/success`,
         cancelUrl: `${frontendUrl}/dat-hang/cancel`,
-        expiredAt,
+        //expiredAt,
       });
 
       /**
