@@ -87,7 +87,7 @@ export default function Slider() {
           {/* sec 1 */}
           <div className="flex-1 relative h-auto overflow-hidden rounded-2xl">
             {/* Text */}
-            <div className="relative z-20 px-[11] pt-[13]">
+            <div className="relative z-2 px-[11] pt-[13]">
               <h2 className="max-w-[245] text-[25px] font-medium leading-[1.25] text-[#f90083]">
                 Dược sĩ tư vấn
                 <br />
@@ -96,7 +96,7 @@ export default function Slider() {
             </div>
 
             {/* Doctor */}
-            <div className="absolute bottom-0 w-full h-full z-10">
+            <div className="absolute bottom-0 w-full h-full z-1">
               <Image
                 src="/img/slider/silde-extra1.webp"
                 fill
@@ -106,7 +106,7 @@ export default function Slider() {
             </div>
 
             {/* Button */}
-            <div className="absolute bottom-[10] left-[10] right-[10] z-20">
+            <div className="absolute bottom-[10] left-[10] right-[10] z-1">
               <button
                 type="button"
                 className="flex h-[40] w-full items-center justify-center rounded-full bg-[#f90083] text-[16px] font-semibold text-white shadow-sm transition hover:bg-[#df0074]"

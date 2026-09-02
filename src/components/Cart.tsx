@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { createPayment } from "@/services/paymentService";
 import PaymentModal from "./PaymentModal";
+import { getWards } from "@/services/thirdPartyService";
 
 /* =========================================================
  * ZOD SCHEMA
@@ -67,7 +68,6 @@ const orderFormSchema = z.object({
     .max(255, "Địa chỉ cụ thể không được vượt quá 255 ký tự"),
 
   note: z.string().trim().max(500, "Ghi chú không được vượt quá 500 ký tự"),
-
   paymentMethod: z.enum(["COD", "BANK"], {
     message: "Vui lòng chọn phương thức thanh toán",
   }),
@@ -84,10 +84,7 @@ const orderItemsSchema = z
   .min(1, "Giỏ hàng không được trống");
 
 type OrderFormValues = z.infer<typeof orderFormSchema>;
-type OrderItemPayload = {
-  variantId: number;
-  quantity: number;
-};
+
 type CartProps = {
   provinces: any[];
 };
@@ -141,8 +138,6 @@ const Cart = ({ provinces }: CartProps) => {
 
       detailedAddress: "",
       note: "",
-
-      paymentMethod: "COD",
     },
   });
 
@@ -152,21 +147,8 @@ const Cart = ({ provinces }: CartProps) => {
   const selectedPaymentMethod = watch("paymentMethod");
 
   /* =========================================================
-   * ITEMS
-   * =======================================================*/
-
-  const orderItems: OrderItemPayload[] = useMemo(() => {
-    return items.map((item) => ({
-      variantId: Number(item.variantId),
-      quantity: Number(item.quantity),
-      price: Number(item.price.salePrice),
-    }));
-  }, [items]);
-
-  /* =========================================================
    * FETCH WARDS
    * =======================================================*/
-
   useEffect(() => {
     if (!selectedProvinceCode) {
       setWards([]);
@@ -180,16 +162,25 @@ const Cart = ({ provinces }: CartProps) => {
       try {
         setIsLoadingWards(true);
 
+        // const response = await fetch(
+        //   `https://production.cas.so/address-kit/2025-07-01/provinces/${selectedProvinceCode}/communes`,
+        //   { credentials: "include" },
+        // );
+
+        // if (!response.ok) {
+        //   throw new Error("Không thể lấy danh sách phường/xã");
+        // }
+
         const response = await fetch(
-          `https://production.cas.so/address-kit/2025-07-01/provinces/${selectedProvinceCode}/communes`,
+          `/api/communes?provinceCode=${selectedProvinceCode}`,
         );
 
         if (!response.ok) {
           throw new Error("Không thể lấy danh sách phường/xã");
         }
-
         const data = await response.json();
-
+        //const response = await fetch("/api/provinces", selectedProvinceCode);
+        // const data = await getWards(selectedProvinceCode);
         setWards(data.communes ?? []);
 
         // Province thay đổi thì phải reset ward
@@ -206,9 +197,8 @@ const Cart = ({ provinces }: CartProps) => {
         setIsLoadingWards(false);
       }
     };
-
     fetchWards();
-  }, [selectedProvinceCode, setValue]);
+  }, [selectedProvinceCode]);
 
   /* =========================================================
    * CLICK OUTSIDE DROPDOWN
@@ -310,7 +300,6 @@ const Cart = ({ provinces }: CartProps) => {
 
   const calculateShipping = () => {
     const subtotal = calculateSubtotal();
-
     return subtotal >= 500000 ? 0 : 30000;
   };
 
@@ -331,7 +320,7 @@ const Cart = ({ provinces }: CartProps) => {
      * Validate items bằng Zod
      * -------------------------------------------*/
 
-    const itemsResult = orderItemsSchema.safeParse(orderItems);
+    const itemsResult = orderItemsSchema.safeParse(items);
 
     if (!itemsResult.success) {
       toast.error("Giỏ hàng không hợp lệ");
@@ -485,14 +474,6 @@ const Cart = ({ provinces }: CartProps) => {
                             <h3 className="line-clamp-2 max-w-xs text-base font-medium text-base-content">
                               {item.productName}
                             </h3>
-
-                            <button
-                              type="button"
-                              onClick={() => remove(item.variantId)}
-                              className="rounded p-1 text-base-content/60 transition-colors hover:bg-base-100 hover:text-error"
-                            >
-                              <Trash2Icon className="h-4 w-4" />
-                            </button>
                           </div>
 
                           {item.packageDescription && (
@@ -548,6 +529,16 @@ const Cart = ({ provinces }: CartProps) => {
                               )}
                             </span>
                           </div>
+                        </div>
+
+                        <div className="flex m-auto ">
+                          <button
+                            type="button"
+                            onClick={() => remove(item.variantId)}
+                            className="bg-gray rounded p-1 text-base-content/60 transition-colors hover:bg-base-100 hover:text-error"
+                          >
+                            <Trash2Icon className="h-4 w-4" />
+                          </button>
                         </div>
                       </div>
                     ))}
@@ -638,7 +629,7 @@ const Cart = ({ provinces }: CartProps) => {
                       <div ref={dropdownProvinceRef} className="relative">
                         <button
                           type="button"
-                          className={`input input-bordered flex w-full items-center justify-between bg-base-0 text-left ${
+                          className={`input input-xl input-bordered flex w-full items-center justify-between bg-base-0 text-left ${
                             errors.province ? "input-error" : ""
                           }`}
                           onClick={() =>
@@ -711,7 +702,7 @@ const Cart = ({ provinces }: CartProps) => {
                         <button
                           type="button"
                           disabled={!selectedProvinceCode || isLoadingWards}
-                          className={`input input-bordered flex w-full items-center justify-between bg-base-0 text-left disabled:opacity-60 ${
+                          className={`input input-xl input-bordered flex w-full items-center justify-between bg-base-0 text-left disabled:opacity-60 ${
                             errors.ward ? "input-error" : ""
                           }`}
                           onClick={() =>
@@ -789,7 +780,7 @@ const Cart = ({ provinces }: CartProps) => {
                         type="text"
                         maxLength={255}
                         placeholder="Nhập địa chỉ cụ thể"
-                        className={`input input-xl w-full bg-base-0 ${
+                        className={`input input-xl font- w-full bg-base-0 ${
                           errors.detailedAddress ? "input-error" : ""
                         }`}
                       />
@@ -807,7 +798,7 @@ const Cart = ({ provinces }: CartProps) => {
                         {...register("note")}
                         maxLength={500}
                         placeholder="Ghi chú cho người bán (không bắt buộc)"
-                        className={`textarea textarea-lg min-h-[110px] w-full resize-none bg-base-0 ${
+                        className={`textarea textarea-lg min-h-[110] w-full resize-none bg-base-0 ${
                           errors.note ? "textarea-error" : ""
                         }`}
                       />
@@ -886,8 +877,20 @@ const Cart = ({ provinces }: CartProps) => {
                 <h2 className="mb-4 text-lg font-semibold text-base-content">
                   Tóm tắt đơn hàng
                 </h2>
-                <div className="space-y-4">
-                  <div className="flex justify-between text-sm">
+                <div className="space-y-5">
+                  <div>
+                    <label>Mã giảm giá:</label>
+                    <div className="flex flex-row gap-2 ">
+                      <input
+                        type="text"
+                        maxLength={255}
+                        placeholder="Mã giảm giá"
+                        className={`input input-md w-full bg-base-0`}
+                      />
+                      <button className="btn btn-primary">Áp dụng</button>
+                    </div>
+                  </div>
+                  <div className="flex justify-between text-sm border-t border-base-200 pt-5">
                     <span className="text-base-content/60">Tạm tính:</span>
 
                     <span className="font-medium">

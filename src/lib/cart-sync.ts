@@ -124,7 +124,6 @@ export function scheduleCartSync(variantId: number) {
    */
   // nếu variant lần đầu được thêm vào giỏ hàng (mảng items chưa có variant này)
   const currentQuantity = getCurrentQuantity(variantId);
-  console.log("===========================================state: ", state);
   if (!state) {
     // Lấy quantity mới nhất từ Zustand.
     state = {
@@ -135,7 +134,6 @@ export function scheduleCartSync(variantId: number) {
 
     syncStates.set(variantId, state);
   }
-  console.log("syncStates: ", syncStates);
 
   /**
    * Nếu user click liên tục:
@@ -197,8 +195,6 @@ async function syncCartItem(variantId: number) {
     state.inFlight = false;
 
     const latestQuantity = getCurrentQuantity(variantId); // phải gọi lại getCurrentQuantity vì có thể rơi vào trường hợp cacch, rollback sẽ làm thay đổi quantity nên gọi lại để lấy giá trị mới nhất
-    console.log("latestQuantity: ", latestQuantity);
-    console.log("state.confirmedQuantity: ", state.confirmedQuantity);
 
     /*
      * TH success: thì state.confirmedQuantity được gán = currentQuantity rồi nên dk if sai

@@ -63,11 +63,12 @@
   height: 3rem;
 
   z-index: 1;
-  border-radius: 50%;
+  border-radius: 100%;
   color: var(--color-black);
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #fff;
   transform: rotate(0deg);
 }
 

@@ -9,7 +9,7 @@ const Navbar = async () => {
   const resListCategories = await fetchAllCategories();
 
   return (
-    <div className="navbar z-10">
+    <div className="navbar p-0 z-10">
       <div className="flex flex-col w-full">
         <div className="flex bg-blue-700 ">
           <div className="flex flex-row justify-between mx-auto w-full min-h-22 max-w-7xl">
@@ -114,31 +114,43 @@ const Navbar = async () => {
           </div>
         </div>
         <div className="flex bg-base-0">
-          <div className="min-h-16 navbar-center hidden sm:flex gap-5 mx-auto">
+          <div className="min-h-14 navbar-center hidden sm:flex gap-7 mx-auto">
             {resListCategories?.map((p: any) => (
-              <div key={p.id} className="dropdown dropdown-hover">
+              <div
+                key={p.id}
+                className="relative group h-full hover:border-primary hover:border-b-2"
+              >
                 <Link
                   href={`/danh-muc/${p.slug}`}
-                  className="flex flex-row items-center"
+                  className="flex flex-row items-center h-full gap-1"
                 >
                   {" "}
-                  <div tabIndex={0} role="" className="m-1 flex gap-1">
+                  <div tabIndex={0} role="" className="">
                     {p.name}{" "}
                   </div>
-                  <ChevronDown />
+                  <ChevronDown
+                    size={18}
+                    className="transition-transform duration-400 group-hover:rotate-180"
+                  />
                 </Link>
-                <ul
-                  tabIndex={-1}
-                  className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
+                <div
+                  className="absolute left-0 top-13
+                            invisible opacity-0
+                            group-hover:visible group-hover:opacity-100
+                            transition-opacity duration-600
+                            menu bg-transparent rounded-sm
+                            z-100 w-52 p-2 shadow-sm"
                 >
-                  {p.children.map((c: any) => (
-                    <li key={c.id}>
-                      <Link href={`/danh-muc/${p.slug}/${c.slug}`}>
-                        {c.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                  <ul className="bg-base-0 p-2">
+                    {p.children.map((c: any) => (
+                      <li key={c.id}>
+                        <Link href={`/danh-muc/${p.slug}/${c.slug}`}>
+                          {c.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             ))}
           </div>

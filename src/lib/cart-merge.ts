@@ -27,7 +27,6 @@ export async function mergeCartOnLogin() {
   });
 
   const { items } = response.data.data;
-  console.log("items: ", items);
   /**
    * Server trả cart cuối cùng.
    *

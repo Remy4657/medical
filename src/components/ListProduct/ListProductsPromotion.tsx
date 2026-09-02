@@ -3,6 +3,7 @@ import { Flame } from "lucide-react";
 import { CatalogProductCard } from "../CatalogProductCard";
 import { useProducts } from "@/hooks/useProductsQuery";
 import Image from "next/image";
+import Countdown from "../Countdown";
 
 export default function ListProductsPromotion({
   listProducts,
@@ -33,31 +34,50 @@ export default function ListProductsPromotion({
           height={120}
         />
       </div>
-      <div className="grid grid-cols-1 gap-6 rounded-2xl">
-        {/* Start List Products */}
-        <div className="">
-          <ul className=" p-3 grid grid-cols-1 gap-2 sm:gap-4  xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-            {products.map((p) => (
-              <li key={p.id}>
-                <CatalogProductCard product={p} />
-              </li>
-            ))}
-          </ul>
-          <div className="flex m-5">
-            {hasNextPage && (
-              <button
-                className="btn m-auto"
-                onClick={() => fetchNextPage()}
-                disabled={isFetchingNextPage}
-              >
-                {isFetchingNextPage
-                  ? "Đang tải..."
-                  : `Xem thêm ${restCountProduct} sản phẩm`}
-              </button>
-            )}
+      <div className="tabs tabs-border">
+        <input
+          type="radio"
+          name="my_tabs_2"
+          className="tab tab-active text-red-500 text-lg font-bold"
+          aria-label="Đang diễn ra"
+        />
+        <div className="tab-content mt-5">
+          <Countdown />
+          <div className="grid grid-cols-1 gap-6 rounded-2xl">
+            {/* Start List Products */}
+            <div className="">
+              <ul className=" p-3 grid grid-cols-1 gap-2 sm:gap-4  xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                {products.map((p) => (
+                  <li key={p.id}>
+                    <CatalogProductCard product={p} />
+                  </li>
+                ))}
+              </ul>
+              <div className="flex m-5">
+                {hasNextPage && (
+                  <button
+                    className="btn m-auto"
+                    onClick={() => fetchNextPage()}
+                    disabled={isFetchingNextPage}
+                  >
+                    {isFetchingNextPage
+                      ? "Đang tải..."
+                      : `Xem thêm ${restCountProduct} sản phẩm`}
+                  </button>
+                )}
+              </div>
+            </div>
+            {/* End List Products */}
           </div>
         </div>
-        {/* End List Products */}
+        <input
+          type="radio"
+          name="my_tabs_2"
+          className="tab text-lg font-bold"
+          aria-label="Sắp diễn ra"
+          disabled={true}
+        />
+        <div className="tab-content mt-5"></div>
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import Countdown from "@/components/Countdown";
 import Features from "@/components/Featured";
 import FeaturedCategory from "@/components/FeaturedCategory";
 import ListProductsCarousel from "@/components/listProduct/ListProductsCarousel";
@@ -44,10 +45,29 @@ export default async function Page() {
             height={120}
           />
         </div>
-        <ListProductsCarousel
-          listProducts={productsPromotion}
-          isPromotion={true}
-        />
+        <div className="tabs tabs-border">
+          <input
+            type="radio"
+            name="my_tabs_2"
+            className="tab tab-active text-red-500 text-lg font-bold"
+            aria-label="Đang diễn ra"
+          />
+          <div className="tab-content mt-5">
+            <Countdown />
+            <ListProductsCarousel
+              listProducts={productsPromotion}
+              isPromotion={true}
+            />
+          </div>
+          <input
+            type="radio"
+            name="my_tabs_2"
+            className="tab text-lg font-bold"
+            aria-label="Sắp diễn ra"
+            disabled={true}
+          />
+          <div className="tab-content mt-5"></div>
+        </div>
       </div>
 
       <FeaturedCategory />

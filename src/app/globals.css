@@ -17,11 +17,11 @@
 :root {
   --container-7xl: 85rem;
   --color-white: rgba(255, 255, 255, 1);
-  --color-gray: #ccc;
+  --color-gray: #cd1212;
   --color-black: #000;
-
-  /* --color-primary: #3b82f6;
-  --color-white: #fff; */
+  --color-border: rgb(119, 163, 239)
+    /* --color-primary: #3b82f6;
+  --color-white: #fff; */;
 }
 
 @theme {
@@ -40,19 +40,31 @@
   /* .btn-primary {
     background-color: rgb(145, 255, 0);
   } */
-  .navbar {
-    align-items: center;
-    width: 100%;
-    min-height: 5rem;
-    padding: 0;
-    display: flex;
-  }
 
-  .btn {
+  button {
     cursor: pointer;
+  }
+  .input-xl {
+    font-size: 18px;
+  }
+  dropdown {
+    outline: none;
   }
   .basis-1 {
     flex-basis: 100%;
+  }
+  label.otp > span {
+    outline: none !important;
+  }
+  label.otp > span:focus,
+  label.otp > input {
+    outline: none !important;
+  }
+  input:focus,
+  textarea:focus,
+  feDropShadow:focus {
+    outline: none;
+    border-color: var(--color-border);
   }
   .scrollbar-hide {
     -ms-overflow-style: none;
