@@ -23,7 +23,6 @@ export class PayOSService {
    * Tạo payment QR cho Order
    */
   async createPayment(payosOrderCode: number) {
-    console.log('payosOrderCode: ', payosOrderCode);
     const order = await this.orderRepository.findOne({
       where: {
         payosOrderCode: payosOrderCode,
@@ -66,7 +65,7 @@ export class PayOSService {
     try {
       const expiredAt = Math.floor(Date.now() / 1000) + 15 * 60;
       const paymentLink = await this.payOS.paymentRequests.create({
-        orderCode: payosOrderCode,
+        orderCode: payosOrderCode, // chỉ dùng số nguyên, không dùng string
         amount,
         description: `DH${order.id}`,
 
@@ -77,9 +76,9 @@ export class PayOSService {
         //     price: Number(item.salePrice),
         //   })) ?? [],
 
-        returnUrl: `${frontendUrl}/dat-hang/success`,
-        cancelUrl: `${frontendUrl}/dat-hang/cancel`,
-        //expiredAt,
+        returnUrl: `${frontendUrl}/dat-hang/success?orderCode=${order.orderCode}`,
+        cancelUrl: `${frontendUrl}/dat-hang/cancel?orderCode=${order.orderCode}`,
+        expiredAt,
       });
 
       /**
@@ -137,7 +136,6 @@ export class PayOSService {
      * Verify chữ ký do PayOS gửi
      */
     const webhookData = await this.payOS.webhooks.verify(body);
-    console.log('webhookData', webhookData);
 
     const order = await this.orderRepository.findOne({
       where: {

@@ -41,7 +41,11 @@ export class OrderItem {
     nullable: true,
   })
   packageDescription: string | null;
-
+  @Column({
+    length: 500,
+    nullable: true,
+  })
+  image: string | null;
   @Column({
     length: 100,
   })

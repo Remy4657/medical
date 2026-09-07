@@ -1,26 +1,48 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { User } from './entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
+  async updateProfile(userId: string, updateUserDto: UpdateUserDto) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+    if (!user) {
+      throw new NotFoundException('Không tìm thấy người dùng');
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    /**
+     * Chỉ update những field được phép
+     */
+    if (updateUserDto.name !== undefined) {
+      user.name = updateUserDto.name.trim();
+    }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
+    if (updateUserDto.gender !== undefined) {
+      user.gender = updateUserDto.gender;
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    if (updateUserDto.birthday !== undefined) {
+      user.birthday = updateUserDto.birthday;
+    }
+
+    const updatedUser = await this.userRepository.save(user);
+
+    return {
+      name: updatedUser.name,
+      gender: updatedUser.gender,
+      birthday: updatedUser.birthday,
+    };
   }
 }

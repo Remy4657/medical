@@ -150,9 +150,11 @@ export class Order {
   })
   items: OrderItem[];
 
-  @CreateDateColumn()
+  @CreateDateColumn({
+    type: 'timestamptz', // dùng để lưu trữ ngày giờ với múi giờ, giúp tránh các vấn đề liên quan đến múi giờ khi làm việc với dữ liệu thời gian
+  })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }

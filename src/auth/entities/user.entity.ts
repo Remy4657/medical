@@ -49,6 +49,17 @@ export class User {
     nullable: true,
   })
   name: string | null;
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  gender: string | null;
+
+  @Column({
+    type: 'date',
+    nullable: true,
+  })
+  birthday: string | null;
 
   @Column({
     type: 'varchar',

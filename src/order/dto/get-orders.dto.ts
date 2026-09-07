@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { OrderStatus } from '../enums/order-status.enum';
 
 export class GetOrdersQueryDto {
   @IsOptional()
@@ -13,5 +14,9 @@ export class GetOrdersQueryDto {
   @IsInt()
   @Min(1)
   @Max(100)
-  limit: number = 10;
+  limit: number = 2;
+
+  @IsOptional()
+  @IsEnum(OrderStatus)
+  status?: OrderStatus;
 }

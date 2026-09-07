@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { DataSource, In } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 
 import { Order } from './entities/order.entity';
 import { OrderItem } from './entities/order-item.entity';
@@ -15,10 +15,16 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderStatus } from './enums/order-status.enum';
 import { PaymentStatus } from './enums/payment-status.enum';
 import { GetOrdersQueryDto } from './dto/get-orders.dto';
+import { ProductImage } from '../product/entities/product-image.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    private readonly dataSource: DataSource,
+    @InjectRepository(Order)
+    private readonly orderRepository: Repository<Order>,
+  ) {}
 
   async createOrder(userId: string, dto: CreateOrderDto) {
     console.log('Creating order for user:', userId, 'with data:', dto);
@@ -76,7 +82,28 @@ export class OrderService {
       const variantMap = new Map(
         variants.map((variant) => [variant.id, variant]),
       );
+      /**
+       * ============================================================
+       * Lấy ảnh đại diện của sản phẩm để lưu vào OrderItem
+       * ============================================================
+       */
+      const productIds = variants.map((variant) => variant.product.id);
 
+      const images = await queryRunner.manager.find(ProductImage, {
+        relations: {
+          product: true,
+        },
+        where: {
+          product: {
+            id: In(productIds),
+          },
+          isPrimary: true,
+          sortOrder: 0,
+        },
+      });
+      const imageMap = new Map(
+        images.map((image) => [image.product.id, image.imageUrl]),
+      );
       /**
        * ============================================================
        * 3. Tính tiền ở SERVER
@@ -157,6 +184,7 @@ export class OrderService {
         orderItems.push({
           variant,
           productName: variant.product.name,
+          image: imageMap.get(variant.product.id) ?? null,
           sku: variant.sku,
           packageDescription: variant.packageDescription ?? null,
           unitName: variant.unit.name,
@@ -299,46 +327,91 @@ export class OrderService {
   }
 
   async getMyOrders(userId: string, query: GetOrdersQueryDto) {
-    const page = query.page ?? 1;
-    const limit = query.limit ?? 10;
+    const page = query.page;
+    const limit = query.limit;
     const skip = (page - 1) * limit;
-
-    const [orders, total] = await this.dataSource
+    const queryBuilder = this.dataSource
       .getRepository(Order)
       .createQueryBuilder('order')
-
-      /**
-       * Chỉ lấy order của user hiện tại
-       */
       .where('order.user_id = :userId', {
         userId,
       })
+      .leftJoinAndSelect('order.items', 'item');
 
-      /**
-       * Order mới nhất lên trước
-       */
+    if (query.status !== undefined) {
+      queryBuilder.andWhere('order.status = :status', {
+        status: query.status,
+      });
+    }
+
+    const [orders, total] = await queryBuilder
       .orderBy('order.createdAt', 'DESC')
-
       .skip(skip)
       .take(limit)
-
       .getManyAndCount();
 
     const totalPages = Math.ceil(total / limit);
 
     return {
-      items: orders,
-
-      meta: {
+      orders: orders,
+      pagination: {
         page,
         limit,
         total,
         totalPages,
-
         hasNextPage: page < totalPages,
-
         hasPreviousPage: page > 1,
       },
     };
+  }
+
+  async getOrderDetail(orderCode: string, userId: string) {
+    const order = await this.orderRepository.findOne({
+      where: {
+        orderCode,
+        user: {
+          id: userId,
+        },
+      },
+      relations: {
+        items: true,
+      },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Không tìm thấy đơn hàng');
+    }
+    return order;
+    // return {
+    //   id: order.id,
+    //   orderCode: order.orderCode,
+    //   status: order.status,
+    //   paymentStatus: order.paymentStatus,
+    //   paymentMethod: order.paymentMethod,
+
+    //   subtotal: order.subtotal,
+    //   discountAmount: order.discountAmount,
+    //   shippingFee: order.shippingFee,
+    //   totalAmount: order.totalAmount,
+
+    //   receiverName: order.receiverName,
+    //   receiverPhone: order.receiverPhone,
+    //   shippingAddress: order.shippingAddress,
+
+    //   createdAt: order.createdAt,
+
+    //   items: order.items.map((item) => ({
+    //     id: item.id,
+    //     variantId: item.variantId,
+    //     productName: item.productName,
+    //     sku: item.sku,
+    //     variantName: item.variantName,
+    //     image: item.image,
+    //     quantity: item.quantity,
+    //     originalPrice: item.originalPrice,
+    //     salePrice: item.salePrice,
+    //     totalPrice: item.totalPrice,
+    //   })),
+    // };
   }
 }

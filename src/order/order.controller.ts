@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -30,5 +38,12 @@ export class OrderController {
     @Query() query: GetOrdersQueryDto,
   ) {
     return this.orderService.getMyOrders(userId, query);
+  }
+  @Get(':orderCode')
+  async getOrderDetail(
+    @Param('orderCode') orderCode: string,
+    @CurrentUserId() userId: string,
+  ) {
+    return this.orderService.getOrderDetail(orderCode, userId);
   }
 }
