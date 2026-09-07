@@ -64,7 +64,7 @@ const ModalLogin = () => {
                 Vui lòng đăng nhập để hưởng những đặc quyền dành cho thành viên
               </p>
             </div>
-            <div className="flex flex-col">
+            {/* <div className="flex flex-col">
               <input
                 className="input input-lg w-full"
                 placeholder="Nhập số điện thoại"
@@ -75,7 +75,7 @@ const ModalLogin = () => {
               >
                 Tiếp tục
               </button>
-            </div>
+            </div> */}
             <div className="flex mt-5">
               <button
                 className="btn bg-white text-black border-[#e5e5e5] m-auto"

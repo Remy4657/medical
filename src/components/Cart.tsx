@@ -78,7 +78,10 @@ const orderItemsSchema = z
     z.object({
       variantId: z.number().int().positive(),
       quantity: z.number().int().min(1).max(999),
-      price: z.number().int(),
+      price: z.object({
+        originalPrice: z.string(),
+        salePrice: z.string(),
+      }),
     }),
   )
   .min(1, "Giỏ hàng không được trống");
@@ -103,6 +106,8 @@ const Cart = ({ provinces }: CartProps) => {
 
   const [wards, setWards] = useState<any[]>([]);
   const [isLoadingWards, setIsLoadingWards] = useState(false);
+
+  const [mounted, setMounted] = useState(false);
 
   const dropdownProvinceRef = useRef<HTMLDivElement>(null);
   const dropdownWardRef = useRef<HTMLDivElement>(null);
@@ -152,10 +157,8 @@ const Cart = ({ provinces }: CartProps) => {
   useEffect(() => {
     if (!selectedProvinceCode) {
       setWards([]);
-
       setValue("ward", "");
       setValue("wardCode", "");
-
       return;
     }
     const fetchWards = async () => {
@@ -205,16 +208,15 @@ const Cart = ({ provinces }: CartProps) => {
    * =======================================================*/
 
   useEffect(() => {
+    setMounted(true);
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
-
       if (
         dropdownProvinceRef.current &&
         !dropdownProvinceRef.current.contains(target)
       ) {
         setIsClickProvinceDropdown(false);
       }
-
       if (
         dropdownWardRef.current &&
         !dropdownWardRef.current.contains(target)
@@ -311,10 +313,6 @@ const Cart = ({ provinces }: CartProps) => {
     return calculateSubtotal() + calculateShipping();
   };
 
-  /* =========================================================
-   * SUBMIT
-   * =======================================================*/
-
   const onSubmit = async (data: OrderFormValues) => {
     /* ---------------------------------------------
      * Validate items bằng Zod
@@ -324,13 +322,8 @@ const Cart = ({ provinces }: CartProps) => {
 
     if (!itemsResult.success) {
       toast.error("Giỏ hàng không hợp lệ");
-
       return;
     }
-
-    /* ---------------------------------------------
-     * Build shipping address
-     * -------------------------------------------*/
 
     const shippingAddress = [
       data.detailedAddress.trim(),
@@ -339,10 +332,6 @@ const Cart = ({ provinces }: CartProps) => {
     ]
       .filter(Boolean)
       .join(", ");
-
-    /* ---------------------------------------------
-     * API BODY
-     * -------------------------------------------*/
 
     const orderData = {
       receiverName: data.receiverName.trim(),
@@ -353,7 +342,7 @@ const Cart = ({ provinces }: CartProps) => {
       items: itemsResult.data.map((item) => ({
         variantId: item.variantId,
         quantity: item.quantity,
-        clientSalePrice: item.price,
+        clientSalePrice: item.price.salePrice,
       })),
     };
 
@@ -361,9 +350,8 @@ const Cart = ({ provinces }: CartProps) => {
       const { data, statusCode } = await createOrder(orderData);
 
       if (statusCode === 201) {
-        console.log("data: ", data);
         if (data.paymentMethod === "COD") {
-          router.push("dat-hang/success");
+          router.push(`dat-hang/success?orderCode=${data.orderCode}`);
         } else {
           const res = await createPayment(data.payosOrderCode);
           //console.log("res: ", res);
@@ -374,28 +362,14 @@ const Cart = ({ provinces }: CartProps) => {
     } catch (error: any) {
       console.error("Lỗi khi tạo đơn hàng:", error.response);
 
-      /*
-       * Ví dụ backend trả:
-       *
-       * {
-       *   statusCode: "PRICE_CHANGED",
-       *   message: "Giá sản phẩm đã thay đổi",
-       *   items: []
-       * }
-       */
-
       if (error.response.data?.statusCode === 409) {
         const changedItems = error.response.data.items;
         useCartStore.getState().setItems(changedItems);
         toast.info(
           "Giá một số sản phẩm đã thay đổi. Giỏ hàng đã được cập nhật.",
         );
-
         return;
       }
-
-      // các lỗi khác
-      // toast.error("Đặt hàng thất bại");
     }
   };
 
@@ -404,7 +378,9 @@ const Cart = ({ provinces }: CartProps) => {
   /* =========================================================
    * RENDER
    * =======================================================*/
-
+  if (!mounted) {
+    return <>Loading</>;
+  }
   return (
     <div className="min-h-screen bg-base-50">
       <div className="mx-auto max-w-7xl px-4 py-6">
@@ -873,7 +849,7 @@ const Cart = ({ provinces }: CartProps) => {
                * RIGHT - ORDER SUMMARY
                * ===============================================*/}
 
-              <div className="h-fit w-full rounded-2xl bg-base-0 p-6 lg:sticky lg:top-5 lg:w-[360px] lg:shrink-0">
+              <div className="h-fit w-full rounded-2xl bg-base-0 p-6 lg:sticky lg:top-5 lg:w-[360] lg:shrink-0">
                 <h2 className="mb-4 text-lg font-semibold text-base-content">
                   Tóm tắt đơn hàng
                 </h2>

@@ -15,9 +15,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased mdl-js">
+    <html lang="en" className="mdl-js">
       <body>
-        <div className="flex min-h-svh flex-col text-base-content overflow-hidden">
+        <div className="flex min-h-svh flex-col text-[17px] font-medium text-base-content overflow-hidden">
           <Navbar />
           <main className="mx-auto w-full max-w-7xl flex-1 px-4 md:px-6 xl:px-0">
             <Layout children={children} />

@@ -51,7 +51,7 @@ export const PrevButton = (props: PropType) => {
 
   return (
     <button
-      className={"border-base-300 embla__button embla__button--prev".concat(
+      className={"border-base-300 embla__button  embla__button--prev".concat(
         disabled ? " embla__button--disabled" : "",
       )}
       type="button"

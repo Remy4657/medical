@@ -11,19 +11,21 @@ const listFeatures = [
   },
   {
     name: "Tra thuốc chính hãng",
-    slug: "/thuoc",
+    slug: "/danh-muc/thuoc",
   },
   {
     name: "Tìm nhà thuốc",
-    slug: "/thuoc",
+    slug: "https://maps.app.goo.gl/zHP3b7U58u5kyfWn8",
+    isNewBlank: true,
   },
   {
     name: "Sản phẩm",
-    slug: "/thuoc",
+    slug: "/danh-muc/thuoc",
   },
   {
     name: "Tư vấn với dược sĩ",
-    slug: "/thuoc",
+    slug: "https://zalo.me/812843995673624521",
+    isNewBlank: true,
   },
 ];
 
@@ -41,7 +43,6 @@ const Features = () => {
           document.getElementById("modal_login") as HTMLDialogElement
         ).showModal();
       }
-      console.log("click");
     }
   };
   return (
@@ -55,6 +56,7 @@ const Features = () => {
             onClick={(e) => {
               handleClick(e, item.slug);
             }}
+            target={item.isNewBlank ? "_blank" : "_self"}
           >
             <Image
               src="/img/icon/category/than_kinh_nao.webp"

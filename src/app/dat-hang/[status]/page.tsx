@@ -1,4 +1,5 @@
 import PaymentResult from "@/components/PaymentResult";
+import { notFound } from "next/navigation";
 
 interface PageProps {
   params: Promise<{
@@ -20,7 +21,9 @@ export default async function PaymentResultPage({
 }: PageProps) {
   const { status } = await params;
   const query = await searchParams;
-
+  if (status !== "success" && status !== "cancel") {
+    return notFound();
+  }
   return (
     <PaymentResult
       type={status}

@@ -55,8 +55,6 @@
   touch-action: manipulation;
   display: inline-flex;
   text-decoration: none;
-  cursor: pointer;
-  padding: 0;
   margin: 0;
 
   width: 3rem;
@@ -64,7 +62,7 @@
 
   z-index: 1;
   border-radius: 100%;
-  color: var(--color-black);
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -73,7 +71,7 @@
 }
 
 .embla__button--disabled {
-  color: var(--color-gray);
+  color: #ccc;
 }
 
 .embla__button__svg {

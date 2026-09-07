@@ -15,7 +15,6 @@ export default async function ProductPage({
 }) {
   const { slug } = await params;
   const productDetail = await fetchDetailProduct(slug);
-  console.log("productDetail: ", productDetail);
   if (!productDetail) return notFound();
   const slugCate = productDetail.breadcrumb.at(-1).slug;
 

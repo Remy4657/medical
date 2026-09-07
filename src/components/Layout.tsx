@@ -7,6 +7,7 @@ import { CartProvider } from "./cart/CartProvider";
 import { Toaster } from "sonner";
 import ModalAddToCart from "./modal/ModalAddToCart";
 import ModalLogin from "./modal/ModalLogin";
+import ScrollToTop from "./ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ function Layout({ children }: { children: ReactNode }) {
       <CartProvider />
 
       {children}
+      <ScrollToTop />
       <ModalLogin />
       <ModalAddToCart />
       <Toaster

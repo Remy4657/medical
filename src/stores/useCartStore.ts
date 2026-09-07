@@ -10,9 +10,11 @@ export const useCartStore = create<CartState>()(
         isLoggedIn: false,
         isCartReady: false,
         items: [],
+
         setOwnerId: (ownerId) => {
           set({ ownerId });
         },
+
         setLoggedIn: (value) => {
           set({
             isLoggedIn: value,

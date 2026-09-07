@@ -37,7 +37,7 @@ export default function Countdown() {
         <span
           style={{ "--value": hours } as React.CSSProperties}
           aria-label={`${hours} hours`}
-          className="bg-red-500 text-white px-2 py-1 rounded-sm m-2"
+          className="bg-red-600 text-white px-2 py-1 rounded-sm m-2"
         >
           {hours < 10 ? `0${hours}` : hours}
         </span>
@@ -45,7 +45,7 @@ export default function Countdown() {
         <span
           style={{ "--value": minutes } as React.CSSProperties}
           aria-label={`${minutes} minutes`}
-          className="bg-red-500 text-white px-2 py-1 rounded-sm m-2"
+          className="bg-red-600 text-white px-2 py-1 rounded-sm m-2"
         >
           {minutes < 10 ? `0${minutes}` : minutes}
         </span>
@@ -53,7 +53,7 @@ export default function Countdown() {
         <span
           style={{ "--value": seconds } as React.CSSProperties}
           aria-label={`${seconds} seconds`}
-          className="bg-red-500 text-white px-2 py-1 rounded-sm m-2"
+          className="bg-red-600 text-white px-2 py-1 rounded-sm m-2"
         >
           {seconds < 10 ? `0${seconds}` : seconds}
         </span>

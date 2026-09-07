@@ -28,7 +28,6 @@ export interface CartState {
   isLoggedIn: boolean;
   // Đã merge cart server xong chưa, chỉ khi true mới cho phép sync API
   isCartReady: boolean;
-
   setOwnerId: (ownerId: string | null) => void;
   setItems: (items: CartItem[]) => void;
 

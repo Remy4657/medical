@@ -19,9 +19,10 @@
   --color-white: rgba(255, 255, 255, 1);
   --color-gray: #cd1212;
   --color-black: #000;
-  --color-border: rgb(119, 163, 239)
-    /* --color-primary: #3b82f6;
-  --color-white: #fff; */;
+  --color-border: rgb(119, 163, 239);
+  --color-base-content: #3f4043;
+  /* --color-primary: #3b82f6;
+  --color-white: #fff; */
 }
 
 @theme {

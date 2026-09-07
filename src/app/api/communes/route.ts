@@ -38,7 +38,6 @@ export async function GET(request: NextRequest): Promise<any> {
     }
 
     const data = await response.json();
-    console.log("data: ", data);
     return NextResponse.json(data);
   } catch (error) {
     console.error("GET /api/communes error:", error);

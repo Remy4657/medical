@@ -44,32 +44,30 @@ export default function PaymentResult({
 
   if (isSuccess) {
     return (
-      <main className="min-h-screen bg-[#f1f4f8] px-4 py-8">
-        <div className="mx-auto w-full max-w-[395px]">
-          <div className="rounded-xl bg-white p-4 shadow-sm">
-            <h1 className="text-center text-[18px] font-bold text-blue-600">
-              Đặt hàng thành công
-            </h1>
+      <main className="flex h-[500]">
+        <div className="w-200 m-auto rounded-xl bg-white p-15 shadow-sm">
+          <h1 className="text-center font-bold text-blue-600">
+            Đặt hàng thành công
+          </h1>
 
-            <p className="mt-2 text-center text-sm leading-6 text-[#15294d]">
-              Đơn hàng của bạn đã được tiếp nhận và đang được xử lý.
-            </p>
+          <p className="mt-2 text-center text-sm leading-6 text-[#15294d]">
+            Đơn hàng của bạn đã được tiếp nhận và đang được xử lý.
+          </p>
 
-            <Link
-              href="/"
-              className="mt-3 flex h-11 items-center justify-center rounded-full bg-blue-50 text-sm font-semibold text-blue-600"
-            >
-              Về trang chủ
-            </Link>
-          </div>
+          <Link
+            href="/"
+            className="w-50 mx-auto mt-5 flex h-11 items-center justify-center rounded-full bg-blue-50 text-sm font-semibold text-blue-600"
+          >
+            Về trang chủ
+          </Link>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#f1f4f8] px-4">
-      <div className="w-full max-w-[395px] rounded-xl bg-white p-5 shadow-sm">
+    <main className="flex h-[500]">
+      <div className="m-auto rounded-xl bg-white p-15 w-200 shadow-sm">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-orange-100 text-2xl">
           !
         </div>
@@ -83,7 +81,7 @@ export default function PaymentResult({
         </p>
         <Link
           href="/"
-          className="mt-6 flex h-11 items-center justify-center rounded-full bg-blue-600 text-sm font-semibold text-white"
+          className="w-50 mx-auto mt-6 flex h-11 items-center justify-center rounded-full bg-blue-50 text-blue-600 text-sm font-semibold"
         >
           Về trang chủ
         </Link>

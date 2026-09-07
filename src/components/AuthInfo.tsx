@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useCartStore } from "@/stores/useCartStore";
 import { useEffect, useState } from "react";
 import { useCart } from "@/hooks/useCart";
+import HeaderActionsSkeleton from "./skeleton/HeaderActionsSkeleton";
 
 const AuthInfo = () => {
   const { data: session, isPending } = authClient.useSession();
@@ -19,7 +20,7 @@ const AuthInfo = () => {
   }, [session?.user.name]);
 
   if (isPending) {
-    return <div>Loading...</div>;
+    return <HeaderActionsSkeleton />;
   }
 
   const handleLogout = async () => {
