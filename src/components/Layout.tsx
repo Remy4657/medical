@@ -8,6 +8,7 @@ import { Toaster } from "sonner";
 import ModalAddToCart from "./modal/ModalAddToCart";
 import ModalLogin from "./modal/ModalLogin";
 import ScrollToTop from "./ScrollToTop";
+import ModalLogout from "./modal/ModalLogout";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ function Layout({ children }: { children: ReactNode }) {
       {children}
       <ScrollToTop />
       <ModalLogin />
+      <ModalLogout />
       <ModalAddToCart />
       <Toaster
         position="top-right"

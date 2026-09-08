@@ -3,25 +3,17 @@ import { Flame } from "lucide-react";
 import { CatalogProductCard } from "../CatalogProductCard";
 import { useProducts } from "@/hooks/useProductsQuery";
 
-export default function ListProductsNoFilter({
+export default function ListProductsBestSelling({
   listProducts,
-  isPromotion,
 }: {
   listProducts: any;
   isPromotion?: boolean;
 }) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    isPromotion == true
-      ? useProducts({
-          initialData: listProducts,
-          isPromotion: true,
-          limit: 18,
-        })
-      : useProducts({
-          initialData: listProducts,
-          sortBy: "bestSelling",
-          limit: 18,
-        });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useProducts({
+    initialData: listProducts,
+    sortBy: "bestSelling",
+    limit: 18,
+  });
   const products = data?.pages.flatMap((page) => page?.products) ?? [];
   const pagination = data?.pages.flatMap((page) => page?.pagination) ?? [];
   const latestPagination = pagination[pagination.length - 1] ?? {};

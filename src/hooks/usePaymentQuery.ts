@@ -1,5 +1,5 @@
 import { createPayment } from "@/services/paymentService";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const usePaymentQuery = (payosOrderCode: number) =>
   useQuery({
@@ -8,6 +8,9 @@ export const usePaymentQuery = (payosOrderCode: number) =>
     staleTime: 1000 * 5,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    // Nếu muốn tự kiểm tra thay đổi giá định kỳ
-    //refetchInterval: 1000 * 10, // 5 giây
   });
+export const useCreatePayment = () => {
+  return useMutation({
+    mutationFn: (payosOrderCode: number) => createPayment(payosOrderCode),
+  });
+};

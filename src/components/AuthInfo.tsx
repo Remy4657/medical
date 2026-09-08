@@ -7,12 +7,14 @@ import { useCartStore } from "@/stores/useCartStore";
 import { useEffect, useState } from "react";
 import { useCart } from "@/hooks/useCart";
 import HeaderActionsSkeleton from "./skeleton/HeaderActionsSkeleton";
+import { useCommonStore } from "@/stores/useCommonStore";
 
 const AuthInfo = () => {
   const { data: session, isPending } = authClient.useSession();
   const { items } = useCartStore();
   const [userName, setUserName] = useState<string | null>("");
   const { signOut } = useCart();
+  const { toggleModalConfirmLogout } = useCommonStore();
 
   useEffect(() => {
     console.log("session authinfo: ", session);
@@ -24,7 +26,7 @@ const AuthInfo = () => {
   }
 
   const handleLogout = async () => {
-    signOut();
+    toggleModalConfirmLogout();
   };
   return (
     <div className="navbar-end text-white">
@@ -78,6 +80,16 @@ const AuthInfo = () => {
                 className="dropdown-content menu bg-base-0 rounded-box z-1 w-52 p-2 shadow-sm text-base-content"
               >
                 <li>
+                  <Link className="btn-ghost" href="/ca-nhan/thong-tin-ca-nhan">
+                    Thông tin cá nhân
+                  </Link>
+                </li>
+                <li>
+                  <Link className="btn-ghost" href="/ca-nhan/don-hang-cua-toi">
+                    Đơn hàng của tôi
+                  </Link>
+                </li>
+                <li>
                   <button
                     className="btn-ghost"
                     onClick={async () => {
@@ -86,11 +98,6 @@ const AuthInfo = () => {
                   >
                     Đăng xuất
                   </button>
-                </li>
-                <li>
-                  <Link className="btn-ghost" href="/don-hang-cua-toi">
-                    Đơn hàng của tôi
-                  </Link>
                 </li>
               </ul>
             </div>

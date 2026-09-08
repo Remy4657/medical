@@ -16,7 +16,7 @@ export const createOrder = async (orderData: any) => {
 export const getOrderByUser = async (
   orderStatus?: string | null,
   page: number = 1,
-  limit: number = 2,
+  limit: number = 5,
 ) => {
   try {
     //  await new Promise((resolve) => setTimeout(resolve, 2000));

@@ -9,8 +9,6 @@ import { useCart } from "@/hooks/useCart";
 
 export function CartProvider() {
   const { data: session, isPending } = useSession();
-  const { signOut } = useCart();
-  const isLoggedIn = useCartStore((state) => state.isLoggedIn);
   const setLoggedIn = useCartStore((state) => state.setLoggedIn);
   const setCartReady = useCartStore((state) => state.setCartReady);
   const ownerId = useCartStore((state) => state.ownerId);

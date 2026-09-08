@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import { createPayment } from "@/services/paymentService";
 import PaymentModal from "./PaymentModal";
 import { getWards } from "@/services/thirdPartyService";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
 
 /* =========================================================
  * ZOD SCHEMA
@@ -93,8 +94,8 @@ type CartProps = {
 };
 
 const Cart = ({ provinces }: CartProps) => {
+  const queryClient = useQueryClient();
   const router = useRouter();
-
   const [payment, setPayment] = useState<any>(null);
 
   const [isClickProvinceDropdown, setIsClickProvinceDropdown] = useState(false);
@@ -352,6 +353,9 @@ const Cart = ({ provinces }: CartProps) => {
       if (statusCode === 201) {
         if (data.paymentMethod === "COD") {
           router.push(`dat-hang/success?orderCode=${data.orderCode}`);
+          await queryClient.invalidateQueries({
+            queryKey: ["orders", "pagination"],
+          });
         } else {
           const res = await createPayment(data.payosOrderCode);
           //console.log("res: ", res);
@@ -855,7 +859,6 @@ const Cart = ({ provinces }: CartProps) => {
                 </h2>
                 <div className="space-y-5">
                   <div>
-                    <label>Mã giảm giá:</label>
                     <div className="flex flex-row gap-2 ">
                       <input
                         type="text"

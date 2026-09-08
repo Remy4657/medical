@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 const listFeatures = [
   {
     name: "Đơn hàng",
-    slug: "/don-hang-cua-toi",
+    slug: "/ca-nhan/don-hang-cua-toi",
   },
   {
     name: "Tra thuốc chính hãng",
@@ -34,7 +34,7 @@ const Features = () => {
   const isLoggedIn = useCartStore((state) => state.isLoggedIn);
 
   const handleClick = (e: any, slug: string) => {
-    if (slug === "/don-hang-cua-toi") {
+    if (slug === "/ca-nhan/don-hang-cua-toi") {
       e.preventDefault();
       if (isLoggedIn) {
         router.push(slug);

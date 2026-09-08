@@ -9,46 +9,6 @@ import { MoveLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-
-interface OrderItem {
-  id: number;
-  productName: string;
-  variantName: string;
-  quantity: number;
-  price: number;
-  image: string;
-}
-
-const order = {
-  code: "SO45998771",
-  createdAt: "13:58 24/06/2026",
-  status: "Đã giao",
-
-  customer: {
-    name: "Nguyễn Trọng Đạt",
-    phone: "******95",
-    address: "******Mai), ******, ******, ******Nội",
-  },
-
-  items: [
-    {
-      id: 1,
-      productName: "Áo Phông Nam Slim Mác Cao Su - ĐEN 002",
-      variantName: "XL",
-      quantity: 1,
-      price: 199000,
-      image: "/images/product.jpg",
-    },
-  ] as OrderItem[],
-
-  subtotal: 199000,
-  discount: 0,
-  shippingFee: 20000,
-  paymentMethod: "Tiền mặt khi nhận hàng",
-  total: 219000,
-  saved: 0,
-};
 
 export default function OrderDetailPage() {
   const router = useRouter();
@@ -61,7 +21,7 @@ export default function OrderDetailPage() {
     return <OrderDetailSkeleton />;
   }
   return (
-    <main className="min-h-screen bg-white">
+    <main className="rounded-2xl bg-white">
       {/* Header */}
       <header className="border-b border-gray-200">
         <div className="p-5">
@@ -81,7 +41,7 @@ export default function OrderDetailPage() {
       </header>
 
       {/* Content */}
-      <div className="mx-auto w-full max-w-[770] px-4 pb-8 pt-4">
+      <div className="mx-auto w-full max-w-[770] p-4">
         {/* Order status */}
         <section className="mb-4 rounded-2xl border border-gray-200 px-[14] py-[15]">
           <div className="flex items-center justify-between gap-4">
