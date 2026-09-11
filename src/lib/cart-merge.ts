@@ -3,6 +3,7 @@
 import { initializeCartSync } from "@/lib/cart-sync";
 import { useCartStore } from "@/stores/useCartStore";
 import api from "./api";
+import { mergeCartOnLoginService } from "@/services/cartService";
 
 export async function mergeCartOnLogin() {
   const store = useCartStore.getState();
@@ -18,15 +19,8 @@ export async function mergeCartOnLogin() {
    * ]
    */
   const localItems = store.items ?? [];
+  const { items } = await mergeCartOnLoginService(localItems);
 
-  const response = await api.post("http://localhost:5001/api/v1/cart/merge", {
-    items: localItems.map((item) => ({
-      variantId: item.variantId,
-      quantity: item.quantity,
-    })),
-  });
-
-  const { items } = response.data.data;
   /**
    * Server trả cart cuối cùng.
    *

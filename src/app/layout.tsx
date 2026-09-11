@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Layout from "@/components/Layout";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/navbar/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
@@ -18,11 +18,13 @@ export default function RootLayout({
     <html lang="en" className="mdl-js">
       <body>
         <div className="flex min-h-svh flex-col text-[17px] font-medium text-base-content overflow-hidden">
-          <Navbar />
-          <main className="mx-auto w-full max-w-7xl flex-1 px-4 md:px-6 xl:px-0">
-            <Layout children={children} />
-          </main>
-          <Footer />
+          <Layout>
+            <Navbar />
+            <main className="mx-auto w-full max-w-7xl flex-1 px-4 md:px-6 xl:px-0">
+              {children}
+            </main>
+            <Footer />
+          </Layout>
         </div>
       </body>
     </html>

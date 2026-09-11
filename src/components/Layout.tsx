@@ -9,8 +9,16 @@ import ModalAddToCart from "./modal/ModalAddToCart";
 import ModalLogin from "./modal/ModalLogin";
 import ScrollToTop from "./ScrollToTop";
 import ModalLogout from "./modal/ModalLogout";
+import Navbar from "./navbar/Navbar";
+import SearchBox from "./search/SearchBox";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function Layout({ children }: { children: ReactNode }) {
   useEffect(() => {

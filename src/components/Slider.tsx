@@ -128,7 +128,7 @@ export default function Slider() {
             </div>
 
             {/* Doctor */}
-            <div className="absolute bottom-0 w-full h-full z-10">
+            <div className="absolute bottom-0 w-full h-full z-1">
               <Image
                 src="/img/slider/silde-extra1.webp"
                 fill
@@ -138,7 +138,7 @@ export default function Slider() {
             </div>
 
             {/* Button */}
-            <div className="absolute bottom-[10] left-[10] right-[10] z-20">
+            <div className="absolute bottom-[10] left-[10] right-[10] z-2">
               <button
                 type="button"
                 className="flex h-[40] w-full items-center justify-center rounded-full bg-[#f90083] text-[16px] font-semibold text-white shadow-sm transition hover:bg-[#df0074]"

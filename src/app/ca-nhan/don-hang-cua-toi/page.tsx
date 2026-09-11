@@ -2,7 +2,7 @@
 import OrderCard from "@/components/OrderCard";
 import { OrderSkeleton } from "@/components/skeleton/OrderSkeleton";
 import { OrderStatus } from "@/constants";
-import { useOrderQueryPagination } from "@/hooks/useOrderQuery";
+import { useOrderPagination } from "@/hooks/useOrder";
 import { getOrderByUser } from "@/services/orderService";
 
 import { useQueryClient } from "@tanstack/react-query";
@@ -29,7 +29,7 @@ export default function MyOrdersPage() {
   const [page, setPage] = useState(1);
   const [orderStatus, setOrderStatus] = useState<string | null>(null);
   const { data, isPending, isLoading, isPlaceholderData, isFetching } =
-    useOrderQueryPagination(orderStatus, page);
+    useOrderPagination(orderStatus, page);
 
   const hasNextPage = data?.pagination.hasNextPage ?? true;
 
@@ -49,7 +49,7 @@ export default function MyOrdersPage() {
         <h1 className="text-[24px] font-bold">Đơn hàng của tôi</h1>
 
         {/* Search */}
-        <div className="relative w-full xl:max-w-[620]">
+        {/* <div className="relative w-full xl:max-w-[620]">
           <input
             type="text"
             placeholder="Tìm theo tên đơn, mã đơn, hoặc tên sản phẩm..."
@@ -62,7 +62,7 @@ export default function MyOrdersPage() {
           >
             <Search size={20} strokeWidth={2} />
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* ================= TABS ================= */}

@@ -3,8 +3,9 @@
 import { useCartStore } from "@/stores/useCartStore";
 import api from "./api";
 import { CartItem } from "@/types/store";
-import { useCartQuery } from "@/hooks/useCartQuery";
+import { useCartQuery } from "@/hooks/useCart";
 import { useEffect } from "react";
+import { syncCartService } from "@/services/cartService";
 
 /**
  * Mỗi variant có một sync state riêng.
@@ -177,10 +178,7 @@ async function syncCartItem(variantId: number) {
   state.inFlight = true;
 
   try {
-    await api.patch(`http://localhost:5001/api/v1/cart/items/${variantId}`, {
-      quantity: quantityToSync,
-    });
-
+    await syncCartService(variantId, quantityToSync);
     state.confirmedQuantity = quantityToSync; // nếu call api thành công, lưu lại để rollback
   } catch (error) {
     console.error("Sync cart failed:", error);

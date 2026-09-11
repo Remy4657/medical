@@ -1,7 +1,7 @@
 export const fetchProduct = async ({
   slug,
   page,
-  limit,
+  limit = 20,
   sortBy,
   order,
   brand = [],

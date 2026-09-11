@@ -1,7 +1,7 @@
 "use client";
 import OrderDetailSkeleton from "@/components/skeleton/OrderDetailSkeleton";
 import { OrderStatus } from "@/constants";
-import { useDetailOrderQuery } from "@/hooks/useOrderQuery";
+import { useDetailOrder } from "@/hooks/useOrder";
 import { getOrderDetail } from "@/services/orderService";
 import { formatDate } from "@/utils/formatDate";
 import { formatPrice } from "@/utils/formatPrice";
@@ -15,7 +15,7 @@ export default function OrderDetailPage() {
   const params = useParams();
   const orderCode = params.code as string;
 
-  const { data: detailOrder, isPending } = useDetailOrderQuery(orderCode);
+  const { data: detailOrder, isPending } = useDetailOrder(orderCode);
 
   if (isPending) {
     return <OrderDetailSkeleton />;

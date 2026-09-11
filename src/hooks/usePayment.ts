@@ -1,7 +1,7 @@
 import { createPayment } from "@/services/paymentService";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export const usePaymentQuery = (payosOrderCode: number) =>
+export const useQueryPayment = (payosOrderCode: number) =>
   useQuery({
     queryKey: ["payment", "create"],
     queryFn: async () => createPayment(payosOrderCode),

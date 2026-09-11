@@ -1,7 +1,7 @@
 import { getOrderByUser, getOrderDetail } from "@/services/orderService";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-export const useOrderQueryPagination = (
+export const useOrderPagination = (
   orderStatus?: string | null,
   page?: number,
   limit?: number,
@@ -13,7 +13,7 @@ export const useOrderQueryPagination = (
     staleTime: Infinity,
     refetchOnWindowFocus: false,
   });
-export const useDetailOrderQuery = (orderCode: string) =>
+export const useDetailOrder = (orderCode: string) =>
   useQuery({
     queryKey: ["orders", orderCode],
     queryFn: () => getOrderDetail(orderCode),

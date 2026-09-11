@@ -3,7 +3,7 @@ import api from "@/lib/api";
 export const createOrder = async (orderData: any) => {
   try {
     const response = await api.post(
-      `http://localhost:5001/api/v1/orders`,
+      `${process.env.NEXT_PUBLIC_API_URL}/orders`,
       orderData,
     );
 

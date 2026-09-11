@@ -866,7 +866,9 @@ const Cart = ({ provinces }: CartProps) => {
                         placeholder="Mã giảm giá"
                         className={`input input-md w-full bg-base-0`}
                       />
-                      <button className="btn btn-primary">Áp dụng</button>
+                      <button type="button" className="btn btn-primary">
+                        Áp dụng
+                      </button>
                     </div>
                   </div>
                   <div className="flex justify-between text-sm border-t border-base-200 pt-5">

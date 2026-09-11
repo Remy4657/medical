@@ -1,7 +1,7 @@
 "use client";
 import { Flame } from "lucide-react";
 import { CatalogProductCard } from "../CatalogProductCard";
-import { useProducts } from "@/hooks/useProductsQuery";
+import { useProducts } from "@/hooks/useProducts";
 import Image from "next/image";
 import Countdown from "../Countdown";
 

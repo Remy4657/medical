@@ -9,6 +9,7 @@ export const useQueryProfile = () =>
     staleTime: Infinity,
     refetchOnWindowFocus: false, // Nếu muốn tự kiểm tra thay đổi khi focus vào tab
     refetchOnReconnect: false, // Nếu muốn tự kiểm tra thay đổi khi kết nối lại
+    gcTime: Infinity, // Nếu muốn giữ dữ liệu trong cache vô thời hạn
   });
 export const useUpdateProfileMutation = () => {
   const queryClient = useQueryClient();

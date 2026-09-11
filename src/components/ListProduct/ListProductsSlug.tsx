@@ -3,23 +3,24 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { CatalogProductCard } from "../CatalogProductCard";
 import { useEffect, useState } from "react";
-import { useProducts } from "@/hooks/useProductsQuery";
+import { useProducts } from "@/hooks/useProducts";
 import ProductFilterDesktop from "./ProductFilterDesktop";
 import MobileFilterDrawer from "./MobileFilterDrawer";
 
 export default function ListProductsSlug({
+  isSearching,
   listBrandFilter,
   listCountryFilter,
   categorySlug,
-  categoryName,
   initialData,
 }: {
+  isSearching?: boolean;
   listBrandFilter: any;
   listCountryFilter: any;
-  categorySlug: string;
-  categoryName?: string;
+  categorySlug?: string;
   initialData: any;
 }) {
+  console.log("initialData: ", initialData);
   const [isOpen, setIsOpen] = useState(false);
   const [sortBy, setSortBy] = useState<undefined | string>(undefined);
   const [order, setOrder] = useState<undefined | string>(undefined);
@@ -52,7 +53,7 @@ export default function ListProductsSlug({
   const total = latestPagination.total ?? 0;
   const limit = latestPagination.limit ?? 0;
   const restCountProduct = total - limit * currentPage;
-
+  console.log("products: ", products);
   const handleSortBestselling = () => {
     setSortBy("bestSelling");
     setOrder("asc");
@@ -89,7 +90,9 @@ export default function ListProductsSlug({
       <div>
         <div className="flex flex-row justify-between mb-5 items-center">
           <div>
-            <h2 className="text-lg text-base-content">Danh sách sản phẩm</h2>
+            <h2 className="text-lg text-base-content">
+              {isSearching ? "Kết quả tìm kiếm" : "Danh sách sản phẩm"}
+            </h2>
           </div>
           <div className="flex flex-row gap-2 justify-end">
             <span className="hidden lg:flex items-center ">Sắp xếp theo: </span>
