@@ -32,6 +32,8 @@ import { CartItem } from './cart/entities/cart-item.entity';
 import { Order } from './order/entities/order.entity';
 import { OrderItem } from './order/entities/order-item.entity';
 import { PayOSModule } from './payos/payos.module';
+import { SearchModule } from './search/search.module';
+import { SearchKeyword } from './search/entities/search.entity';
 
 @Module({
   imports: [
@@ -67,6 +69,7 @@ import { PayOSModule } from './payos/payos.module';
         CartItem,
         Order,
         OrderItem,
+        SearchKeyword,
       ],
       synchronize: process.env.NODE_ENV !== 'production',
       logging: true,
@@ -79,6 +82,7 @@ import { PayOSModule } from './payos/payos.module';
     CartModule,
     OrderModule,
     PayOSModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [

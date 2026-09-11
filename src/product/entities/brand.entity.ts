@@ -25,9 +25,9 @@ export class Brand {
   @OneToMany(() => Product, (product) => product.brand)
   products: Product[];
 
-  @CreateDateColumn()
+  @CreateDateColumn({ select: false })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ select: false })
   updatedAt: Date;
 }

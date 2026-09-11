@@ -41,8 +41,28 @@ export class AuthService {
 
     return {
       name: updatedUser.name,
+      email: updatedUser.email,
       gender: updatedUser.gender,
       birthday: updatedUser.birthday,
     };
+  }
+  async getMyProfile(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      select: {
+        name: true,
+        email: true,
+        gender: true,
+        birthday: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Không tìm thấy người dùng');
+    }
+
+    return user;
   }
 }

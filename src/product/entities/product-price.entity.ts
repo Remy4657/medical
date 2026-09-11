@@ -55,6 +55,6 @@ export class ProductPrice {
   @JoinColumn({ name: 'variant_id' })
   variant: ProductVariant;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ select: false })
   updatedAt: Date;
 }

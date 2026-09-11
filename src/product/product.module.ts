@@ -16,6 +16,6 @@ import { BrandService } from './brand.service';
   ], // đăng ký repository cho entity product
   controllers: [ProductController],
   providers: [ProductService, CountryService, BrandService],
-  // exports: [ProductService],
+  exports: [ProductService],
 })
 export class ProductModule {}

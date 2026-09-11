@@ -317,7 +317,6 @@ export class CartService {
 
   async getCart(userId: string) {
     const cart = await this.getUserCart(userId);
-
     const items = await this.getFullCartItems(cart.id, this.dataSource.manager);
 
     return {

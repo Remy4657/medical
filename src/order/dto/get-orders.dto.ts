@@ -14,7 +14,7 @@ export class GetOrdersQueryDto {
   @IsInt()
   @Min(1)
   @Max(100)
-  limit: number = 2;
+  limit: number = 5;
 
   @IsOptional()
   @IsEnum(OrderStatus)
