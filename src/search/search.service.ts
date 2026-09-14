@@ -27,7 +27,7 @@ export class SearchService {
   // SUGGEST
   // ============================================================
 
-  async suggest(keyword: string): Promise<SearchSuggestResponse> {
+  async suggest(keyword: string) {
     const q = keyword?.trim();
 
     if (!q || q.length < 2) {
@@ -35,24 +35,19 @@ export class SearchService {
         keywordSuggestions: [],
         categories: [],
         products: [],
-        total: 0,
       };
     }
 
-    const [keywordSuggestions, categories, products, total] = await Promise.all(
-      [
-        this.getKeywordSuggestions(q),
-        this.getCategorySuggestions(q),
-        this.getProductSuggestions(q),
-        this.countProducts(q),
-      ],
-    );
+    const [keywordSuggestions, categories, products] = await Promise.all([
+      this.getKeywordSuggestions(q),
+      this.getCategorySuggestions(q),
+      this.getProductSuggestions(q),
+    ]);
 
     return {
       keywordSuggestions,
       categories,
       products,
-      total,
     };
   }
 
@@ -119,35 +114,9 @@ export class SearchService {
   // PRODUCT SUGGESTION
   // ============================================================
 
-  private async getProductSuggestions(
-    keyword: string,
-  ): Promise<SearchProductItem[]> {
-    const qb = this.createProductSearchQuery(keyword);
-
-    const products = await qb.limit(5).getMany();
-
-    return products.map((product) => this.mapProduct(product));
-  }
-
-  // ============================================================
-  // COUNT
-  // ============================================================
-
-  private async countProducts(keyword: string) {
-    const qb = this.createProductSearchQuery(keyword, false);
-
-    return qb.getCount();
-  }
-
-  // ============================================================
-  // FULL SEARCH
-  // ============================================================
-
-  async search(keyword: string, page = 1, limit = 20) {
-    const skip = (page - 1) * limit;
+  private async getProductSuggestions(keyword: string) {
     const normalizedKeyword = this.normalize(keyword);
 
-    //const qb = this.createProductSearchQuery(keyword);
     const qb = this.productRepository.createQueryBuilder('product');
     const bestVariantSubQuery = qb
       .subQuery()
@@ -162,6 +131,103 @@ export class SearchService {
       .addOrderBy('pv.id', 'ASC')
       .limit(1)
       .getQuery();
+    qb.leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect(
+        'product.images',
+        'image',
+        'image.is_primary = :isPrimary AND image.sort_order = :sortOrder',
+        {
+          isPrimary: true,
+          sortOrder: 0,
+        },
+      )
+      .leftJoinAndMapOne(
+        'product.bestVariant',
+        ProductVariant,
+        'variant',
+        `variant.id = ${bestVariantSubQuery}`,
+      )
+      .leftJoinAndSelect('variant.price', 'price')
+      .leftJoinAndSelect('variant.unit', 'unit')
+      .where(
+        `
+      (
+        unaccent(lower(product.name))
+          LIKE :keyword
+        OR unaccent(lower(category.name)) LIKE :keyword
+        OR unaccent(lower(product.description))
+          LIKE :keyword
+      )
+      `,
+        {
+          keyword: `%${normalizedKeyword}%`,
+        },
+      );
+
+    // Ranking
+    qb.addSelect(
+      `CASE
+    WHEN unaccent(lower(product.name)) = :exactKeyword
+      THEN 1
+
+    WHEN unaccent(lower(product.name)) LIKE :prefixKeyword
+      THEN 2
+
+    WHEN unaccent(lower(product.name)) LIKE :keyword
+      THEN 3
+
+    ELSE 4
+  END`,
+      'search_rank',
+    );
+    qb.addOrderBy('search_rank', 'ASC');
+    qb.setParameters({
+      exactKeyword: normalizedKeyword,
+      prefixKeyword: `${normalizedKeyword}%`,
+      keyword: `%${normalizedKeyword}%`,
+    });
+
+    const products = await qb.limit(3).getMany();
+    return products.map((product) => {
+      const image = product.images?.[0];
+      const variant = product.bestVariant;
+
+      return {
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        imageUrl: image?.imageUrl ?? null,
+        bestVariant: {
+          packageDescription: variant?.packageDescription ?? null,
+          unitName: variant?.unit?.name ?? null,
+          originalPrice: variant?.price?.originalPrice ?? null,
+          salePrice: variant?.price?.salePrice ?? null,
+        },
+      };
+    });
+  }
+
+  // ============================================================
+  // FULL SEARCH
+  // ============================================================
+
+  async search(keyword: string, page = 1, limit = 20) {
+    const normalizedKeyword = this.normalize(keyword);
+
+    const qb = this.productRepository.createQueryBuilder('product');
+    const bestVariantSubQuery = qb
+      .subQuery()
+      .select('pv.id')
+      .from(ProductVariant, 'pv')
+      .innerJoin(ProductPrice, 'pp', 'pp.variant_id = pv.id')
+      .where('pv.product_id = product.id')
+      .orderBy(
+        '(pp.originalPrice - pp.salePrice) / NULLIF(pp.originalPrice, 0)',
+        'DESC',
+      )
+      .limit(1)
+      .getQuery();
+
     qb.leftJoinAndSelect('product.category', 'category')
       .leftJoinAndSelect('product.brand', 'brand')
       .leftJoinAndSelect('product.country', 'country')
@@ -185,8 +251,6 @@ export class SearchService {
 
       .skip((page - 1) * limit)
       .take(limit)
-      .addOrderBy('product.created_at', 'DESC')
-      .addOrderBy('product.id', 'DESC')
       .where(
         `
       (
@@ -226,14 +290,7 @@ export class SearchService {
     });
     const [products, total] = await qb.getManyAndCount();
 
-    // const [products, total] = await Promise.all([
-    //   qb.skip(skip).take(limit).getMany(),
-
-    //   this.createProductSearchQuery(keyword, false).getCount(),
-    // ]);
-
     return {
-      // products: products.map((product) => this.mapProduct(product)),
       products,
       pagination: {
         total,

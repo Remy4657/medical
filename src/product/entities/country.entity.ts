@@ -9,6 +9,9 @@ export class Country {
   @Column({ length: 100, unique: true })
   name: string;
 
+  @Column({ length: 100, unique: true, nullable: true })
+  image: string;
+
   @Column({ length: 2, unique: true })
   code: string;
 

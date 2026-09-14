@@ -24,7 +24,6 @@ export interface SearchSuggestResponse {
   keywordSuggestions: string[];
   categories: SearchCategoryItem[];
   products: SearchProductItem[];
-  total: number;
 }
 
 export interface SearchResultResponse {
