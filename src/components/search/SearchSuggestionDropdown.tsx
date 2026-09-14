@@ -20,7 +20,7 @@ export default function SearchSuggestionDropdown({
   onSearch,
   onClose,
 }: any) {
-  const { keywordSuggestions, categories, products, total } = data;
+  const { keywordSuggestions, categories, products } = data;
 
   const hasData =
     keywordSuggestions.length > 0 ||
@@ -29,16 +29,21 @@ export default function SearchSuggestionDropdown({
 
   if (!hasData) {
     return (
-      <div className="p-5 text-sm text-gray-500">Không tìm thấy sản phẩm</div>
+      <div>
+        <div className="p-5 text-sm text-gray-500">
+          Không tìm thấy sản phẩm với từ khóa
+          <span className="font-bold"> "{keyword}"</span>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-10">
-      <div
-        className="absolute inset-0 bg-black/45 backdrop-blur-[1px]"
+    <div className="">
+      {/* <div
+        className="absolute bg-black/45 backdrop-blur-[1px]"
         onClick={onClose}
-      />
+      /> */}
       {/* ----------------------------------------- */}
       {/* KEYWORD */}
       {/* ----------------------------------------- */}
@@ -79,6 +84,8 @@ export default function SearchSuggestionDropdown({
         <div
           className="
             border-t
+            border-gray-200
+
           "
         >
           {categories.map((category: any) => (
@@ -99,7 +106,7 @@ export default function SearchSuggestionDropdown({
                 <ArrowUpLeft />
               </span>
 
-              <span>Danh mục {category.name}</span>
+              <span>{category.name}</span>
             </Link>
           ))}
         </div>
@@ -113,6 +120,8 @@ export default function SearchSuggestionDropdown({
         <div
           className="
             border-t
+            border-gray-200
+
           "
         >
           {products.map((product: any) => (
@@ -134,15 +143,16 @@ export default function SearchSuggestionDropdown({
                 className="
                     h-24
                     w-24
-                    flex-shrink-0
+                    shrink-0
                     overflow-hidden
                     rounded-xl
-
+                    border
+                    border-gray-200
                   "
               >
-                {product.image && (
+                {product.imageUrl && (
                   <img
-                    src={product.image}
+                    src={product.imageUrl}
                     alt={product.name}
                     className="
                         h-full
@@ -165,18 +175,29 @@ export default function SearchSuggestionDropdown({
                   {product.name}
                 </div>
 
-                {product.price && (
+                {product.bestVariant.salePrice && (
                   <div className="mt-1">
                     <span
                       className="
                           font-semibold
                         "
                     >
-                      {formatPrice(product.price.salePrice)}đ
+                      {formatPrice(product.bestVariant.salePrice)}
                     </span>
 
-                    {product.unit && (
-                      <span className="ml-1">/ {product.unit.name}</span>
+                    {product.bestVariant.unitName && (
+                      <span className="ml-1">
+                        / {product.bestVariant.unitName}
+                      </span>
+                    )}
+                    {product.bestVariant.originalPrice && (
+                      <span
+                        className="
+                          font-semibold line-through ml-3 text-gray-500
+                        "
+                      >
+                        {formatPrice(product.bestVariant.originalPrice)}
+                      </span>
                     )}
                   </div>
                 )}
@@ -190,28 +211,25 @@ export default function SearchSuggestionDropdown({
       {/* VIEW ALL */}
       {/* ----------------------------------------- */}
 
-      {total > 0 && (
-        <button
-          type="button"
-          onClick={onSearch}
-          className="
+      <button
+        type="button"
+        onClick={onSearch}
+        className="
             flex
             w-full
             items-center
             justify-center
             gap-2
             border-t
+            border-gray-200
             py-4
             font-medium
-            text-blue-600
+            text-primary
             hover:bg-gray-50
           "
-        >
-          <span>Xem tất cả</span>
-
-          <span>→</span>
-        </button>
-      )}
+      >
+        <span>Xem tất cả</span>
+      </button>
     </div>
   );
 }

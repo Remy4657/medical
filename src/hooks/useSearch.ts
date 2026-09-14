@@ -9,7 +9,7 @@ export function useSearchSuggest(keyword: string) {
     queryKey: ["search-suggest", keyword],
     queryFn: () => searchSuggestService(keyword),
     enabled: keyword.trim().length >= 2,
-    staleTime: 60 * 1000,
+    staleTime: 5 * 60 * 1000,
   });
 }
 
@@ -17,5 +17,5 @@ export const useSearchProducts = (keyword: string) =>
   useQuery({
     queryKey: ["search", keyword],
     queryFn: () => searchProductsService(keyword),
-    staleTime: 60 * 1000,
+    staleTime: 5 * 60 * 1000,
   });

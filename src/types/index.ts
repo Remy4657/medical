@@ -20,6 +20,7 @@ export type Unit = {
 };
 export type Country = {
   name: string;
+  image: string;
 };
 export type Price = {
   originalPrice: string;

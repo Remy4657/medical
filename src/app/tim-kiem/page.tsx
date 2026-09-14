@@ -10,6 +10,7 @@ type Props = {
 export default async function SearchPage({ searchParams }: Props) {
   const params = await searchParams;
   const q = params.q ?? "";
+
   const { brands, countries } = await fetchAllFilters();
 
   return (

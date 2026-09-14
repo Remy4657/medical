@@ -57,17 +57,17 @@ export default function AccountSidebar() {
               key={item.href}
               href={item.href}
               className={[
-                "group flex min-h-[70px] w-full items-center gap-3",
+                "group flex min-h-[70] w-full items-center gap-3",
                 "border-l-2 px-4 text-left transition",
                 active
-                  ? "border-[#1760e9] bg-[#eef1f5] text-[#1760e9]"
+                  ? "border-primary bg-[#eef1f5] text-primary"
                   : "border-transparent bg-white text-[#16345f] hover:bg-slate-50",
               ].join(" ")}
             >
               <Icon
                 size={25}
                 strokeWidth={1.7}
-                className={active ? "text-[#1760e9]" : "text-[#0f1e36]"}
+                className={active ? "text-primary" : "text-[#0f1e36]"}
               />
 
               <span className="flex-1 font-medium">{item.label}</span>
@@ -75,7 +75,7 @@ export default function AccountSidebar() {
               <ChevronRight
                 size={23}
                 strokeWidth={1.7}
-                className={active ? "text-[#1760e9]" : "text-[#111827]"}
+                className={active ? "text-primary" : "text-[#111827]"}
               />
             </Link>
           );

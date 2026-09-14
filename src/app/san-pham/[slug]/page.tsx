@@ -23,14 +23,14 @@ export default async function ProductPage({
   });
 
   return (
-    <div className="mx-auto py-8">
+    <div className="mx-auto">
       <Breadcrumb
         items={productDetail.breadcrumb}
         nameProduct={productDetail.name}
       />
 
       {/* Product Layout: Image Gallery + Info */}
-      <div className="bg-base-0 p-5 rounded-lg grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="bg-base-0 mt-5 p-5 rounded-lg grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Product Gallery */}
         <div className="lg:pr-8">
           <EmblaCarouselThumbs images={productDetail.images} />
@@ -54,6 +54,7 @@ export default async function ProductPage({
       </div>
 
       <div className="bg-base-0 p-5 mt-5 rounded-lg">
+        <h1 className="mb-3">Sản phẩm liên quan</h1>
         <ListProductsCarousel listProducts={products} />
       </div>
     </div>

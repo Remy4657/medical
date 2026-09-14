@@ -72,8 +72,6 @@ export function useProducts({
         : undefined,
 
     getNextPageParam: (lastPage, pages) => {
-      console.log("lastPage: ", lastPage);
-      console.log("pages: ", pages);
       if (!lastPage?.pagination?.hasMore) {
         return undefined;
       }

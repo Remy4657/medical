@@ -4,6 +4,7 @@ import { useCommonStore } from "@/stores/useCommonStore";
 import { Product } from "@/types";
 import { calculateDiscountPercent, formatPrice } from "@/utils/formatPrice";
 import { PlusIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 export function CatalogProductCard({ product }: { product: Product }) {
@@ -15,7 +16,7 @@ export function CatalogProductCard({ product }: { product: Product }) {
   return (
     <article className="bg-base-0  card group h-full overflow-hidden transition border border-base-300 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-xl">
       <Link href={`/san-pham/${product.slug}`} className="relative block">
-        <figure className="aspect-4/3 bg-base-300">
+        <figure className="aspect-4/3 bg-base-300 mt-5">
           {product.images ? (
             <img
               src={primaryImage}
@@ -26,9 +27,20 @@ export function CatalogProductCard({ product }: { product: Product }) {
             />
           ) : null}
         </figure>
-        <span className="badge badge-sm absolute left-3 top-3 border-0 bg-base-100/90 text-xs font-medium text-base-content/80 backdrop-blur">
-          {product.country.name}
-        </span>
+        <div className="flex flex-row gap-1 absolute left-1 top-1">
+          <div className="relative h-5 w-6 shrink-0">
+            <Image
+              src={product.country.image ?? "/images/product-placeholder.png"}
+              fill
+              className="object-contain"
+              alt={product.country.name ?? "Country"}
+            />
+          </div>
+          <span className=" text-xs font-medium text-base-content/80 ">
+            {product.country.name}
+          </span>
+        </div>
+
         {calculateDiscountPercent(
           product.bestVariant?.price?.originalPrice,
           product.bestVariant?.price.salePrice,

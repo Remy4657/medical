@@ -1,6 +1,6 @@
 import Countdown from "@/components/Countdown";
-import Features from "@/components/Featured";
-import FeaturedCategory from "@/components/FeaturedCategory";
+import Features from "@/components/feature/Featured";
+import FeaturedCategory from "@/components/feature/FeaturedCategory";
 import ListProductsCarousel from "@/components/listProduct/ListProductsCarousel";
 import Slider from "@/components/Slider";
 import {
@@ -36,7 +36,7 @@ export default async function Page() {
         />
       </div>
 
-      <div className="flex flex-col mt-5 p-3 rounded-2xl bg-white">
+      <div className="flex flex-col mt-20 p-3 rounded-2xl bg-white">
         <div className="mb-5">
           <Image
             src="/img/flashsale.webp"

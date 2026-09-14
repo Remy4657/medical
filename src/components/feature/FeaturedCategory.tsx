@@ -7,55 +7,67 @@ const listCategories = [
     slug: "/danh-muc/thuoc",
   },
   {
-    name: "Thần kinh não",
+    name: "Vitamin & Khoáng chất",
     slug: "/danh-muc/thuoc",
   },
   {
-    name: "Thần kinh não",
+    name: "Sinh lý - Nội tiết tố",
     slug: "/danh-muc/thuoc",
   },
   {
-    name: "Thần kinh não",
+    name: "Tim mạch - Huyết áp",
     slug: "/danh-muc/thuoc",
   },
   {
-    name: "Thần kinh não",
+    name: "Miễn dịch - Đề kháng",
     slug: "/danh-muc/thuoc",
   },
   {
-    name: "Thần kinh não",
+    name: "Tiêu hóa",
     slug: "/danh-muc/thuoc",
   },
   {
-    name: "Thần kinh não",
+    name: "Chăm sóc da mặt",
     slug: "/danh-muc/thuoc",
   },
   {
-    name: "Thần kinh não",
+    name: "Hỗ trợ làm đẹp",
     slug: "/danh-muc/thuoc",
   },
   {
-    name: "Thần kinh não",
+    name: "Hỗ trợ tình dục",
     slug: "/danh-muc/thuoc",
   },
   {
-    name: "Thần kinh não",
+    name: "Sữa",
     slug: "/danh-muc/thuoc",
   },
   {
-    name: "Thần kinh não",
+    name: "Theo dõi sức khoẻ",
     slug: "/danh-muc/thuoc",
   },
   {
-    name: "Thần kinh não",
+    name: "Chăm sóc mẹ và bé",
     slug: "/danh-muc/thuoc",
   },
 ];
 
 const FeaturedCategory = () => {
   return (
-    <div>
-      <h1 className="my-5 text-xl font-medium">Danh mục nổi bật</h1>
+    <div className="mt-5">
+      <div className="flex flex-row gap-2">
+        <div className="flex">
+          <div className="relative m-auto h-8 w-8 shrink-0">
+            <Image
+              src="/img/icon/danh_muc_noi_bat.webp"
+              fill
+              className="object-contain "
+              alt="image"
+            />
+          </div>
+        </div>
+        <h1 className="my-5 text-xl font-medium">Danh mục nổi bật</h1>
+      </div>
       <div className="grid gap-4 lg:gap-5 grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {listCategories.map((item: any, index) => {
           return (
@@ -71,12 +83,11 @@ const FeaturedCategory = () => {
                 alt=""
                 className=""
               />
-              <span className="text-center">Thần kinh não</span>
+              <span className="text-center">{item.name}</span>
             </Link>
           );
         })}
       </div>
-      <div>hi</div>
     </div>
   );
 };

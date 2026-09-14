@@ -20,7 +20,6 @@ export default function ListProductsSlug({
   categorySlug?: string;
   initialData: any;
 }) {
-  console.log("initialData: ", initialData);
   const [isOpen, setIsOpen] = useState(false);
   const [sortBy, setSortBy] = useState<undefined | string>(undefined);
   const [order, setOrder] = useState<undefined | string>(undefined);
@@ -53,7 +52,6 @@ export default function ListProductsSlug({
   const total = latestPagination.total ?? 0;
   const limit = latestPagination.limit ?? 0;
   const restCountProduct = total - limit * currentPage;
-  console.log("products: ", products);
   const handleSortBestselling = () => {
     setSortBy("bestSelling");
     setOrder("asc");
@@ -68,7 +66,7 @@ export default function ListProductsSlug({
   };
 
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-[260px_1fr] xl:grid-cols-[300px_1fr]">
+    <div className="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-[260px_1fr] xl:grid-cols-[300px_1fr]">
       {/* Start Desktop filter */}
       <aside className="hidden sm:block">
         <ProductFilterDesktop

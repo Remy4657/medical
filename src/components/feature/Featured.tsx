@@ -8,24 +8,29 @@ const listFeatures = [
   {
     name: "Đơn hàng",
     slug: "/ca-nhan/don-hang-cua-toi",
+    image: "/img/icon/category/lichsudonhang.webp",
   },
   {
     name: "Tra thuốc chính hãng",
-    slug: "/danh-muc/thuoc",
+    slug: "https://dichvucong.dav.gov.vn/congbothuoc/index",
+    image: "/img/icon/category/trathuoc.webp",
   },
   {
     name: "Tìm nhà thuốc",
     slug: "https://maps.app.goo.gl/zHP3b7U58u5kyfWn8",
     isNewBlank: true,
+    image: "/img/icon/category/timnhathuoc.webp",
   },
   {
     name: "Sản phẩm",
     slug: "/danh-muc/thuoc",
+    image: "/img/icon/category/sanpham.webp",
   },
   {
     name: "Tư vấn với dược sĩ",
     slug: "https://zalo.me/812843995673624521",
     isNewBlank: true,
+    image: "/img/icon/category/tuvanvoiduocsi.webp",
   },
 ];
 
@@ -46,7 +51,7 @@ const Features = () => {
     }
   };
   return (
-    <div className="grid gap-5 grid-cols-5 mt-7">
+    <div className="grid gap-5 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-7">
       {listFeatures.map((item: any, index) => {
         return (
           <Link
@@ -59,7 +64,7 @@ const Features = () => {
             target={item.isNewBlank ? "_blank" : "_self"}
           >
             <Image
-              src="/img/icon/category/than_kinh_nao.webp"
+              src={item.image ?? "/img/placeholder.webp"}
               width={40}
               height={20}
               alt=""

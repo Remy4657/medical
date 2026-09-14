@@ -22,32 +22,12 @@ export default function PaymentResult({
 }: PaymentResultProps) {
   const isSuccess = type === "success";
 
-  // Không phải URL hợp lệ
-  //   if (!isSuccess && !isCancel) {
-  //     return (
-  //       <main className="flex min-h-screen items-center justify-center bg-[#f1f4f8] px-4">
-  //         <div className="w-full max-w-md rounded-xl bg-white p-6 text-center">
-  //           <h1 className="text-lg font-bold text-gray-800">
-  //             Trang không tồn tại
-  //           </h1>
-
-  //           <Link
-  //             href="/"
-  //             className="mt-5 inline-flex rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white"
-  //           >
-  //             Về trang chủ
-  //           </Link>
-  //         </div>
-  //       </main>
-  //     );
-  //   }
-
   if (isSuccess) {
     return (
       <main className="flex h-[500]">
         <div className="w-200 m-auto rounded-xl bg-white p-15 shadow-sm">
-          <h1 className="text-center font-bold text-blue-600">
-            Đặt hàng thành công
+          <h1 className="text-center font-bold text-blue-500 text-xl">
+            Đặt hàng thành công!
           </h1>
 
           <p className="mt-2 text-center text-sm leading-6 text-[#15294d]">
@@ -56,7 +36,7 @@ export default function PaymentResult({
 
           <Link
             href="/"
-            className="w-50 mx-auto mt-5 flex h-11 items-center justify-center rounded-full bg-blue-50 text-sm font-semibold text-blue-600"
+            className="w-50 mx-auto mt-5 flex h-11 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary"
           >
             Về trang chủ
           </Link>
@@ -73,7 +53,7 @@ export default function PaymentResult({
         </div>
 
         <h1 className="mt-4 text-center text-[18px] font-bold text-orange-500">
-          Đã hủy thanh toán
+          Đã hủy thanh toán!
         </h1>
 
         <p className="mt-2 text-center text-sm leading-6 text-gray-600">
@@ -81,7 +61,7 @@ export default function PaymentResult({
         </p>
         <Link
           href="/"
-          className="w-50 mx-auto mt-6 flex h-11 items-center justify-center rounded-full bg-blue-50 text-blue-600 text-sm font-semibold"
+          className="w-50 mx-auto mt-6 flex h-11 items-center justify-center rounded-full bg-primary/10 text-primary text-sm font-semibold"
         >
           Về trang chủ
         </Link>

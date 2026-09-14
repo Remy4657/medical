@@ -10,6 +10,7 @@ import {
   ChevronLeftIcon,
   ChevronDown,
   Loader2,
+  Truck,
 } from "lucide-react";
 
 import Link from "next/link";
@@ -24,6 +25,9 @@ import { createPayment } from "@/services/paymentService";
 import PaymentModal from "./PaymentModal";
 import { getWards } from "@/services/thirdPartyService";
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import Loading from "./Loading";
+import { useCommonStore } from "@/stores/useCommonStore";
+import ModalRemoveFromCart from "./modal/ModalRemoveFromCart";
 
 /* =========================================================
  * ZOD SCHEMA
@@ -96,6 +100,7 @@ type CartProps = {
 const Cart = ({ provinces }: CartProps) => {
   const queryClient = useQueryClient();
   const router = useRouter();
+  const { toggleRemoveFromCart } = useCommonStore();
   const [payment, setPayment] = useState<any>(null);
 
   const [isClickProvinceDropdown, setIsClickProvinceDropdown] = useState(false);
@@ -109,6 +114,8 @@ const Cart = ({ provinces }: CartProps) => {
   const [isLoadingWards, setIsLoadingWards] = useState(false);
 
   const [mounted, setMounted] = useState(false);
+
+  const [selectedVariantId, setSelectedVariantId] = useState<number>();
 
   const dropdownProvinceRef = useRef<HTMLDivElement>(null);
   const dropdownWardRef = useRef<HTMLDivElement>(null);
@@ -383,19 +390,18 @@ const Cart = ({ provinces }: CartProps) => {
    * RENDER
    * =======================================================*/
   if (!mounted) {
-    return <>Loading</>;
+    return <Loading />;
   }
   return (
     <div className="min-h-screen bg-base-50">
-      <div className="mx-auto max-w-7xl px-4 py-6">
+      <div className="mx-auto max-w-7xl pb-6">
         {/* Back */}
         <Link
           href="/"
-          className="flex items-center gap-2 text-primary transition-colors hover:text-primary/80"
+          className="flex items-center w-fit gap-2 text-primary transition-colors hover:text-primary/80"
         >
-          <ChevronLeftIcon className="h-5 w-5" />
-
-          <span className="text-lg font-semibold">Tiếp tục mua sắm</span>
+          <ChevronLeftIcon size={17} />
+          <span className="text-sm breadcrumbs">Tiếp tục mua sắm</span>
         </Link>
 
         {/* Empty cart */}
@@ -417,14 +423,14 @@ const Cart = ({ provinces }: CartProps) => {
 
         {!isEmpty && (
           <>
-            <h2 className="mt-8 text-lg font-semibold text-base-content">
+            <h2 className="mb-2 mt-5 text-md font-semibold text-primary">
               Sản phẩm trong giỏ hàng
             </h2>
 
             <form
               onSubmit={handleSubmit(onSubmit)}
               noValidate
-              className="mt-4 flex flex-col gap-5 lg:flex-row"
+              className="flex flex-col gap-5 lg:flex-row"
             >
               {/* =================================================
                * LEFT
@@ -432,96 +438,112 @@ const Cart = ({ provinces }: CartProps) => {
 
               <div className="flex min-w-0 flex-1 flex-col gap-5">
                 {/* Cart items */}
-                <div className="rounded-2xl bg-base-0 p-6">
-                  <div className="divide-y divide-base-200">
-                    {items.map((item) => (
-                      <div
-                        key={item.variantId}
-                        className="flex items-start py-6 first:pt-0 last:pb-0"
-                      >
-                        {/* Image */}
-                        <div className="h-24 w-24 shrink-0">
-                          <img
-                            src={item.image || undefined}
-                            alt={item.productName}
-                            className="h-full w-full rounded-lg border border-base-200 object-cover"
-                          />
-                        </div>
-
-                        {/* Detail */}
-                        <div className="ml-4 min-w-0 flex-1 space-y-2">
-                          <div className="flex justify-between gap-3">
-                            <h3 className="line-clamp-2 max-w-xs text-base font-medium text-base-content">
-                              {item.productName}
-                            </h3>
+                <div className="rounded-2xl bg-base-0">
+                  {" "}
+                  <div className="flex flex-row gap-1 rounded-t-2xl px-6 py-3 bg-primary/8 w-full">
+                    <span className="font-bold text-blue-500 flex flex-row gap-1">
+                      <Truck /> <span>Miễn phí vận chuyển </span>
+                    </span>
+                    <span className="font-normal">
+                      đối với đơn hàng trên 500.000đ
+                    </span>
+                  </div>
+                  <div className=" p-6">
+                    <div className="divide-y divide-base-200">
+                      {items.map((item) => (
+                        <div
+                          key={item.variantId}
+                          className="flex items-start py-6 first:pt-0 last:pb-0"
+                        >
+                          {/* Image */}
+                          <div className="h-24 w-24 shrink-0">
+                            <img
+                              src={item.image || undefined}
+                              alt={item.productName}
+                              className="h-full w-full rounded-lg border border-base-200 object-cover"
+                            />
                           </div>
 
-                          {item.packageDescription && (
-                            <p className="line-clamp-2 text-sm text-base-content/60">
-                              {item.packageDescription}
-                            </p>
-                          )}
+                          {/* Detail */}
+                          <div className="ml-4 min-w-0 flex-1 space-y-2">
+                            <div className="flex flex-row justify-between">
+                              <div>
+                                <h3 className="line-clamp-2 max-w-xs text-base font-medium text-base-content">
+                                  {item.productName}
+                                </h3>
 
-                          <div className="flex flex-wrap items-center gap-4">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold">
-                                {formatPrice(item.price.salePrice)}
-                              </span>
+                                {item.packageDescription && (
+                                  <p className="line-clamp-2 text-sm text-base-content/60">
+                                    {item.packageDescription}
+                                  </p>
+                                )}
+                              </div>
 
-                              {Number(item.price.originalPrice) >
-                                Number(item.price.salePrice) && (
-                                <span className="text-sm text-base-content/50 line-through">
-                                  {formatPrice(item.price.originalPrice)}
+                              <div className="">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedVariantId(item.variantId);
+                                    toggleRemoveFromCart();
+                                  }}
+                                  className="bg-gray rounded p-1 text-base-content/60 transition-colors hover:bg-base-100 hover:text-error"
+                                >
+                                  <Trash2Icon className="h-4 w-4" />
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-wrap justify-between items-center gap-4">
+                              <div className="flex flex-3 items-center gap-2">
+                                <span className="font-semibold">
+                                  {formatPrice(item.price.salePrice)}
                                 </span>
-                              )}
-                            </div>
 
-                            {/* Quantity */}
-                            <div className="flex items-center rounded-lg border border-base-300">
-                              <button
-                                type="button"
-                                onClick={() => decrease(item.variantId)}
-                                disabled={item.quantity <= 1}
-                                className="px-3 py-1 text-lg disabled:cursor-not-allowed disabled:opacity-40"
-                              >
-                                −
-                              </button>
+                                {Number(item.price.originalPrice) >
+                                  Number(item.price.salePrice) && (
+                                  <span className="text-sm text-base-content/50 line-through">
+                                    {formatPrice(item.price.originalPrice)}
+                                  </span>
+                                )}
+                              </div>
 
-                              <span className="w-8 text-center">
-                                {item.quantity}
+                              {/* Quantity */}
+                              <div className="flex flex-1 items-center rounded-lg border border-primary text-primary">
+                                <button
+                                  type="button"
+                                  onClick={() => decrease(item.variantId)}
+                                  disabled={item.quantity <= 1}
+                                  className="px-3 py-1 text-lg disabled:cursor-not-allowed disabled:text-base-300"
+                                >
+                                  −
+                                </button>
+
+                                <span className="w-8 text-center">
+                                  {item.quantity}
+                                </span>
+
+                                <button
+                                  type="button"
+                                  onClick={() => increase(item.variantId)}
+                                  className="px-3 py-1 text-lg"
+                                >
+                                  +
+                                </button>
+                              </div>
+
+                              <span className="flex-3 text-right font-semibold text-red-500">
+                                {formatPrice(
+                                  (
+                                    Number(item.price.salePrice) *
+                                    Number(item.quantity)
+                                  ).toString(),
+                                )}
                               </span>
-
-                              <button
-                                type="button"
-                                onClick={() => increase(item.variantId)}
-                                className="px-3 py-1 text-lg"
-                              >
-                                +
-                              </button>
                             </div>
-
-                            <span className="font-semibold">
-                              {formatPrice(
-                                (
-                                  Number(item.price.salePrice) *
-                                  Number(item.quantity)
-                                ).toString(),
-                              )}
-                            </span>
                           </div>
                         </div>
-
-                        <div className="flex m-auto ">
-                          <button
-                            type="button"
-                            onClick={() => remove(item.variantId)}
-                            className="bg-gray rounded p-1 text-base-content/60 transition-colors hover:bg-base-100 hover:text-error"
-                          >
-                            <Trash2Icon className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
 
@@ -530,7 +552,7 @@ const Cart = ({ provinces }: CartProps) => {
                  * ===============================================*/}
 
                 <div>
-                  <h2 className="mb-3 text-lg font-semibold text-base-content">
+                  <h2 className="mb-2 text-md font-semibold text-primary">
                     Thông tin người đặt
                   </h2>
 
@@ -797,7 +819,7 @@ const Cart = ({ provinces }: CartProps) => {
                  * ===============================================*/}
 
                 <div>
-                  <h2 className="mb-3 text-lg font-semibold text-base-content">
+                  <h2 className="mb-2 text-md font-semibold text-primary">
                     Phương thức thanh toán
                   </h2>
 
@@ -854,7 +876,7 @@ const Cart = ({ provinces }: CartProps) => {
                * ===============================================*/}
 
               <div className="h-fit w-full rounded-2xl bg-base-0 p-6 lg:sticky lg:top-5 lg:w-[360] lg:shrink-0">
-                <h2 className="mb-4 text-lg font-semibold text-base-content">
+                <h2 className="mb-4 text-lg font-semibold text-primary">
                   Tóm tắt đơn hàng
                 </h2>
                 <div className="space-y-5">
@@ -874,7 +896,7 @@ const Cart = ({ provinces }: CartProps) => {
                   <div className="flex justify-between text-sm border-t border-base-200 pt-5">
                     <span className="text-base-content/60">Tạm tính:</span>
 
-                    <span className="font-medium">
+                    <span className="font-normal text-lg">
                       {formatPrice(calculateSubtotal().toString())}
                     </span>
                   </div>
@@ -884,7 +906,7 @@ const Cart = ({ provinces }: CartProps) => {
                       Phí vận chuyển:
                     </span>
 
-                    <span className="font-medium">
+                    <span className="font-normal text-lg ">
                       {calculateShipping() > 0
                         ? formatPrice(calculateShipping().toString())
                         : "Miễn phí"}
@@ -902,7 +924,7 @@ const Cart = ({ provinces }: CartProps) => {
                   <div className="flex justify-between border-t border-base-200 pt-3">
                     <span className="text-xl font-bold">Tổng cộng:</span>
 
-                    <span className="text-2xl font-bold text-primary">
+                    <span className="text-2xl font-bold text-red-500">
                       {formatPrice(calculateTotal().toString())}
                     </span>
                   </div>
@@ -953,6 +975,7 @@ const Cart = ({ provinces }: CartProps) => {
           </>
         )}
       </div>
+      <ModalRemoveFromCart onConfirm={() => remove(selectedVariantId!)} />
     </div>
   );
 };

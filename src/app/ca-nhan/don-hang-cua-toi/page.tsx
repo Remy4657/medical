@@ -6,19 +6,7 @@ import { useOrderPagination } from "@/hooks/useOrder";
 import { getOrderByUser } from "@/services/orderService";
 
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  UserRound,
-  Package,
-  MapPin,
-  Syringe,
-  FileText,
-  FilePlus2,
-  LogOut,
-  ChevronRight,
-  Search,
-  Box,
-  Plane,
-} from "lucide-react";
+import { Plane } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const tabs = ["Tất cả", "Đang xử lý", "Đã giao"];
@@ -120,24 +108,26 @@ export default function MyOrdersPage() {
 
             {/* ================= PAGINATION ================= */}
             <div className="mt-5 flex justify-center">
-              <div className="join ">
+              <div className="join bg-transparent">
                 <button
                   onClick={() => {
                     setPage((p) => Math.max(1, p - 1));
                   }}
                   disabled={page === 1}
-                  className={`join-item btn ${page !== 1 ? "text-primary" : "text-gray"}`}
+                  className={`join-item btn bg-transparent rounded-none border-none ${page !== 1 ? "text-primary" : "text-gray"}`}
                 >
                   «
                 </button>
-                <button className="join-item btn text-primary">
-                  Trang {page}
-                </button>
+                <div className="flex">
+                  <span className="m-auto text-sm border-none text-primary">
+                    Trang {page}
+                  </span>
+                </div>
                 <button
                   onClick={() => {
                     setPage((p) => p + 1);
                   }}
-                  className={`join-item btn ${hasNextPage ? "text-primary" : "text-gray"}`}
+                  className={`join-item btn bg-transparent rounded-none border-none ${hasNextPage ? "text-primary" : "text-gray"}`}
                   disabled={isFetching || !hasNextPage}
                 >
                   »
@@ -210,7 +200,7 @@ export default function MyOrdersPage() {
               type="button"
               className="
             mt-5
-            h-[48px]
+            h-[48]
             rounded-full
             border-0
             bg-[#2865e5]

@@ -9,7 +9,7 @@
 }
 
 .embla__viewport {
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 .embla__container {

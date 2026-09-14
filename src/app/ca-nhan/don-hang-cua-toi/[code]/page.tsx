@@ -72,7 +72,7 @@ export default function OrderDetailPage() {
           {detailOrder?.items.map((item: any) => (
             <div key={item.id} className="flex items-center gap-3">
               {/* Product image */}
-              <div className="relative h-[100px] w-[80px] shrink-0 overflow-hidden rounded-md bg-gray-100">
+              <div className="relative h-[100] w-[80] shrink-0 overflow-hidden rounded-md bg-gray-100">
                 <Image
                   src={item.image ?? "/images/product-placeholder.png"}
                   alt={item.productName}

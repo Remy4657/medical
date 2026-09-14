@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useSearchSuggest } from "@/hooks/useSearch";
 import SearchSuggestionDropdown from "./SearchSuggestionDropdown";
+import { SearchSuggestionsSkeleton } from "../skeleton/SearchSuggestsSkeleton";
 
 export default function SearchBox() {
   const router = useRouter();
@@ -41,24 +42,18 @@ export default function SearchBox() {
   // GO TO SEARCH
   // --------------------------------------------------
 
-  const handleSearch = () => {
-    const q = keyword.trim();
-
+  const handleSearch = (value: string) => {
+    console.log("value:", value);
+    console.log("keyword: ", keyword);
+    const q =
+      value && typeof value === "string" ? value.trim() : keyword.trim();
+    console.log("!q: ", !q);
     if (!q) {
       return;
     }
-
+    setKeyword(value);
     setIsFocused(false);
-
     router.push(`/tim-kiem?q=${encodeURIComponent(q)}`);
-  };
-
-  // --------------------------------------------------
-  // VIEW ALL
-  // --------------------------------------------------
-
-  const handleViewAll = () => {
-    //  handleSearch(keyword);
   };
 
   const shouldShowDropdown = isFocused && keyword.trim().length >= 2;
@@ -89,13 +84,19 @@ export default function SearchBox() {
             value={keyword}
             onChange={(event) => setKeyword(event.target.value)}
             onFocus={() => setIsFocused(true)}
+
             placeholder="Tìm kiếm sản phẩm..."
-            className="py-3"
-            onKeyDown={handleSearch}
+            className="py-3 outline-none"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.currentTarget.blur();
+                handleSearch(keyword);
+              }
+            }}
           />
         </label>
       </div>
-      {true && (
+      {shouldShowDropdown && (
         <div
           className="
             absolute
@@ -111,13 +112,12 @@ export default function SearchBox() {
             shadow-lg
           "
         >
-          {isPending && <div className="p-4">Đang tìm kiếm...</div>}
+          {isPending && <SearchSuggestionsSkeleton />}
 
           {!isPending && data && (
             <SearchSuggestionDropdown
               data={data}
               keyword={keyword}
-              onViewAll={handleViewAll}
               onSearch={handleSearch}
               onClose={() => setIsFocused(false)}
             />
@@ -125,73 +125,5 @@ export default function SearchBox() {
         </div>
       )}
     </div>
-    // <div ref={containerRef} className="relative w-full">
-
-    //   <form
-    //     onSubmit={(event) => {
-    //       event.preventDefault();
-    //       handleSearch();
-    //     }}
-    //   >
-    //     <div
-    //       className="
-    //         flex
-    //         h-12
-    //         items-center
-    //         rounded-full
-    //         border
-    //         px-4
-    //       "
-    //     >
-    //       <input
-    //         value={keyword}
-    //         onChange={(event) => setKeyword(event.target.value)}
-    //         onFocus={() => setIsFocused(true)}
-    //         placeholder="Tìm kiếm sản phẩm..."
-    //         className="
-    //           flex-1
-    //           bg-transparent
-    //           outline-none
-    //         "
-    //       />
-
-    //       <button type="submit" className="ml-2">
-    //         🔍
-    //       </button>
-    //     </div>
-    //   </form>
-
-    //   {/* DROPDOWN */}
-
-    //   {shouldShowDropdown && (
-    //     <div
-    //       className="
-    //         absolute
-    //         left-0
-    //         right-0
-    //         top-full
-    //         z-50
-    //         mt-2
-    //         overflow-hidden
-    //         rounded-xl
-    //         border
-    //         bg-white
-    //         shadow-lg
-    //       "
-    //     >
-    //       {isFetching && <div className="p-4">Đang tìm kiếm...</div>}
-
-    //       {!isFetching && data && (
-    //         <SearchSuggestionDropdown
-    //           data={data}
-    //           keyword={keyword}
-    //           onViewAll={handleViewAll}
-    //           onSearch={handleSearch}
-    //           onClose={() => setIsFocused(false)}
-    //         />
-    //       )}
-    //     </div>
-    //   )}
-    //</div>
   );
 }

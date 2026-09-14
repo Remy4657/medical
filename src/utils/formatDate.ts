@@ -1,5 +1,4 @@
 export const formatDate = (dateString: string) => {
-  console.log("dateString", dateString);
   const date = new Intl.DateTimeFormat("vi-VN", {
     timeZone: "Asia/Ho_Chi_Minh",
     year: "numeric",

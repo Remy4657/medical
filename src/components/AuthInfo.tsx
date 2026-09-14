@@ -1,5 +1,11 @@
 "use client";
-import { CircleUserRound, Moon, Sun } from "lucide-react";
+import {
+  CircleUserRound,
+  ClipboardClock,
+  LogOut,
+  Moon,
+  Sun,
+} from "lucide-react";
 import { ShoppingCartIcon, StoreIcon } from "lucide-react";
 import { authClient } from "../lib/auth-client";
 import Link from "next/link";
@@ -8,12 +14,12 @@ import { useEffect, useState } from "react";
 import { useCart } from "@/hooks/useCart";
 import HeaderActionsSkeleton from "./skeleton/HeaderActionsSkeleton";
 import { useCommonStore } from "@/stores/useCommonStore";
+import getLastWord from "@/utils/getLastWord";
 
 const AuthInfo = () => {
   const { data: session, isPending } = authClient.useSession();
   const { items } = useCartStore();
   const [userName, setUserName] = useState<string | null>("");
-  const { signOut } = useCart();
   const { toggleModalConfirmLogout } = useCommonStore();
 
   useEffect(() => {
@@ -29,7 +35,7 @@ const AuthInfo = () => {
     toggleModalConfirmLogout();
   };
   return (
-    <div className="navbar-end text-white">
+    <div className=" navbar-end text-white">
       <div className="flex flex-row items-center">
         <label className="swap swap-rotate">
           <input
@@ -73,20 +79,22 @@ const AuthInfo = () => {
             <div className="dropdown dropdown-hover">
               <span className="flex cursor-pointer">
                 <CircleUserRound />
-                Xin chào, {userName}
+                Xin chào, {getLastWord(userName)}
               </span>
               <ul
                 tabIndex={-1}
-                className="dropdown-content menu bg-base-0 rounded-box z-1 w-52 p-2 shadow-sm text-base-content"
+                className="dropdown-content menu bg-base-0 rounded-box z-1 w-58 p-2 shadow-sm text-base-content font-normal text-lg"
               >
                 <li>
                   <Link className="btn-ghost" href="/ca-nhan/thong-tin-ca-nhan">
-                    Thông tin cá nhân
+                    <CircleUserRound size={20} strokeWidth={1} />
+                    <span>Thông tin cá nhân</span>
                   </Link>
                 </li>
                 <li>
                   <Link className="btn-ghost" href="/ca-nhan/don-hang-cua-toi">
-                    Đơn hàng của tôi
+                    <ClipboardClock size={20} strokeWidth={1} />
+                    <span>Đơn hàng của tôi</span>
                   </Link>
                 </li>
                 <li>
@@ -96,6 +104,7 @@ const AuthInfo = () => {
                       await handleLogout();
                     }}
                   >
+                    <LogOut size={20} strokeWidth={1} className="" />
                     Đăng xuất
                   </button>
                 </li>

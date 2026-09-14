@@ -6,7 +6,8 @@ export const searchSuggestService = async (keyword: string) => {
       q: keyword,
     });
     const response = await api.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/search/suggest?${params.toString()}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/search/suggest`,
+      { params },
     );
     return response.data.data;
   } catch (error) {

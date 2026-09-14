@@ -61,9 +61,14 @@
   label.otp > input {
     outline: none !important;
   }
+  label.input,
   input:focus,
   textarea:focus,
   feDropShadow:focus {
+    outline: none;
+    border-color: var(--color-border);
+  }
+  button.input:focus {
     outline: none;
     border-color: var(--color-border);
   }

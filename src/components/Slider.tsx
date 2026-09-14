@@ -88,7 +88,7 @@ export default function Slider() {
           <div className="flex-1 relative h-auto overflow-hidden rounded-2xl">
             {/* Text */}
             <div className="relative z-2 px-[11] pt-[13]">
-              <h2 className="max-w-[245] text-[25px] font-medium leading-[1.25] text-[#f90083]">
+              <h2 className="max-w-[245] text-[18px] lg:text-[25px] font-medium text-[#f90083]">
                 Dược sĩ tư vấn
                 <br />
                 miễn phí 24/7
@@ -111,7 +111,7 @@ export default function Slider() {
                 type="button"
                 className="flex h-[40] w-full items-center justify-center rounded-full bg-[#f90083] text-[16px] font-semibold text-white shadow-sm transition hover:bg-[#df0074]"
               >
-                Đặt Thuốc Nhanh
+                Tư vấn ngay
               </button>
             </div>
           </div>
@@ -119,8 +119,8 @@ export default function Slider() {
           {/* sec 2 */}
           <div className="flex-1 relative h-auto overflow-hidden rounded-2xl bg-linear-to-br from-[#ffe5f2] via-[#ffd1e9] to-[#ffb8db]">
             {/* Text */}
-            <div className="relative z-20 px-[11] pt-[13]">
-              <h2 className="max-w-[245] text-[18px] lg:text-[25px] font-medium leading-[1.25] text-[#f90083]">
+            <div className="relative z-2 px-[11] pt-[13]">
+              <h2 className="max-w-[245] text-[18px] lg:text-[25px] font-medium text-[#f90083]">
                 Dược sĩ tư vấn
                 <br />
                 miễn phí 24/7
@@ -130,7 +130,7 @@ export default function Slider() {
             {/* Doctor */}
             <div className="absolute bottom-0 w-full h-full z-1">
               <Image
-                src="/img/slider/silde-extra1.webp"
+                src="/img/slider/slide-extra2.webp"
                 fill
                 alt=""
                 className="object-fill"
@@ -143,7 +143,7 @@ export default function Slider() {
                 type="button"
                 className="flex h-[40] w-full items-center justify-center rounded-full bg-[#f90083] text-[16px] font-semibold text-white shadow-sm transition hover:bg-[#df0074]"
               >
-                Đặt Thuốc Nhanh
+                Tư vấn ngay
               </button>
             </div>
           </div>

@@ -9,7 +9,6 @@ import {
 import { EmblaOptionsType } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
 import { useRouter } from "next/navigation";
-// import "@/app/styles/carousel.css";
 
 export default function ListProductsCarousel({
   listProducts,
@@ -37,11 +36,8 @@ export default function ListProductsCarousel({
       >
         <section id="catolag" className="scroll-mt-24">
           <div className="embla">
-            <div
-              className="embla__viewport overflow-x-auto scrollbar-hide"
-              ref={emblaRef}
-            >
-              <div className="embla__container gap-3">
+            <div className="embla__viewport scrollbar-hide" ref={emblaRef}>
+              <div className="embla__container gap-3 pt-1">
                 {listProducts.map((p) => (
                   <div
                     className="embla__slide grow-0 shrink-0  basis-1/6 min-w-[160] sm:basis-[calc((100%-60px)/6)] sm:min-w-[200]"
