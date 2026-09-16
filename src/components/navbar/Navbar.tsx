@@ -1,9 +1,4 @@
-import { ChevronDown, CircleUserRound, Moon, Sun } from "lucide-react";
-import { ShoppingCartIcon, StoreIcon } from "lucide-react";
-import Link from "next/link";
-import { fetchAllCategories } from "@/services/categoryService";
 import AuthInfo from "../AuthInfo";
-import { notFound } from "next/navigation";
 import SearchBox from "../search/SearchBox";
 import Navigation from "./Navigation";
 import Logo from "./Logo";

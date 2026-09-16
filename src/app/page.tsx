@@ -3,13 +3,9 @@ import Features from "@/components/feature/Featured";
 import FeaturedCategory from "@/components/feature/FeaturedCategory";
 import ListProductsCarousel from "@/components/listProduct/ListProductsCarousel";
 import Slider from "@/components/Slider";
-import {
-  fetchAllProductsPromotion,
-  fetchProduct,
-} from "@/services/productService";
-import { ChevronRight, Flame } from "lucide-react";
+import { fetchProduct } from "@/services/productService";
+import { Flame } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 
 export default async function Page() {
   const { products: productsPromotion } = await fetchProduct({

@@ -43,11 +43,8 @@ export default function SearchBox() {
   // --------------------------------------------------
 
   const handleSearch = (value: string) => {
-    console.log("value:", value);
-    console.log("keyword: ", keyword);
     const q =
       value && typeof value === "string" ? value.trim() : keyword.trim();
-    console.log("!q: ", !q);
     if (!q) {
       return;
     }

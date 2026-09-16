@@ -32,9 +32,9 @@ const Navigation = async () => {
                             group-hover:visible group-hover:opacity-100
                             transition-opacity duration-600
                             menu bg-transparent rounded-sm
-                            z-100 w-52 p-2 shadow-sm"
+                            z-5 w-52 p-2 shadow-none"
             >
-              <ul className="bg-base-0 p-2">
+              <ul className="bg-base-0 p-2 shadow-2xl">
                 {p.children.map((c: any) => (
                   <li key={c.id}>
                     <Link href={`/danh-muc/${p.slug}/${c.slug}`}>{c.name}</Link>

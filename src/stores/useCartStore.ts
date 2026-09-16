@@ -53,11 +53,11 @@ export const useCartStore = create<CartState>()(
             } else {
               set((state) => ({
                 items: [
-                  ...state.items,
                   {
                     ...item,
                     quantity: newQuantity,
                   },
+                  ...state.items,
                 ],
               }));
             }

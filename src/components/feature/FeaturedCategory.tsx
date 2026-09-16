@@ -35,7 +35,7 @@ const listCategories = [
     slug: "/danh-muc/thuoc",
   },
   {
-    name: "Hỗ trợ tình dục",
+    name: "Hỗ trợ sinh lý",
     slug: "/danh-muc/thuoc",
   },
   {

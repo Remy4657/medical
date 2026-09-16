@@ -10,7 +10,9 @@ type Props = {
     slugs: string[];
   }>;
 };
-
+export async function generateStaticParams() {
+  return []; // không dứng trước page nào khi buil, chi cache khi trang được user truy cập
+}
 const page = async ({ params }: Props) => {
   const { slugs } = await params;
   const currentSlugPage = slugs.at(-1) as string;

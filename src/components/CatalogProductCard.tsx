@@ -30,7 +30,7 @@ export function CatalogProductCard({ product }: { product: Product }) {
         <div className="flex flex-row gap-1 absolute left-1 top-1">
           <div className="relative h-5 w-6 shrink-0">
             <Image
-              src={product.country.image ?? "/images/product-placeholder.png"}
+              src={product.country.image ?? "/img/placeholder.webp"}
               fill
               className="object-contain"
               alt={product.country.name ?? "Country"}

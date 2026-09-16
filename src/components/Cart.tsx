@@ -187,11 +187,9 @@ const Cart = ({ provinces }: CartProps) => {
         );
 
         if (!response.ok) {
-          throw new Error("Không thể lấy danh sách phường/xã");
+          toast.error("Không thể lấy danh sách phường/xã");
         }
         const data = await response.json();
-        //const response = await fetch("/api/provinces", selectedProvinceCode);
-        // const data = await getWards(selectedProvinceCode);
         setWards(data.communes ?? []);
 
         // Province thay đổi thì phải reset ward
@@ -359,7 +357,7 @@ const Cart = ({ provinces }: CartProps) => {
 
       if (statusCode === 201) {
         if (data.paymentMethod === "COD") {
-          router.push(`dat-hang/success?orderCode=${data.orderCode}`);
+          router.push(`dat-hang/${data.orderCode}`);
           await queryClient.invalidateQueries({
             queryKey: ["orders", "pagination"],
           });
@@ -939,7 +937,6 @@ const Cart = ({ provinces }: CartProps) => {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="h-5 w-5 animate-spin" />
-                      Đang xử lý...
                     </>
                   ) : (
                     "Đặt hàng"

@@ -8,6 +8,9 @@ import Breadcrumb from "@/components/BreadCrumb";
 import ListProductsCarousel from "@/components/listProduct/ListProductsCarousel";
 import DetailProductAction from "@/components/DetailProductAction";
 
+export async function generateStaticParams() {
+  return []; // không dứng trước page nào khi buil, chi cache khi trang được user truy cập
+}
 export default async function ProductPage({
   params,
 }: {

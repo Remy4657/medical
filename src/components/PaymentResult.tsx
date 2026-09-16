@@ -1,27 +1,21 @@
 "use client";
+import { useDetailOrder } from "@/hooks/useOrder";
 import Link from "next/link";
-type ResultType = "success" | "cancel";
+import Loading from "./Loading";
 
 interface PaymentResultProps {
-  type: string;
-
-  orderCode?: string;
-  code?: string;
-  paymentId?: string;
-  cancel?: string;
-  paymentStatus?: string;
+  orderCode: string;
 }
 
-export default function PaymentResult({
-  type,
-  orderCode,
-  code,
-  paymentId,
-  cancel,
-  paymentStatus,
-}: PaymentResultProps) {
-  const isSuccess = type === "success";
-
+export default function PaymentResult({ orderCode }: PaymentResultProps) {
+  const { data: detailOrder, isPending } = useDetailOrder(orderCode);
+  if (isPending) {
+    return <Loading />;
+  }
+  const isSuccess =
+    (detailOrder.paymentStatus === "PAID" &&
+      detailOrder.paymentMethod === "BANK") ||
+    detailOrder.paymentMethod === "COD";
   if (isSuccess) {
     return (
       <main className="flex h-[500]">
@@ -48,10 +42,6 @@ export default function PaymentResult({
   return (
     <main className="flex h-[500]">
       <div className="m-auto rounded-xl bg-white p-15 w-200 shadow-sm">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-orange-100 text-2xl">
-          !
-        </div>
-
         <h1 className="mt-4 text-center text-[18px] font-bold text-orange-500">
           Đã hủy thanh toán!
         </h1>

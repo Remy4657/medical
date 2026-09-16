@@ -10,7 +10,6 @@ const breadcrumbMap: Record<string, string> = {
 
 export default function AccountBreadcrumb() {
   const pathname = usePathname();
-  console.log("pathname: ", pathname);
 
   const current = breadcrumbMap[pathname] ?? "Đơn hàng của tôi";
 

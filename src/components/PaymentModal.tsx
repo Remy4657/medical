@@ -48,7 +48,7 @@ export default function PaymentModal({
 
   const config: PayOSConfig = useMemo(
     () => ({
-      RETURN_URL: `${window.location.origin}` + `/dat-hang/success`,
+      RETURN_URL: `${window.location.origin}` + `/dat-hang/`,
       ELEMENT_ID: "payos-checkout",
       CHECKOUT_URL:
         "https://pay.payos.vn/web/bba077eba6bc4cd28287b18e95f216e3/",

@@ -39,7 +39,7 @@ export default function Slider() {
             ref={emblaRef}
           >
             <div className="flex flex-row w-full h-full">
-              {[1, 2, 3].map((p, index) => (
+              {[6, 7, 8].map((p, index) => (
                 <div
                   className="embla__slide grow-0 shrink-0 basis-1 w-full h-full"
                   key={index}

@@ -22,6 +22,8 @@ export const fetchProduct = async ({
   isPromotion?: boolean;
 }) => {
   try {
+    // await new Promise((resolve) => setTimeout(resolve, 3000));
+
     const params = new URLSearchParams();
 
     if (slug) {
@@ -58,11 +60,10 @@ export const fetchProduct = async ({
     country.forEach((item: any) => {
       params.append("country", item);
     });
-    console.log(
-      `fetchProduct: ${process.env.NEXT_PUBLIC_API_URL}/products/?${params.toString()}`,
-    );
+
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/products/?${params.toString()}`,
+      { cache: "force-cache" },
     ).then((res) => res.json());
     return res.data;
   } catch (error) {
@@ -73,16 +74,18 @@ export const fetchAllProductsPromotion = async () => {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/products/promotions`,
+      { cache: "force-cache" },
     ).then((res) => res.json());
     return res.data;
   } catch (error) {
-    console.error(error);
+    console.error("error: ", error);
   }
 };
 export const fetchAllFilters = async () => {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/products/filters`,
+      { cache: "force-cache" },
     ).then((res) => res.json());
     return res.data;
   } catch (error) {
@@ -92,9 +95,9 @@ export const fetchAllFilters = async () => {
 
 export const fetchDetailProduct = async (slug: string) => {
   try {
-    console.log(`${process.env.NEXT_PUBLIC_API_URL}/product/?${slug}`);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/product/${slug}`,
+      { cache: "force-cache" },
     ).then((res) => res.json());
     return res.data;
   } catch (error) {

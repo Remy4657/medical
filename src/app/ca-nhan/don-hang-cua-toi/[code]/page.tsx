@@ -74,7 +74,7 @@ export default function OrderDetailPage() {
               {/* Product image */}
               <div className="relative h-[100] w-[80] shrink-0 overflow-hidden rounded-md bg-gray-100">
                 <Image
-                  src={item.image ?? "/images/product-placeholder.png"}
+                  src={item.image ?? "/img/placeholder.webp"}
                   alt={item.productName}
                   fill
                   className="object-contain"
