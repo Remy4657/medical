@@ -1,3 +1,4 @@
+import BlogList from "@/components/blog/BlogList";
 import Countdown from "@/components/Countdown";
 import Features from "@/components/feature/Featured";
 import FeaturedCategory from "@/components/feature/FeaturedCategory";
@@ -67,6 +68,7 @@ export default async function Page() {
       </div>
 
       <FeaturedCategory />
+      <BlogList />
     </div>
   );
 }
