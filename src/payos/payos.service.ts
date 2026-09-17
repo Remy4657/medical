@@ -76,8 +76,8 @@ export class PayOSService {
         //     price: Number(item.salePrice),
         //   })) ?? [],
 
-        returnUrl: `${frontendUrl}/dat-hang/success?orderCode=${order.orderCode}`,
-        cancelUrl: `${frontendUrl}/dat-hang/cancel?orderCode=${order.orderCode}`,
+        returnUrl: `${frontendUrl}/dat-hang/${order.orderCode}`,
+        cancelUrl: `${frontendUrl}/dat-hang/${order.orderCode}`,
         expiredAt,
       });
 

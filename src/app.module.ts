@@ -34,6 +34,10 @@ import { OrderItem } from './order/entities/order-item.entity';
 import { PayOSModule } from './payos/payos.module';
 import { SearchModule } from './search/search.module';
 import { SearchKeyword } from './search/entities/search.entity';
+import { BlogModule } from './blog/blog.module';
+import { BlogImage } from './blog/entities/blog-image.entity';
+import { BlogPost } from './blog/entities/blog-post.entity';
+import { BlogCategory } from './blog/entities/blog-category.entity';
 
 @Module({
   imports: [
@@ -70,10 +74,13 @@ import { SearchKeyword } from './search/entities/search.entity';
         Order,
         OrderItem,
         SearchKeyword,
+        BlogCategory,
+        BlogPost,
+        BlogImage,
       ],
       synchronize: process.env.NODE_ENV !== 'production',
       logging: true,
-      namingStrategy: new SnakeNamingStrategy(),
+      namingStrategy: new SnakeNamingStrategy(), // Sử dụng SnakeNamingStrategy để tự động chuyển đổi tên bảng và cột sang snake_case
     }),
     RoleModule,
     CategoryModule,
@@ -83,6 +90,7 @@ import { SearchKeyword } from './search/entities/search.entity';
     OrderModule,
     PayOSModule,
     SearchModule,
+    BlogModule,
   ],
   controllers: [AppController],
   providers: [

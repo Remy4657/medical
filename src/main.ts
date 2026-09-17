@@ -12,7 +12,7 @@ async function bootstrap() {
 
   app.use(cookieParser());
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: process.env.NEXT_PUBLIC_APP_URL,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, // cho phép gửi cookie/authorization header
   });
