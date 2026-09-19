@@ -46,7 +46,7 @@ jobs:
           port: 22
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd ~/project/medical/be
+            cd ~/project/medical/backend
             docker compose pull
             docker compose down
             docker compose up -d
