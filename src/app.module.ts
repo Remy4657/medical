@@ -78,7 +78,7 @@ import { BlogCategory } from './blog/entities/blog-category.entity';
         BlogPost,
         BlogImage,
       ],
-      synchronize: process.env.NODE_ENV !== 'production',
+      synchronize: true,
       logging: true,
       namingStrategy: new SnakeNamingStrategy(), // Sử dụng SnakeNamingStrategy để tự động chuyển đổi tên bảng và cột sang snake_case
     }),
