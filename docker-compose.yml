@@ -8,8 +8,27 @@ services:
       POSTGRES_DB: medical_db
     ports:
       - '5432:5432'
-    volumes:
+    networks:
+      - medical-network
+    volumes: # volume để lưu trữ dữ liệu của PostgreSQL, tránh mất dữ liệu khi container bị xóa
       - medical-pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: remy4657/medical-backend:latest
+    container_name: medical-backend
+    restart: unless-stopped
+    env_file:
+      - .env.production # lấy các biến môi trường từ file .env.production
+    ports:
+      - '5001:5001'
+    networks:
+      - medical-network
+networks:
+  medical-network:
+    external: true
 
 volumes:
   medical-pgdata:
