@@ -1,6 +1,6 @@
 import Breadcrumb from "@/components/BreadCrumb";
 import { fetchAllFilters, fetchProduct } from "@/services/productService";
-import ListProductsSlug from "@/components/listProduct/ListProductsSlug";
+import ListProductsSlug from "@/components/ListProduct/ListProductsSlug";
 import { notFound } from "next/navigation";
 import { fetchChildrenCategory } from "@/services/categoryService";
 import ListChildrenCategory from "@/components/ListChildrenCategory";

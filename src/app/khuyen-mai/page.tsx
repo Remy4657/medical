@@ -1,4 +1,4 @@
-import ListProductsPromotion from "@/components/listProduct/ListProductsPromotion";
+import ListProductsPromotion from "@/components/ListProduct/ListProductsPromotion";
 import {
   fetchAllProductsPromotion,
   fetchProduct,

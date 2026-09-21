@@ -1,4 +1,4 @@
-import ListProductsBestSelling from "@/components/listProduct/ListProductsBestSelling";
+import ListProductsBestSelling from "@/components/ListProduct/ListProductsBestSelling";
 import { fetchProduct } from "@/services/productService";
 
 const page = async () => {

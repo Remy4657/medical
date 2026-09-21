@@ -1,6 +1,6 @@
 "use client";
 import { useSearchProducts } from "@/hooks/useSearch";
-import ListProductsSlug from "../listProduct/ListProductsSlug";
+import ListProductsSlug from "../ListProduct/ListProductsSlug";
 import Loading from "../Loading";
 type SearchResultsProps = {
   keyword: string;

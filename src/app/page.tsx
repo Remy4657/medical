@@ -2,7 +2,7 @@ import BlogList from "@/components/blog/BlogList";
 import Countdown from "@/components/Countdown";
 import Features from "@/components/feature/Featured";
 import FeaturedCategory from "@/components/feature/FeaturedCategory";
-import ListProductsCarousel from "@/components/listProduct/ListProductsCarousel";
+import ListProductsCarousel from "@/components/ListProduct/ListProductsCarousel";
 import Slider from "@/components/Slider";
 import { fetchProduct } from "@/services/productService";
 import { Flame } from "lucide-react";

@@ -5,7 +5,7 @@ import EmblaCarouselThumbs from "@/components/carousel/EmblaCarouselThumbs";
 import { fetchProduct, fetchDetailProduct } from "@/services/productService";
 import { calculateDiscountPercent, formatPrice } from "@/utils/formatPrice";
 import Breadcrumb from "@/components/BreadCrumb";
-import ListProductsCarousel from "@/components/listProduct/ListProductsCarousel";
+import ListProductsCarousel from "@/components/ListProduct/ListProductsCarousel";
 import DetailProductAction from "@/components/DetailProductAction";
 
 export async function generateStaticParams() {
