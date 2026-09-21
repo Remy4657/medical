@@ -32,8 +32,9 @@ jobs:
           GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
           EOF
       # Build và push Docker image
-      - name: Build and Push Frontend Image
+      - name: Build Image
         run: docker compose --env-file .env.production build frontend # frontend là tên service trong file docker-compose.yml
+      - name: Push Image
         run: docker compose push frontend
   deploy:
     name: Deploy Frontend to VPS
