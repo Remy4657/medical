@@ -47,6 +47,7 @@ export class PayOSController {
 
   @Post('webhook')
   async webhook(@Body() body: any) {
+    console.log('handleWebhook');
     return this.payOSService.handleWebhook(body);
   }
 }

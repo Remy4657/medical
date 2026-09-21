@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { DataSource, In, Repository } from 'typeorm';
+import { DataSource, In, IsNull, Repository } from 'typeorm';
 
 import { Order } from './entities/order.entity';
 import { OrderItem } from './entities/order-item.entity';
@@ -27,7 +27,6 @@ export class OrderService {
   ) {}
 
   async createOrder(userId: string, dto: CreateOrderDto) {
-    console.log('Creating order for user:', userId, 'with data:', dto);
     if (!dto.items || dto.items.length === 0) {
       throw new BadRequestException('Giỏ hàng đang trống');
     }
@@ -214,7 +213,7 @@ export class OrderService {
        * Thực tế có thể gọi shipping service / tính theo tỉnh,
        * trọng lượng, voucher...
        */
-      const shippingFee = subtotal >= 500000 ? 0 : 30000;
+      const shippingFee = subtotal >= 500000 ? 0 : 5000;
 
       /**
        * ============================================================
@@ -239,10 +238,7 @@ export class OrderService {
       const order = queryRunner.manager.create(Order, {
         orderCode,
         payosOrderCode: dto.paymentMethod === 'BANK' ? payosOrderCode : null,
-        user: {
-          id: userId,
-        } as any,
-
+        userId: userId,
         status: OrderStatus.PENDING,
         paymentStatus: PaymentStatus.UNPAID,
 
@@ -369,9 +365,7 @@ export class OrderService {
     const order = await this.orderRepository.findOne({
       where: {
         orderCode,
-        user: {
-          id: userId,
-        },
+        userId: userId ?? IsNull(),
       },
       relations: {
         items: true,

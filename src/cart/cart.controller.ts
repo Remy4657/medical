@@ -22,7 +22,6 @@ import { MergeCartDto } from './dto/merge-cart.dto';
 @UseGuards(AuthGuard)
 export class CartController {
   constructor(private readonly cartService: CartService) {}
-  // GET /api/v1/cart
   @Get()
   async getCart(@CurrentUserId() userId: string) {
     return this.cartService.getCart(userId);

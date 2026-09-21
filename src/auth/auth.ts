@@ -14,7 +14,7 @@ const pool = new Pool({
 
 export const auth = betterAuth({
   database: pool,
-  secret: process.env.BETTER_AUTH_SECRET!,
   baseURL: process.env.NEXT_PUBLIC_APP_URL!,
+  secret: process.env.BETTER_AUTH_SECRET!,
   trustedOrigins: [process.env.NEXT_PUBLIC_APP_URL!],
 });

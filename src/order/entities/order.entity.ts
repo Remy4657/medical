@@ -25,6 +25,13 @@ export class Order {
   })
   orderCode: string;
 
+  @Column({
+    name: 'user_id',
+    type: 'varchar',
+    nullable: true,
+  })
+  userId: string | null;
+
   @ManyToOne(() => User, (user) => user.orders, {
     nullable: true,
     onDelete: 'RESTRICT',
