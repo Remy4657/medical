@@ -60,7 +60,9 @@ export const fetchProduct = async ({
     country.forEach((item: any) => {
       params.append("country", item);
     });
-
+    console.log(
+      `${process.env.NEXT_PUBLIC_API_URL}/products/?${params.toString()}`,
+    );
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/products/?${params.toString()}`,
       { cache: "force-cache" },

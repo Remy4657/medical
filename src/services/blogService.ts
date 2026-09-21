@@ -1,5 +1,3 @@
-import { Blog, BlogListResponse } from "@/types/blog";
-
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function getBlogs(page = 1, limit = 8, category?: string) {
@@ -11,14 +9,11 @@ export async function getBlogs(page = 1, limit = 8, category?: string) {
     if (category) {
       params.set("category", category);
     }
-    const res = await fetch(
-      `${API_URL}/blog?${params.toString()}`,
-      // {
-      //   next: {
-      //     revalidate: 24 * 60 * 60, // 24 hours
-      //   },
-      // }
-    );
+    const res = await fetch(`${API_URL}/blog?${params.toString()}`, {
+      next: {
+        revalidate: 24 * 60 * 60, // 24 hours
+      },
+    });
 
     if (!res.ok) {
       throw new Error("Failed to fetch blogs");
@@ -33,14 +28,11 @@ export async function getBlogs(page = 1, limit = 8, category?: string) {
 
 export async function getBlogBySlug(slug: string) {
   try {
-    const res = await fetch(
-      `${API_URL}/blog/${slug}`,
-      //    {
-      //   next: {
-      //     revalidate: 24 * 60 * 60, // 24 hours
-      //   },
-      // }
-    );
+    const res = await fetch(`${API_URL}/blog/${slug}`, {
+      next: {
+        revalidate: 24 * 60 * 60, // 24 hours
+      },
+    });
     if (!res.ok) {
       throw new Error("Blog not found");
     }

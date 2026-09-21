@@ -1,0 +1,23 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+        BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+        GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+        GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+    image: remy4657/medical-frontend:latest
+    container_name: medical-frontend
+    restart: unless-stopped
+    env_file:
+      - .env.production # lấy các biến môi trường từ file .env.production
+    ports:
+      - "3000:3000"
+    networks:
+      - medical-network
+networks:
+  medical-network:
+    external: true

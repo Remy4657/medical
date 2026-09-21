@@ -1,0 +1,55 @@
+name: Frontend CI-CD
+
+on:
+  push:
+    branches:
+      - frontend
+
+jobs:
+  build-and-push:
+    name: Build and Push Frontend Image
+    runs-on: ubuntu-latest
+
+    steps:
+      # Lấy source code từ branch Frontend
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Đăng nhập Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      # Tạo biến môi trường
+      - name: Create .env.production
+        run: |
+          cat > .env.production << EOF
+          NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_APP_URL=${{ vars.NEXT_PUBLIC_APP_URL }}
+          GOOGLE_CLIENT_ID=${{ vars.GOOGLE_CLIENT_ID }}
+          BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
+          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+          EOF
+      # Build và push Docker image
+      - name: Build and Push Frontend Image
+        run: docker compose --env-file .env.production build frontend # frontend là tên service trong file docker-compose.yml
+        run: docker compose push frontend
+  deploy:
+    name: Deploy Frontend to VPS
+    runs-on: ubuntu-latest
+    needs: build-and-push
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          port: 22
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd ~/project/medical/frontend
+            docker compose pull
+            docker compose down
+            docker compose up -d

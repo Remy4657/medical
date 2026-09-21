@@ -48,7 +48,11 @@ export default function SearchBox() {
     if (!q) {
       return;
     }
-    setKeyword(value);
+    console.log("value: ", value);
+    console.log("keyword: ", keyword);
+    if (value && typeof value === "string") {
+      setKeyword(value);
+    }
     setIsFocused(false);
     router.push(`/tim-kiem?q=${encodeURIComponent(q)}`);
   };

@@ -2,7 +2,6 @@
 import OrderDetailSkeleton from "@/components/skeleton/OrderDetailSkeleton";
 import { OrderStatus } from "@/constants";
 import { useDetailOrder } from "@/hooks/useOrder";
-import { getOrderDetail } from "@/services/orderService";
 import { formatDate } from "@/utils/formatDate";
 import { formatPrice } from "@/utils/formatPrice";
 import { MoveLeft } from "lucide-react";

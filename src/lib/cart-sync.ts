@@ -1,7 +1,6 @@
 "use client";
 
 import { useCartStore } from "@/stores/useCartStore";
-import api from "./api";
 import { CartItem } from "@/types/store";
 import { useCartQuery } from "@/hooks/useCart";
 import { useEffect } from "react";
@@ -50,7 +49,7 @@ function getCurrentQuantity(variantId: number): number {
   return item?.quantity ?? 0;
 }
 
-export function CartSync({ isLoggedIn }: { isLoggedIn: boolean }) {
+export function FetchCartByUserId({ isLoggedIn }: { isLoggedIn: boolean }) {
   const { data, isSuccess } = useCartQuery(isLoggedIn);
   const setItems = useCartStore((state) => state.setItems);
 

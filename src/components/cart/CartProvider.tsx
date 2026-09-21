@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "@/lib/auth-client";
 import { mergeCartOnLogin } from "@/lib/cart-merge";
 import { useCartStore } from "@/stores/useCartStore";
-import { CartSync } from "@/lib/cart-sync";
-import { useCart } from "@/hooks/useCart";
+import { FetchCartByUserId } from "@/lib/cart-sync";
 
 export function CartProvider() {
   const { data: session, isPending } = useSession();
@@ -106,9 +105,10 @@ export function CartProvider() {
   if (!isDomLoaded) {
     return;
   }
+  console.log("!!session?.user: ", !!session?.user);
   return (
     <>
-      <CartSync isLoggedIn={!!session?.user} />
+      <FetchCartByUserId isLoggedIn={!!session?.user} />
     </>
   );
 }

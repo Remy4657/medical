@@ -5,10 +5,7 @@ export const searchSuggestService = async (keyword: string) => {
     const params = new URLSearchParams({
       q: keyword,
     });
-    const response = await api.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/search/suggest`,
-      { params },
-    );
+    const response = await api.get(`/search/suggest`, { params });
     return response.data.data;
   } catch (error) {
     console.error("Error fetching search results:", error);
@@ -20,9 +17,7 @@ export const searchProductsService = async (keyword: string) => {
     const params = new URLSearchParams({
       q: keyword,
     });
-    const response = await api.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/search?${params.toString()}`,
-    );
+    const response = await api.get(`/search?${params.toString()}`);
     return response.data.data;
   } catch (error) {
     console.error("Error fetching search results:", error);
