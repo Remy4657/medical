@@ -47,6 +47,7 @@
   }
   .input-xl {
     font-size: 18px;
+    font-weight: normal;
   }
   dropdown {
     outline: none;

@@ -93,7 +93,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-x-8 lg:grid-cols-[1.05fr_1.1fr_1fr]">
           {/* Column 1 */}
           <div className="space-y-8">
-            <FooterSection title="Về Medigo">
+            <FooterSection title="Về An Sinh">
               <FooterLinks links={aboutLinks} />
             </FooterSection>
 

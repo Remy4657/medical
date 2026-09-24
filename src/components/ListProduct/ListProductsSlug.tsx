@@ -1,8 +1,7 @@
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { CatalogProductCard } from "../CatalogProductCard";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useProducts } from "@/hooks/useProducts";
 import ProductFilterDesktop from "./ProductFilterDesktop";
 import MobileFilterDrawer from "./MobileFilterDrawer";

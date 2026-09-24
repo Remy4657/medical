@@ -308,7 +308,7 @@ const Cart = ({ provinces }: CartProps) => {
 
   const calculateShipping = () => {
     const subtotal = calculateSubtotal();
-    return subtotal >= 500000 ? 0 : 30000;
+    return subtotal >= 500000 ? 0 : 5000;
   };
 
   const calculateTax = () => {
@@ -399,7 +399,7 @@ const Cart = ({ provinces }: CartProps) => {
           className="flex items-center w-fit gap-2 text-primary transition-colors hover:text-primary/80"
         >
           <ChevronLeftIcon size={17} />
-          <span className="text-sm breadcrumbs">Tiếp tục mua sắm</span>
+          <span className="breadcrumbs">Tiếp tục mua sắm</span>
         </Link>
 
         {/* Empty cart */}
@@ -681,7 +681,7 @@ const Cart = ({ provinces }: CartProps) => {
                                       onClick={() =>
                                         handleSelectProvince(province)
                                       }
-                                      className="w-full rounded-lg px-3 py-2 text-left hover:bg-base-200"
+                                      className="w-full font-normal rounded-lg px-3 py-2 text-left hover:bg-base-200"
                                     >
                                       {province.name}
                                     </button>
@@ -756,7 +756,7 @@ const Cart = ({ provinces }: CartProps) => {
                                     <button
                                       type="button"
                                       onClick={() => handleSelectWard(ward)}
-                                      className="w-full rounded-lg px-3 py-2 text-left hover:bg-base-200"
+                                      className="w-full font-normal rounded-lg px-3 py-2 text-left hover:bg-base-200"
                                     >
                                       {ward.name}
                                     </button>
@@ -798,7 +798,7 @@ const Cart = ({ provinces }: CartProps) => {
                         {...register("note")}
                         maxLength={500}
                         placeholder="Ghi chú cho người bán (không bắt buộc)"
-                        className={`textarea textarea-lg min-h-[110] w-full resize-none bg-base-0 ${
+                        className={`textarea font-normal textarea-lg min-h-[110] w-full resize-none bg-base-0 ${
                           errors.note ? "textarea-error" : ""
                         }`}
                       />
@@ -835,7 +835,7 @@ const Cart = ({ provinces }: CartProps) => {
                           {...register("paymentMethod")}
                           type="radio"
                           value="COD"
-                          className="checkbox checkbox-lg checkbox-primary"
+                          className="checkbox checkbox-md"
                         />
 
                         <span>Thanh toán khi nhận hàng</span>
@@ -853,7 +853,7 @@ const Cart = ({ provinces }: CartProps) => {
                           {...register("paymentMethod")}
                           type="radio"
                           value="BANK"
-                          className="checkbox checkbox-lg checkbox-primary"
+                          className="checkbox checkbox-md"
                         />
 
                         <span>Thanh toán bằng chuyển khoản (QR Code)</span>

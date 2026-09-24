@@ -11,7 +11,7 @@ export async function getBlogs(page = 1, limit = 8, category?: string) {
     }
     const res = await fetch(`${API_URL}/blog?${params.toString()}`, {
       next: {
-        revalidate: 24 * 60 * 60, // 24 hours
+        revalidate: 30 * 60, // 24 hours
       },
     });
 
@@ -30,7 +30,7 @@ export async function getBlogBySlug(slug: string) {
   try {
     const res = await fetch(`${API_URL}/blog/${slug}`, {
       next: {
-        revalidate: 24 * 60 * 60, // 24 hours
+        revalidate: 30 * 60, // 24 hours
       },
     });
     if (!res.ok) {

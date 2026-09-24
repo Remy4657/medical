@@ -69,7 +69,7 @@ export default function BlogDetail({ blog }: BlogDetailProps) {
         )}
 
         {/* Thumbnail */}
-        {blog.thumbnail && (
+        {/* {blog.thumbnail && (
           <div className="relative aspect-[16/9] rounded-2xl overflow-hidden mt-8">
             <Image
               src={blog.thumbnail}
@@ -79,38 +79,12 @@ export default function BlogDetail({ blog }: BlogDetailProps) {
               className="object-cover"
             />
           </div>
-        )}
+        )} */}
 
         {/* Content */}
         <div className="mt-10">
           {blog.content && <BlogContent content={blog.content} />}
         </div>
-
-        {/* Images của bài */}
-        {blog.images && blog.images.length > 0 && (
-          <div className="mt-12 space-y-10">
-            {blog.images
-              .sort((a, b) => a.sortOrder - b.sortOrder)
-              .map((image) => (
-                <figure key={image.id}>
-                  <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden">
-                    <Image
-                      src={image.url}
-                      alt={image.alt ?? blog.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-
-                  {image.caption && (
-                    <figcaption className="text-center text-sm text-base-content/60 mt-3">
-                      {image.caption}
-                    </figcaption>
-                  )}
-                </figure>
-              ))}
-          </div>
-        )}
       </div>
     </main>
   );

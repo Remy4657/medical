@@ -8,7 +8,6 @@ interface BlogListProps {
 
 export default async function BlogList({ page = 1, category }: BlogListProps) {
   const data = await getBlogs();
-  console.log("data.item", data.items);
   return (
     <section className="container mx-auto px-4 mt-20">
       <div className="mb-6">
@@ -24,7 +23,7 @@ export default async function BlogList({ page = 1, category }: BlogListProps) {
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {data.items.slice(0, 4).map((blog: any) => (
+            {data.items.map((blog: any) => (
               <BlogCard key={blog.id} blog={blog} />
             ))}
           </div>

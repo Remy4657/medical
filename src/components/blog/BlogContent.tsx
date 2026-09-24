@@ -7,6 +7,7 @@ import Color from "@tiptap/extension-color";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { TextStyle } from "@tiptap/extension-text-style";
 import { useEffect, useState } from "react";
+import { BlogImage } from "../editor/BlogImage";
 
 interface BlogContentProps {
   content: Record<string, any>;
@@ -45,9 +46,14 @@ export default function BlogContent({ content }: BlogContentProps) {
   //     }}
   //   />
   // );
+  // const editor = useEditor({
+  //   extensions: [StarterKit, Image, Underline, TextStyle, Color],
+  //   content,
+  // });
   const editor = useEditor({
-    extensions: [StarterKit, Image, Underline, TextStyle, Color],
+    extensions: [StarterKit, BlogImage],
     content,
+    editable: false,
   });
 
   return <EditorContent editor={editor} />;
