@@ -147,7 +147,7 @@ export class PayOSService {
     console.log('webhookData: ', webhookData);
     const order = await this.orderRepository.findOne({
       where: {
-        orderCode: String(webhookData.orderCode),
+        payosOrderCode: webhookData.orderCode, // bởi vì truyền lúc tạo payment truyền orderCode = payosOrderCode
       },
     });
     console.log('order: ', order);

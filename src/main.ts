@@ -14,7 +14,7 @@ async function bootstrap() {
 
   app.enableCors({
     origin: process.env.NEXT_PUBLIC_APP_URL,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
     credentials: true, // cho phép gửi cookie/authorization header
   });
 

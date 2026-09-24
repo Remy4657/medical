@@ -34,8 +34,10 @@ export class BlogService {
         slug: dto.slug,
         excerpt: dto.excerpt ?? null,
         content: dto.content,
-        thumbnail: dto.thumbnail ?? null,
-        status: dto.status ?? BlogStatus.DRAFT,
+        thumbnail:
+          dto.thumbnail ??
+          'https://res.cloudinary.com/dgrcjje61/image/upload/v1789551388/slider4.webp',
+        status: dto.status ?? BlogStatus.PUBLISHED,
         publishedAt: dto.status === BlogStatus.PUBLISHED ? new Date() : null,
       });
 
