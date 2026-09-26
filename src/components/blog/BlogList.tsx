@@ -9,7 +9,7 @@ interface BlogListProps {
 export default async function BlogList({ page = 1, category }: BlogListProps) {
   const data = await getBlogs();
   return (
-    <section className="container mx-auto px-4 mt-20">
+    <section className=" mt-10 md:mt-20">
       <div className="mb-6">
         <h1 className="text-3xl font-bold">Bài viết sức khỏe</h1>
 

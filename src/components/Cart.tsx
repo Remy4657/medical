@@ -391,12 +391,18 @@ const Cart = ({ provinces }: CartProps) => {
     return <Loading />;
   }
   return (
-    <div className="min-h-screen bg-base-50">
+    <div className="">
       <div className="mx-auto max-w-7xl pb-6">
+        <div className="flex flex-row gap-1 px-4 py-3 bg-primary/8 w-[1000] -mx-4 sm:mx-0 sm:hidden">
+          <span className="font-bold text-blue-500 flex flex-row gap-1">
+            <Truck /> <span>Miễn phí vận chuyển </span>
+          </span>
+          <span className="font-normal">đối với đơn hàng trên 500.000đ</span>
+        </div>
         {/* Back */}
         <Link
           href="/"
-          className="flex items-center w-fit gap-2 text-primary transition-colors hover:text-primary/80"
+          className="flex items-center w-fit gap-2 text-primary transition-colors hover:text-primary/80 mb-3"
         >
           <ChevronLeftIcon size={17} />
           <span className="breadcrumbs">Tiếp tục mua sắm</span>
@@ -404,7 +410,7 @@ const Cart = ({ provinces }: CartProps) => {
 
         {/* Empty cart */}
         {isEmpty && (
-          <div className="mt-8 rounded-2xl bg-base-0 py-20 text-center">
+          <div className="mt-8 rounded-none sm:rounded-2xl bg-base-0 py-20 text-center -mx-4 sm:mx-0">
             <h2 className="mb-3 text-xl font-semibold text-base-content">
               Giỏ hàng hiện đang trống
             </h2>
@@ -421,14 +427,14 @@ const Cart = ({ provinces }: CartProps) => {
 
         {!isEmpty && (
           <>
-            <h2 className="mb-2 mt-5 text-md font-semibold text-primary">
+            <h2 className="mb-2 text-md font-semibold text-primary hidden sm:block">
               Sản phẩm trong giỏ hàng
             </h2>
 
             <form
               onSubmit={handleSubmit(onSubmit)}
               noValidate
-              className="flex flex-col gap-5 lg:flex-row"
+              className="flex flex-col gap-5 lg:flex-row -mx-4 sm:mx-0"
             >
               {/* =================================================
                * LEFT
@@ -436,9 +442,9 @@ const Cart = ({ provinces }: CartProps) => {
 
               <div className="flex min-w-0 flex-1 flex-col gap-5">
                 {/* Cart items */}
-                <div className="rounded-2xl bg-base-0">
+                <div className="rounded-none sm:rounded-2xl bg-base-0  p-4 sm:p-0">
                   {" "}
-                  <div className="flex flex-row gap-1 rounded-t-2xl px-6 py-3 bg-primary/8 w-full">
+                  <div className="hidden sm:flex flex-row gap-1 rounded-t-2xl px-6 py-3 bg-primary/8 w-full">
                     <span className="font-bold text-blue-500 flex flex-row gap-1">
                       <Truck /> <span>Miễn phí vận chuyển </span>
                     </span>
@@ -446,7 +452,10 @@ const Cart = ({ provinces }: CartProps) => {
                       đối với đơn hàng trên 500.000đ
                     </span>
                   </div>
-                  <div className=" p-6">
+                  <h2 className="mb-5 text-md font-semibold text-primary sm:hidden">
+                    Sản phẩm trong giỏ hàng
+                  </h2>
+                  <div className="p-4 sm:p-6">
                     <div className="divide-y divide-base-200">
                       {items.map((item) => (
                         <div
@@ -550,12 +559,12 @@ const Cart = ({ provinces }: CartProps) => {
                  * ===============================================*/}
 
                 <div>
-                  <h2 className="mb-2 text-md font-semibold text-primary">
+                  <h2 className="mb-2 text-md font-semibold text-primary hidden sm:block">
                     Thông tin người đặt
                   </h2>
 
-                  <div className="rounded-2xl bg-base-0 p-6">
-                    <h3 className="mb-4 text-lg font-semibold">
+                  <div className="rounded-none sm:rounded-2xl bg-base-0 p-4 sm:p-6">
+                    <h3 className="mb-4 text-lg font-semibold text-primary sm:text-base-content">
                       Thông tin cá nhân
                     </h3>
 
@@ -620,7 +629,7 @@ const Cart = ({ provinces }: CartProps) => {
                     </div>
 
                     {/* Address */}
-                    <h3 className="mb-4 mt-6 text-lg font-semibold">
+                    <h3 className="mb-4 mt-6 text-lg font-semibold text-primary sm:text-base-content">
                       Địa chỉ nhận hàng
                     </h3>
 
@@ -817,11 +826,14 @@ const Cart = ({ provinces }: CartProps) => {
                  * ===============================================*/}
 
                 <div>
-                  <h2 className="mb-2 text-md font-semibold text-primary">
+                  <h2 className="mb-2 text-md font-semibold text-primary hidden sm:block">
                     Phương thức thanh toán
                   </h2>
 
-                  <div className="rounded-2xl bg-base-0 p-6">
+                  <div className="rounded-none sm:rounded-2xl bg-base-0 p-4 sm:p-6">
+                    <h2 className="mb-5 text-md font-semibold text-primary block sm:hidden">
+                      Phương thức thanh toán
+                    </h2>
                     <div className="flex flex-col gap-4">
                       {/* COD */}
                       <label
@@ -873,8 +885,8 @@ const Cart = ({ provinces }: CartProps) => {
                * RIGHT - ORDER SUMMARY
                * ===============================================*/}
 
-              <div className="h-fit w-full rounded-2xl bg-base-0 p-6 lg:sticky lg:top-5 lg:w-[360] lg:shrink-0">
-                <h2 className="mb-4 text-lg font-semibold text-primary">
+              <div className="h-fit w-full rounded-none sm:rounded-2xl bg-base-0 p-4 sm:p-6 lg:sticky lg:top-5 lg:w-[360] lg:shrink-0">
+                <h2 className="mb-5 text-lg font-semibold text-primary">
                   Tóm tắt đơn hàng
                 </h2>
                 <div className="space-y-5">

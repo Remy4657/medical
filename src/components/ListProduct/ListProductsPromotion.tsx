@@ -17,16 +17,16 @@ export default function ListProductsPromotion({
   });
 
   const products = data?.pages.flatMap((page) => page?.products) ?? [];
-  const pagination = data?.pages.flatMap((page) => page?.pagination) ?? [];
-  const latestPagination = pagination[pagination.length - 1] ?? {};
+  const latestPagination = data?.pages.at(-1)?.pagination ?? {};
+
   const currentPage = latestPagination.page ?? 1;
   const total = latestPagination.total ?? 0;
   const limit = latestPagination.limit ?? 0;
   const restCountProduct = total - limit * currentPage;
 
   return (
-    <div className="flex flex-col mt-5 p-3 rounded-2xl bg-white">
-      <div className="mb-5">
+    <div className="flex flex-col sm:mt-5 p-3 rounded-none sm:rounded-2xl bg-white -mx-4 sm:mx-0">
+      <div className="mb-5 -mx-3">
         <Image
           src="/img/flashsale.webp"
           alt="image"
@@ -43,10 +43,10 @@ export default function ListProductsPromotion({
         />
         <div className="tab-content mt-5">
           <Countdown />
-          <div className="grid grid-cols-1 gap-6 rounded-2xl">
+          <div className="grid grid-cols-1 gap-6 rounded-none sm:rounded-2xl">
             {/* Start List Products */}
             <div className="">
-              <ul className=" p-3 grid grid-cols-1 gap-2 sm:gap-4  xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+              <ul className=" grid grid-cols-1 gap-2 sm:gap-4  xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                 {products.map((p) => (
                   <li key={p.id}>
                     <CatalogProductCard product={p} />

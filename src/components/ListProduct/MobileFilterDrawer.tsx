@@ -10,6 +10,8 @@ type Props = {
   maxPrice: number | undefined;
   setMinPrice: any;
   setMaxPrice: any;
+  countFiltered: number;
+  setCountFiltered: any;
   open: boolean;
   onClose: () => void;
 };
@@ -25,6 +27,8 @@ export default function MobileFilterDrawer({
   maxPrice,
   setMinPrice,
   setMaxPrice,
+  countFiltered,
+  setCountFiltered,
   open,
   onClose,
 }: Props) {
@@ -40,7 +44,7 @@ export default function MobileFilterDrawer({
       {/* Drawer */}
       <div className="absolute left-0 top-0 h-full w-[85%] max-w-sm bg-base-100 shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b p-4">
+        <div className="flex items-center justify-between p-4">
           <h2 className="text-lg font-semibold"></h2>
 
           <button onClick={onClose} className="btn btn-sm btn-circle btn-ghost">
@@ -49,7 +53,7 @@ export default function MobileFilterDrawer({
         </div>
 
         {/* Filter content */}
-        <div className="h-[calc(100%-130px)] overflow-y-auto p-5">
+        <div className="h-[calc(100%-150px)] overflow-y-auto scrollbar-hide">
           <ProductFilterDesktop
             listBrandFilter={listBrandFilter}
             listCountryFilter={listCountryFilter}
@@ -61,15 +65,17 @@ export default function MobileFilterDrawer({
             maxPrice={maxPrice}
             setMinPrice={setMinPrice}
             setMaxPrice={setMaxPrice}
+            countFiltered={countFiltered}
+            setCountFiltered={setCountFiltered}
           />
         </div>
 
         {/* Footer */}
-        <div className="absolute bottom-0 left-0 right-0 border-t bg-base-100 p-4">
+        {/* <div className="absolute bottom-0 left-0 right-0 border-t bg-base-100 p-4">
           <button onClick={onClose} className="btn btn-primary w-full">
             Áp dụng bộ lọc
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -32,12 +32,12 @@ export default function ListProductsCarousel({
   return (
     <div>
       <div
-        className={`space-y-12 ${isBestSelling ? "bg-primary p-3 rounded-2xl rounded-tl-none" : ""}`}
+        className={`${isBestSelling ? "bg-primary px-3 rounded-none sm:rounded-2xl sm:rounded-tl-none" : ""}`}
       >
         <section id="catolag" className="scroll-mt-24">
           <div className="embla">
             <div className="embla__viewport scrollbar-hide" ref={emblaRef}>
-              <div className="embla__container gap-3 pt-1">
+              <div className="embla__container gap-3 pt-3">
                 {listProducts.map((p) => (
                   <div
                     className="embla__slide grow-0 shrink-0  basis-1/6 min-w-[160] sm:basis-[calc((100%-60px)/6)] sm:min-w-[200]"
@@ -63,22 +63,24 @@ export default function ListProductsCarousel({
             </div>
           </div>
         </section>
+        {(isBestSelling || isPromotion) && (
+          <div className="flex justify-between items-center">
+            <button
+              className="flex flex-row cursor-pointer p-3 btn-ghost m-auto text-primary"
+              onClick={() => {
+                isBestSelling
+                  ? router.push("/ban-chay")
+                  : router.push("/khuyen-mai");
+              }}
+            >
+              <span className={`text-md ${isBestSelling ? "text-base-0" : ""}`}>
+                Xem tất cả {">>"}
+              </span>
+              {/* <ChevronRight className="size-5 items-center" /> */}
+            </button>
+          </div>
+        )}
       </div>
-      {(isBestSelling || isPromotion) && (
-        <div className="flex justify-between items-center">
-          <button
-            className="flex flex-row cursor-pointer p-3 btn-ghost m-auto text-primary"
-            onClick={() => {
-              isBestSelling
-                ? router.push("/ban-chay")
-                : router.push("/khuyen-mai");
-            }}
-          >
-            <span className="text-md">Xem tất cả</span>
-            {/* <ChevronRight className="size-5 items-center" /> */}
-          </button>
-        </div>
-      )}
     </div>
   );
 }

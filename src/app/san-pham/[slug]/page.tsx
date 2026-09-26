@@ -1,9 +1,7 @@
 import { notFound } from "next/navigation";
 
-import Link from "next/link";
 import EmblaCarouselThumbs from "@/components/carousel/EmblaCarouselThumbs";
 import { fetchProduct, fetchDetailProduct } from "@/services/productService";
-import { calculateDiscountPercent, formatPrice } from "@/utils/formatPrice";
 import Breadcrumb from "@/components/BreadCrumb";
 import ListProductsCarousel from "@/components/ListProduct/ListProductsCarousel";
 import DetailProductAction from "@/components/DetailProductAction";
@@ -33,7 +31,7 @@ export default async function ProductPage({
       />
 
       {/* Product Layout: Image Gallery + Info */}
-      <div className="bg-base-0 mt-5 p-5 rounded-lg grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="bg-base-0 mt-5 p-5 rounded-none sm:rounded-lg grid grid-cols-1 lg:grid-cols-2 gap-8 -mx-4 sm:mx-0">
         {/* Product Gallery */}
         <div className="lg:pr-8">
           <EmblaCarouselThumbs images={productDetail.images} />
@@ -42,7 +40,7 @@ export default async function ProductPage({
         <DetailProductAction productDetail={productDetail} />
       </div>
 
-      <div className="bg-base-0 p-5 mt-5 rounded-lg">
+      <div className="bg-base-0 p-5 mt-5 rounded-none sm:rounded-lg -mx-4 sm:mx-0">
         <div className="flex flex-col gap-2">
           <span className="text-lg font-bold">Thông tin sản phẩm</span>
           {productDetail.attributes.map((item: any) => (
@@ -56,7 +54,7 @@ export default async function ProductPage({
         </div>
       </div>
 
-      <div className="bg-base-0 p-5 mt-5 rounded-lg">
+      <div className="bg-base-0 p-5 mt-5 rounded-none sm:rounded-lg -mx-4 sm:mx-0">
         <h1 className="mb-3">Sản phẩm liên quan</h1>
         <ListProductsCarousel listProducts={products} />
       </div>

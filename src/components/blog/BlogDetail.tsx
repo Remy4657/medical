@@ -12,7 +12,7 @@ interface BlogDetailProps {
 export default function BlogDetail({ blog }: BlogDetailProps) {
   console.log("blog: ", blog);
   return (
-    <main className="container mx-auto px-4 py-8">
+    <main className=" sm:mx-auto py-8">
       {/* Breadcrumb */}
       {/* <div className="breadcrumbs text-sm mb-6">
         <ul>

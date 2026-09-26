@@ -45,7 +45,7 @@ const listFeatures = [
 
 const FeaturePrivacy = () => {
   return (
-    <div className="flex bg-primary/10 py-5 mt-20">
+    <div className="flex bg-primary/10 py-5 px-3 mt-20">
       <div className="mx-auto w-full max-w-7xl grid gap-5 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
         {listFeatures.map((item: any, index) => {
           return (

@@ -20,9 +20,9 @@ export default async function Page() {
     <div>
       <Slider />
       <Features />
-      <div className="flex flex-col mt-15 rounded-2xl bg-white">
+      <div className="flex flex-col mt-15 bg-transparent -mx-4 sm:mx-0">
         <div>
-          <p className="flex flex-row px-5 py-2 text-white text-xl w-fit bg-primary rounded-t-2xl">
+          <p className=" flex flex-row px-5 py-2 text-white text-xl w-full  bg-primary justify-center rounded-t-none sm:w-fit sm:rounded-t-2xl">
             <Flame />
             <span className="ml-1">Sản phẩm bán chạy</span>
           </p>
@@ -33,8 +33,8 @@ export default async function Page() {
         />
       </div>
 
-      <div className="flex flex-col mt-20 p-3 rounded-2xl bg-white">
-        <div className="mb-5">
+      <div className="flex flex-col mt-10 md:mt-20 -mx-4 px-3 sm:mx-0 rounded-none sm:rounded-2xl bg-white">
+        <div className="mb-5 -mx-3">
           <Image
             src="/img/flashsale.webp"
             alt="image"

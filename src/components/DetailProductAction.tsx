@@ -176,11 +176,11 @@ const DetailProductAction = ({ productDetail }: Props) => {
         </p>
         <div className="flex flex-col">
           <div className="flex flex-row">
-            <span className="font-medium w-[60]">Xuất xứ: </span>
+            <span className="font-medium w-[70]">Xuất xứ: </span>
             <span className=""> {productDetail.country}</span>
           </div>
           <div className="flex flex-row">
-            <span className="font-medium w-[100]">Thương hiệu: </span>
+            <span className="font-medium w-[110]">Thương hiệu: </span>
             <span className=""> {productDetail.brand}</span>
           </div>
         </div>

@@ -48,8 +48,7 @@ export default function SearchBox() {
     if (!q) {
       return;
     }
-    console.log("value: ", value);
-    console.log("keyword: ", keyword);
+
     if (value && typeof value === "string") {
       setKeyword(value);
     }
@@ -60,8 +59,11 @@ export default function SearchBox() {
   const shouldShowDropdown = isFocused && keyword.trim().length >= 2;
 
   return (
-    <div ref={containerRef} className="relative flex items-center basis-300">
-      <div className=" flex items-center basis-300">
+    <div
+      ref={containerRef}
+      className="relative flex items-center basis-500 sm:basis-400"
+    >
+      <div className=" flex items-center basis-500 sm:basis-400">
         <label className=" input w-full py-[25] text-lg rounded-3xl">
           <svg
             className="h-[1em] opacity-50"

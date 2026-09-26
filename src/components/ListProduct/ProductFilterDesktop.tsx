@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FilterAccordion from "./FilterAccordion";
+import { minMax } from "@tiptap/core";
 
 type Props = {
   listBrandFilter: any;
@@ -12,6 +13,8 @@ type Props = {
   maxPrice: number | undefined;
   setMinPrice: any;
   setMaxPrice: any;
+  countFiltered: number;
+  setCountFiltered: any;
 };
 
 export default function ProductFilterDesktop({
@@ -25,10 +28,25 @@ export default function ProductFilterDesktop({
   maxPrice,
   setMinPrice,
   setMaxPrice,
+  countFiltered,
+  setCountFiltered,
 }: Props) {
   const [openId1, setOpenId1] = useState<number | null>(1);
   const [openId2, setOpenId2] = useState<number | null>(2);
   const [openId3, setOpenId3] = useState<number | null>(3);
+
+  useEffect(() => {
+    if (
+      minPrice ||
+      maxPrice ||
+      listBrandFilterSelected.length > 0 ||
+      listCountryFilterSelected.length > 0
+    ) {
+      setCountFiltered(1);
+    } else {
+      setCountFiltered(0);
+    }
+  }, [minPrice, maxPrice, listBrandFilterSelected, listCountryFilterSelected]);
 
   const handleChangeBrand = (value: string) => {
     setListBrandFilterSelected((prev: string[]) => {

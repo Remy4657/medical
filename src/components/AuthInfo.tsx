@@ -37,7 +37,7 @@ const AuthInfo = () => {
   return (
     <div className=" navbar-end text-white">
       <div className="flex flex-row items-center">
-        <label className="swap swap-rotate">
+        <label className="swap swap-rotate hidden md:flex mr-5">
           <input
             type="checkbox"
             className="theme-controller"
@@ -64,7 +64,7 @@ const AuthInfo = () => {
 
         <Link
           href="/gio-hang"
-          className="relative btn btn-ghost gap-2 font-medium indicator text-white"
+          className="relative pl-0 btn btn-ghost gap-2 font-medium indicator text-white "
           aria-label={"Cart"}
         >
           <ShoppingCartIcon className="size-6 opacity-90" aria-hidden />
@@ -74,7 +74,7 @@ const AuthInfo = () => {
             </span>
           )}
         </Link>
-        <div className="hidden sm:block px-2">
+        <div className="hidden sm:block ml-3">
           {userName ? (
             <div className="dropdown dropdown-hover">
               <span className="flex cursor-pointer">

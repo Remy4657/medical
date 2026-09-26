@@ -4,7 +4,7 @@ const NavigationBar = () => {
       <div
         tabIndex={0}
         role="button"
-        className="btn btn-ghost sm:hidden text-white"
+        className="px-0 btn btn-ghost md:hidden text-white hover:bg-none"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
