@@ -33,9 +33,6 @@
   --color-base-0: var(--color-base-100);
 }
 @layer base {
-  .btn {
-    font-weight: bolder;
-  }
 }
 @layer utilities {
   /* .btn-primary {
@@ -72,6 +69,8 @@
   button.input:focus {
     outline: none;
     border-color: var(--color-border);
+  }
+  .btn {
   }
   .scrollbar-hide {
     -ms-overflow-style: none;

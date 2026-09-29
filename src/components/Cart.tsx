@@ -393,7 +393,7 @@ const Cart = ({ provinces }: CartProps) => {
   return (
     <div className="">
       <div className="mx-auto max-w-7xl pb-6">
-        <div className="flex flex-row gap-1 px-4 py-3 bg-primary/8 w-[1000] -mx-4 sm:mx-0 sm:hidden">
+        <div className="flex flex-row gap-1 px-4 py-3 bg-primary/8 w-[1000] -mx-4 sm:mx-0 sm:hidden text-sm flex-wrap">
           <span className="font-bold text-blue-500 flex flex-row gap-1">
             <Truck /> <span>Miễn phí vận chuyển </span>
           </span>

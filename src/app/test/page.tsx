@@ -16,7 +16,6 @@ const Modal = ({ setIsShowModal }: { setIsShowModal: any }) => {
       const now = Math.floor(Date.now() / 1000);
 
       const value = Math.max(0, expiredAt - now);
-      console.log("value: ", value);
       if (value <= 0) {
         clearInterval(timer);
       }

@@ -46,7 +46,7 @@ export default async function ProductPage({
           {productDetail.attributes.map((item: any) => (
             <div key={item.id} className="flex flex-row">
               <span className="font-medium flex-1">{item.name}</span>
-              <span className="flex-4 whitespace-pre-line text-sm leading-7">
+              <span className="flex-4 whitespace-pre-line text-md leading-7 font-normal">
                 {item.value}
               </span>
             </div>

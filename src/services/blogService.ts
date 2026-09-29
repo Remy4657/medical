@@ -19,7 +19,6 @@ export async function getBlogs(page = 1, limit = 8, category?: string) {
       throw new Error("Failed to fetch blogs");
     }
     const data = await res.json();
-    console.log("res.json()", data);
     return data.data;
   } catch (error) {
     console.error(error);

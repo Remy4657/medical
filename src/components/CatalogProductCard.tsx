@@ -60,13 +60,13 @@ export function CatalogProductCard({ product }: { product: Product }) {
       <div className="card-body grow gap-3 p-5 text-left">
         <Link
           href={`/san-pham/${product.slug}`}
-          className="card-title line-clamp-2 text-lg transition group-hover:text-primary"
+          className="line-clamp-3 text-[15px] transition group-hover:text-primary"
         >
           {product.name}
         </Link>
-        <p className="line-clamp-3 text-sm leading-relaxed text-base-content/70">
+        {/* <p className="line-clamp-3 text-sm leading-relaxed text-base-content/70">
           {product.description}
-        </p>
+        </p> */}
         <div className="card-actions mt-auto items-start justify-start border-t border-base-200 pt-4 flex-col">
           <span className="text-md ">
             {formatPrice(product.bestVariant?.price?.salePrice)} /{" "}

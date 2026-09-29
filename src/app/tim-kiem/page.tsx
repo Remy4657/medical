@@ -1,4 +1,4 @@
-import SearchResults from "@/components/search/SearchResults";
+import ListProductsSearch from "@/components/ListProduct/ListProductsSearch";
 import { fetchAllFilters } from "@/services/productService";
 
 type Props = {
@@ -9,14 +9,17 @@ type Props = {
 
 export default async function SearchPage({ searchParams }: Props) {
   const params = await searchParams;
-  const q = params.q ?? "";
+  const q = params.q?.trim() ?? "";
 
   const { brands, countries } = await fetchAllFilters();
 
   return (
-    <SearchResults
-      keyword={q}
-      filterOptions={{ brands: brands, countries: countries }}
-    />
+    <div className="mt-5">
+      <ListProductsSearch
+        keyword={q}
+        listBrandFilter={brands}
+        listCountryFilter={countries}
+      />
+    </div>
   );
 }

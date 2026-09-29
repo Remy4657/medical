@@ -1,7 +1,3 @@
-// components/blog/BlogDetail.tsx
-
-import Link from "next/link";
-import Image from "next/image";
 import BlogContent from "./BlogContent";
 import { Blog } from "@/types/blog";
 
@@ -10,7 +6,6 @@ interface BlogDetailProps {
 }
 
 export default function BlogDetail({ blog }: BlogDetailProps) {
-  console.log("blog: ", blog);
   return (
     <main className=" sm:mx-auto py-8">
       {/* Breadcrumb */}

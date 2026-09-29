@@ -105,7 +105,6 @@ export function CartProvider() {
   if (!isDomLoaded) {
     return;
   }
-  console.log("!!session?.user: ", !!session?.user);
   return (
     <>
       <FetchCartByUserId isLoggedIn={!!session?.user} />

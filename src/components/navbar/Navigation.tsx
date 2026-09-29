@@ -7,7 +7,7 @@ const Navigation = async () => {
 
   return (
     <div className="flex bg-base-0">
-      <div className="min-h-14 navbar-center hidden sm:flex gap-7 mx-auto">
+      <div className="min-h-14 navbar-center hidden md:flex gap-7 mx-auto">
         {resListCategories?.map((p: any) => (
           <div
             key={p.id}

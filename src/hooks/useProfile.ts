@@ -7,8 +7,6 @@ export const useQueryProfile = () =>
     queryKey: ["profile"],
     queryFn: getProfile,
     staleTime: Infinity,
-    refetchOnWindowFocus: false, // Nếu muốn tự kiểm tra thay đổi khi focus vào tab
-    refetchOnReconnect: false, // Nếu muốn tự kiểm tra thay đổi khi kết nối lại
   });
 export const useUpdateProfileMutation = () => {
   const queryClient = useQueryClient();

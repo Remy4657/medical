@@ -170,18 +170,23 @@ const DetailProductAction = ({ productDetail }: Props) => {
         </button>
       </div>
       <div>
-        <p>
-          <span className="font-medium">Mô tả: </span>
+        <p className="text-base-content/80 font-normal leading-8">
+          <span className="font-medium text-base-content">Mô tả: </span>
+
           {productDetail.description}
         </p>
         <div className="flex flex-col">
-          <div className="flex flex-row">
+          <div className="flex flex-row leading-8">
             <span className="font-medium w-[70]">Xuất xứ: </span>
-            <span className=""> {productDetail.country}</span>
+            <span className="text-base-content/80 font-normal">
+              {productDetail.country}
+            </span>
           </div>
           <div className="flex flex-row">
             <span className="font-medium w-[110]">Thương hiệu: </span>
-            <span className=""> {productDetail.brand}</span>
+            <span className="text-base-content/80 font-normal">
+              {productDetail.brand}
+            </span>
           </div>
         </div>
       </div>

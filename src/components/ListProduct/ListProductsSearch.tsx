@@ -2,21 +2,20 @@
 
 import { CatalogProductCard } from "../CatalogProductCard";
 import { useEffect, useState } from "react";
-import { useProducts } from "@/hooks/useProducts";
 import ProductFilterDesktop from "./ProductFilterDesktop";
 import MobileFilterDrawer from "./MobileFilterDrawer";
 import { ListFilter } from "lucide-react";
+import { useSearchProducts } from "@/hooks/useSearch";
+import Loading from "../Loading";
 
-export default function ListProductsSlug({
+export default function ListProductsSearch({
+  keyword,
   listBrandFilter,
   listCountryFilter,
-  categorySlug,
-  initialData,
 }: {
+  keyword: string;
   listBrandFilter: any;
   listCountryFilter: any;
-  categorySlug?: string;
-  initialData: any;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [sortBy, setSortBy] = useState<undefined | string>(undefined);
@@ -34,10 +33,15 @@ export default function ListProductsSlug({
   const handleOpenFilter = () => {
     setIsOpen(true);
   };
-
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useProducts({
-    categorySlug,
-    initialData,
+  const {
+    data,
+    isPending,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useSearchProducts({
+    keywordSearch: keyword,
     sortBy,
     order,
     brand: listBrandFilterSelected,
@@ -63,7 +67,17 @@ export default function ListProductsSlug({
     setSortBy("price");
     setOrder("desc");
   };
+  if (isPending) {
+    return <Loading />;
+  }
 
+  if (isError) {
+    return (
+      <div className="text-md font-normal">
+        Không tìm thấy sản phẩm phù hợp, vui thòng thử lại sau.
+      </div>
+    );
+  }
   return (
     <div className="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-[260px_1fr] xl:grid-cols-[300px_1fr]">
       {/* Start Desktop filter */}
@@ -87,23 +101,23 @@ export default function ListProductsSlug({
 
       {/* Start List Products */}
       <div>
-        <div className="flex gap-3 flex-row justify-between mb-5 items-center overflow-x-auto scrollbar-hide">
-          <div>
-            <h2 className="text-lg text-base-content hidden md:block">
-              Danh sách sản phẩm
-            </h2>
-            <button
-              onClick={() => handleOpenFilter()}
-              className={`relative btn btn-outline d-block sm:hidden w-[110] ${countFiltered == 1 ? "text-primary border-primary" : "border-base-300"}`}
-            >
-              <ListFilter size={15} />
-              Bộ lọc
-              {countFiltered == 1 && (
-                <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-primary border-2 border-white" />
-              )}
-            </button>
-          </div>
-          {products.length > 0 && (
+        {products.length > 0 && (
+          <div className="flex gap-3 flex-row justify-between mb-5 items-center overflow-x-auto scrollbar-hide">
+            <div>
+              <h2 className="text-lg text-base-content hidden md:block">
+                Kết quả tìm kiếm
+              </h2>
+              <button
+                onClick={() => handleOpenFilter()}
+                className={`relative btn btn-outline d-block sm:hidden w-[110] ${countFiltered == 1 ? "text-primary border-primary" : "border-base-300"}`}
+              >
+                <ListFilter size={15} />
+                Bộ lọc
+                {countFiltered == 1 && (
+                  <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-primary border-2 border-white" />
+                )}
+              </button>
+            </div>
             <div className="flex flex-row gap-3">
               <span className="hidden lg:flex items-center ">
                 Sắp xếp theo:{" "}
@@ -140,12 +154,13 @@ export default function ListProductsSlug({
                 Giá giảm dần
               </button>
             </div>
-          )}
-        </div>
-
-        <h2 className="text-lg  mb-3 text-base-content block md:hidden">
-          Danh sách sản phẩm
-        </h2>
+          </div>
+        )}
+        {products.length > 0 && (
+          <h2 className="text-lg  mb-3 text-base-content block md:hidden">
+            Kết quả tìm kiếm
+          </h2>
+        )}
         <ul className="grid gap-2 sm:gap-6 grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
           {products.length > 0 ? (
             products.map((p) => (
@@ -155,7 +170,7 @@ export default function ListProductsSlug({
             ))
           ) : (
             <p className="text-gray-500 text-sm italic">
-              Không có sản phẩm nào.
+              Không có sản phẩm phù hợp.
             </p>
           )}
         </ul>

@@ -6,8 +6,6 @@ export const useQueryPayment = (payosOrderCode: number) =>
     queryKey: ["payment", "create"],
     queryFn: async () => createPayment(payosOrderCode),
     staleTime: 1000 * 5,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   });
 export const useCreatePayment = () => {
   return useMutation({
