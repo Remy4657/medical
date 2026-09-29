@@ -24,10 +24,6 @@ export class SearchController {
    */
   @Get()
   async search(@Query() query: SearchProductsDto) {
-    return this.searchService.search(
-      query.q,
-      query.page ?? 1,
-      query.limit ?? 20,
-    );
+    return this.searchService.search(query);
   }
 }

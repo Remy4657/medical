@@ -87,15 +87,7 @@ export class PayOSService {
       await this.orderRepository.update(order.id, {
         payosPaymentLinkId: paymentLink.paymentLinkId,
       });
-      console.log({
-        payosOrderCode: order.payosOrderCode,
-        amount,
-        status: paymentLink.status,
-        qrCode: paymentLink.qrCode,
-        checkoutUrl: paymentLink.checkoutUrl,
-        paymentLinkId: paymentLink.paymentLinkId,
-        expiredAt,
-      });
+
       return {
         payosOrderCode: order.payosOrderCode,
         amount,
@@ -144,13 +136,11 @@ export class PayOSService {
      * Verify chữ ký do PayOS gửi
      */
     const webhookData = await this.payOS.webhooks.verify(body);
-    console.log('webhookData: ', webhookData);
     const order = await this.orderRepository.findOne({
       where: {
         payosOrderCode: webhookData.orderCode, // bởi vì truyền lúc tạo payment truyền orderCode = payosOrderCode
       },
     });
-    console.log('order: ', order);
 
     /**
      * PayOS có thể gửi webhook cho transaction
@@ -166,7 +156,6 @@ export class PayOSService {
      * Webhook success
      */
     if (webhookData.code === '00') {
-      console.log('zo 1');
       /**
        * Idempotency:
        *
@@ -180,7 +169,6 @@ export class PayOSService {
         if (Number(webhookData.amount) !== Number(order.totalAmount)) {
           throw new BadRequestException('Số tiền webhook không khớp Order');
         }
-        console.log('zo 2');
 
         await this.orderRepository.update(order.id, {
           // Cast to any to satisfy TypeORM partial update typing for enum/union fields

@@ -9,6 +9,7 @@ import { SearchProductItem, SearchSuggestResponse } from './types/search.types';
 import { SearchKeyword } from './entities/search.entity';
 import { ProductVariant } from '../product/entities/product-variant.entity';
 import { ProductPrice } from '../product/entities/product-price.entity';
+import { SearchProductsDto } from './dto/search.dto';
 
 @Injectable()
 export class SearchService {
@@ -211,10 +212,28 @@ export class SearchService {
   // FULL SEARCH
   // ============================================================
 
-  async search(keyword: string, page = 1, limit = 20) {
-    const normalizedKeyword = this.normalize(keyword);
+  async search(query: SearchProductsDto) {
+    const {
+      q,
+      page = 1,
+      limit = 20,
+      order = 'desc',
+      sortBy = 'createdAt',
+      brand,
+      country,
+      minPrice,
+      maxPrice,
+      isPromotion,
+    } = query;
+
+    const normalizedKeyword = this.normalize(q);
 
     const qb = this.productRepository.createQueryBuilder('product');
+
+    // =========================
+    // Best variant
+    // =========================
+
     const bestVariantSubQuery = qb
       .subQuery()
       .select('pv.id')
@@ -225,6 +244,7 @@ export class SearchService {
         '(pp.originalPrice - pp.salePrice) / NULLIF(pp.originalPrice, 0)',
         'DESC',
       )
+      .addOrderBy('pv.id', 'ASC')
       .limit(1)
       .getQuery();
 
@@ -247,123 +267,181 @@ export class SearchService {
         `variant.id = ${bestVariantSubQuery}`,
       )
       .leftJoinAndSelect('variant.price', 'price')
-      .leftJoinAndSelect('variant.unit', 'unit')
+      .leftJoinAndSelect('variant.unit', 'unit');
 
-      .skip((page - 1) * limit)
-      .take(limit)
-      .where(
-        `
-      (
-        unaccent(lower(product.name))
-          LIKE :keyword
-        OR unaccent(lower(category.name)) LIKE :keyword
-        OR unaccent(lower(product.description))
-          LIKE :keyword
-      )
-      `,
-        {
-          keyword: `%${normalizedKeyword}%`,
-        },
-      )
-
-      // Ranking
-      .addSelect(
-        `CASE
-    WHEN unaccent(lower(product.name)) = :exactKeyword
-      THEN 1
-
-    WHEN unaccent(lower(product.name)) LIKE :prefixKeyword
-      THEN 2
-
-    WHEN unaccent(lower(product.name)) LIKE :keyword
-      THEN 3
-
-    ELSE 4
-  END`,
-        'search_rank',
-      );
-    qb.addOrderBy('search_rank', 'ASC');
-    qb.setParameters({
-      exactKeyword: normalizedKeyword,
-      prefixKeyword: `${normalizedKeyword}%`,
-      keyword: `%${normalizedKeyword}%`,
-    });
-    const [products, total] = await qb.getManyAndCount();
-
-    return {
-      products,
-      pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-        hasMore: page * limit < total,
-      },
-    };
-  }
-
-  // ============================================================
-  // BUILD PRODUCT QUERY
-  // ============================================================
-
-  private createProductSearchQuery(
-    keyword: string,
-    withRelations = true,
-  ): SelectQueryBuilder<Product> {
-    const normalizedKeyword = this.normalize(keyword);
-
-    const qb = this.productRepository
-      .createQueryBuilder('product')
-      .leftJoinAndSelect('product.category', 'category');
-
-    if (withRelations) {
-      qb.leftJoinAndSelect('product.images', 'image')
-        .leftJoinAndSelect('product.variants', 'variant')
-        .leftJoinAndSelect('variant.price', 'price')
-        .leftJoinAndSelect('variant.unit', 'unit');
-    }
+    // =========================
+    // SEARCH
+    // =========================
 
     qb.where(
       `
-      (
-        unaccent(lower(product.name))
-          LIKE :keyword
-        OR unaccent(lower(category.name)) LIKE :keyword
-        OR unaccent(lower(product.description))
-          LIKE :keyword
-      )
-      `,
+    (
+      unaccent(lower(product.name))
+        LIKE :keyword
+
+      OR unaccent(lower(category.name))
+        LIKE :keyword
+
+      OR unaccent(lower(product.description))
+        LIKE :keyword
+    )
+    `,
       {
         keyword: `%${normalizedKeyword}%`,
       },
     );
 
-    // Ranking
+    // =========================
+    // BRAND FILTER
+    // =========================
+
+    if (brand?.length) {
+      qb.andWhere('brand.slug IN (:...brands)', {
+        brands: brand,
+      });
+    }
+
+    // =========================
+    // COUNTRY FILTER
+    // =========================
+
+    if (country?.length) {
+      qb.andWhere('country.code IN (:...countries)', {
+        countries: country,
+      });
+    }
+
+    // =========================
+    // PRICE FILTER
+    // =========================
+
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      qb.andWhere(
+        `
+      EXISTS (
+        SELECT 1
+        FROM product_variant variantFilter
+        INNER JOIN product_price priceFilter
+          ON priceFilter.variant_id = variantFilter.id
+        WHERE variantFilter.product_id = product.id
+
+        ${
+          minPrice !== undefined
+            ? 'AND priceFilter.sale_price >= :minPrice'
+            : ''
+        }
+
+        ${
+          maxPrice !== undefined
+            ? 'AND priceFilter.sale_price <= :maxPrice'
+            : ''
+        }
+      )
+      `,
+        {
+          ...(minPrice !== undefined && {
+            minPrice,
+          }),
+
+          ...(maxPrice !== undefined && {
+            maxPrice,
+          }),
+        },
+      );
+    }
+
+    // =========================
+    // SEARCH RANK
+    // =========================
+
     qb.addSelect(
-      `CASE
-    WHEN unaccent(lower(product.name)) = :exactKeyword
-      THEN 1
+      `
+    CASE
 
-    WHEN unaccent(lower(product.name)) LIKE :prefixKeyword
-      THEN 2
+      WHEN unaccent(lower(product.name))
+        = :exactKeyword
+        THEN 1
 
-    WHEN unaccent(lower(product.name)) LIKE :keyword
-      THEN 3
+      WHEN unaccent(lower(product.name))
+        LIKE :prefixKeyword
+        THEN 2
 
-    ELSE 4
-  END`,
+      WHEN unaccent(lower(product.name))
+        LIKE :keyword
+        THEN 3
+
+      ELSE 4
+
+    END
+    `,
       'search_rank',
     );
-    qb.addOrderBy('search_rank', 'ASC');
+
     qb.setParameters({
       exactKeyword: normalizedKeyword,
       prefixKeyword: `${normalizedKeyword}%`,
       keyword: `%${normalizedKeyword}%`,
     });
 
-    // qb.addOrderBy('product.totalSold', 'DESC');
+    // =========================
+    // SORT
+    // =========================
 
-    return qb;
+    const sortOrder = order === 'asc' ? 'ASC' : 'DESC';
+
+    if (sortBy === 'bestSelling') {
+      qb.orderBy('product.total_sold', sortOrder);
+    } else if (sortBy === 'price') {
+      qb.addSelect(
+        `
+      (
+        SELECT MIN(pp.sale_price)
+        FROM product_variant pv
+        INNER JOIN product_price pp
+          ON pp.variant_id = pv.id
+        WHERE pv.product_id = product.id
+      )
+      `,
+        'min_price',
+      );
+
+      qb.orderBy('min_price', sortOrder);
+    } else {
+      qb.orderBy('product.created_at', sortOrder);
+    }
+
+    // =========================
+    // SEARCH RELEVANCE
+    // =========================
+
+    // Giữ relevance làm secondary sort.
+    qb.addOrderBy('search_rank', 'ASC');
+
+    qb.addOrderBy('product.created_at', 'DESC');
+    qb.addOrderBy('product.id', 'DESC');
+
+    // =========================
+    // PAGINATION
+    // =========================
+
+    qb.skip((page - 1) * limit);
+    qb.take(limit);
+
+    const [products, total] = await qb.getManyAndCount();
+
+    return {
+      products,
+
+      keyword: q,
+
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasMore: page * limit < total,
+      },
+    };
   }
 
   // ============================================================
