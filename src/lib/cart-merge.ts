@@ -2,7 +2,6 @@
 
 import { initializeCartSync } from "@/lib/cart-sync";
 import { useCartStore } from "@/stores/useCartStore";
-import api from "./api";
 import { mergeCartOnLoginService } from "@/services/cartService";
 
 export async function mergeCartOnLogin() {
